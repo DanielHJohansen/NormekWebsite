@@ -14,41 +14,44 @@ interface Props {
 const { data, draft = false } = Astro.props;
 const { labels } = data;
 const offers = await getOffers();
+
+/** The spec rows hold bullet lists. */
+const listClass = "flex max-w-prose list-disc flex-col gap-2 pl-5";
 ---
 
 <SectionShell id={data.id} {draft}>
   {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
   <h2 id={`${data.id}-heading`} class="mb-4 text-2xl"><Inline text={data.heading} /></h2>
-  <p class="mb-10 max-w-measure-lg text-muted"><Inline text={data.lead} /></p>
+  <p class="mb-10 max-w-prose text-muted"><Inline text={data.lead} /></p>
 
   <ol class="border-t-2 border-fg">
     {
       offers.map((offer, index) => (
         <li class="flex flex-wrap gap-x-12 gap-y-6 border-b border-border py-8">
           <div class="min-w-0 flex-1 basis-70">
-            <p class="mb-2 font-mono text-xs tracking-eyebrow text-muted uppercase">
+            <p class="eyebrow mb-2">
               {labels.stage} {index + 1}
             </p>
             <h3 class="mb-2 text-xl"><Inline text={offer.data.name} /></h3>
             <p class="text-muted"><Inline text={offer.data.summary} /></p>
           </div>
           <div class="min-w-0 grow-2 basis-90">
-            <p class="mb-2 font-mono text-xs tracking-eyebrow text-muted uppercase">
-              {labels.youGet}
-            </p>
-            <p><Inline text={offer.data.youGet} /></p>
+            <p class="eyebrow mb-2">{labels.youGet}</p>
+            <ul class={listClass}>
+              {offer.data.youGet.map((item) => <li><Inline text={item} /></li>)}
+            </ul>
           </div>
           <div class="min-w-0 grow-[1.4] basis-70">
-            <p class="mb-2 font-mono text-xs tracking-eyebrow text-muted uppercase">
-              {labels.iNeed}
-            </p>
-            <p><Inline text={offer.data.iNeed} /></p>
+            <p class="eyebrow mb-2">{labels.iNeed}</p>
+            <ul class={listClass}>
+              {offer.data.iNeed.map((item) => <li><Inline text={item} /></li>)}
+            </ul>
             {offer.data.notIncluded && (
               <>
-                <p class="mt-5 mb-2 font-mono text-xs tracking-eyebrow text-muted uppercase">
-                  {labels.notIncluded}
-                </p>
-                <p><Inline text={offer.data.notIncluded} /></p>
+                <p class="eyebrow mt-5 mb-2">{labels.notIncluded}</p>
+                <ul class={listClass}>
+                  {offer.data.notIncluded.map((item) => <li><Inline text={item} /></li>)}
+                </ul>
               </>
             )}
           </div>

@@ -1,5 +1,5 @@
 /**
- * A rehype plugin that wraps every placeholder in Markdown text in <span class="placeholder">.
+ * A rehype plugin that wraps every placeholder in Markdown text in <span class="tbc">.
  * It is the Markdown twin of the Inline component, so a gap looks the same wherever it is written.
  * Code blocks and inline code are left alone.
  */
@@ -30,7 +30,7 @@ function transform(node: HastNode): void {
               ? {
                   type: "element",
                   tagName: "span",
-                  properties: { className: ["placeholder"] },
+                  properties: { className: ["tbc"] },
                   children: [{ type: "text", value: segment.text }],
                 }
               : { type: "text", value: segment.text },

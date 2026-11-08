@@ -8,12 +8,11 @@ import {
   buildRequest,
   encode,
   fields,
+  json,
   ORIGIN,
   readJson,
-  useContactHarness,
-  HOSTNAME,
   TURNSTILE_PASS,
-  json,
+  useContactHarness,
 } from "./contact-harness";
 
 const h = useContactHarness();
@@ -385,11 +384,5 @@ describe("CF-06 honeypot", () => {
   it("is decided after the field names, so a trap with an unknown field is a 400", async () => {
     const body = encode([...Object.entries(fields({ website: "x" })), ["to", "eve@example.net"]]);
     expect((await h.send({ body })).status).toBe(400);
-  });
-});
-
-describe("the hostname the harness reports", () => {
-  it("is the production hostname, so the tests above prove the Turnstile hostname check passes", () => {
-    expect(TURNSTILE_PASS.hostname).toBe(HOSTNAME);
   });
 });

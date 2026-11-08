@@ -31,6 +31,12 @@ const TURNSTILE_TEST_SECRET = /^[123]x0000/;
 /** A header value without spaces or control characters, because the key goes into Authorization. */
 const HEADER_SAFE = /^[\x21-\x7e]+$/;
 
+/**
+ * Letters, digits, hyphens and dots, or a bracketed IPv6 address. The URL parser also accepts a
+ * host like `*.pages.dev`, which can never equal a real Origin header, so it is refused here.
+ */
+const PLAIN_HOSTNAME = /^(?:[a-z0-9-]+(?:\.[a-z0-9-]+)*|\[[0-9a-f:]+\])$/;
+
 function read(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -50,7 +56,9 @@ function parseOrigins(value: string): string[] | null {
       return null;
     }
     const isBareOrigin =
-      (url.protocol === "https:" || url.protocol === "http:") && url.origin === entry;
+      (url.protocol === "https:" || url.protocol === "http:") &&
+      url.origin === entry &&
+      PLAIN_HOSTNAME.test(url.hostname);
     if (!isBareOrigin) return null;
     origins.push(entry);
   }

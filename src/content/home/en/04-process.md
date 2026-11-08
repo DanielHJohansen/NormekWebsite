@@ -14,7 +14,7 @@ steps:
     text: Deliverables, exclusions, duration and price. Work starts when you accept [TO CONFIRM].
   - lead: Design and prototype.
     text: I design the enclosure around your board and check the fit on a prototype.
-  - lead: Hand off to manufacturers.
+  - lead: Hand off to manufacturers you approve.
     text: I send drawings and a request for quote, then review what comes back, including their design for manufacturing feedback.
 draft: false
 ---

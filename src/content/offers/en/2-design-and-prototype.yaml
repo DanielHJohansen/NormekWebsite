@@ -1,0 +1,18 @@
+order: 20
+name: Design and prototype
+summary: Check the design on your real board.
+youGet:
+  - Native CAD ([format TO CONFIRM]) and STEP files with a bill of materials.
+  - One or two rounds of 3D printed prototypes.
+  - A fit report with photos and measured dimensions.
+  - Two design reviews, one before printing.
+  - Extra rounds are quoted.
+  - Printed prototypes check fit. They do not prove sealing, strength or heat in the production material.
+iNeed:
+  - A frozen board revision
+  - One or two assembled boards
+  - Parts lists
+  - A reviewer who answers within [2 working days, TO CONFIRM]
+  - "Who pays for prototype parts and shipping: [TO CONFIRM]"
+price: null
+priceStatus: hypothesis

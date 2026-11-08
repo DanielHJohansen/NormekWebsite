@@ -12,7 +12,11 @@ import { renderSitemap, type SitemapEntry } from "../lib/sitemap";
 export const GET: APIRoute = async ({ site }) => {
   if (!site) throw new Error("Set `site` in astro.config.mjs. The sitemap needs absolute URLs.");
   const locale = SITE.defaultLocale;
-  const [pages, work] = await Promise.all([getPages(locale), getWork(locale)]);
+  const [allPages, work] = await Promise.all([getPages(locale), getWork(locale)]);
+  // /thanks/ and the 404 page are not pages to index, so they never get a sitemap line.
+  const pages = allPages.filter(
+    (page) => page.data.sitemap && !page.data.noindex && page.data.layout !== "notfound",
+  );
 
   const entries: SitemapEntry[] = [
     { path: homePath(locale) },

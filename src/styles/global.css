@@ -1,6 +1,7 @@
 /*
  * Global styles. Tokens live in tokens.css. Everything here reads them through var(--...) and
  * Tailwind utilities, so there are no raw colour values in this file.
+ * Spec: docs/design/tokens.md (ui-designer, 2026-11-08).
  */
 
 /*
@@ -25,19 +26,19 @@
     text-size-adjust: 100%;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    html {
-      scroll-behavior: smooth;
-    }
-  }
-
   body {
     font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     font-weight: var(--font-weight-normal);
-    /* The brand uses no italics and no faux weights (brand guide section 3). */
+    /* The brand uses no italics and no faux weights (tokens.md 3.3). */
     font-synthesis: none;
+  }
+
+  /* Weights are 400 and 600 only, so strong is 600 and never the browser's 700. */
+  strong,
+  b {
+    font-weight: var(--font-weight-semibold);
   }
 
   h1,
@@ -47,12 +48,20 @@
     font-family: var(--font-display);
     font-weight: var(--font-weight-semibold);
     text-wrap: balance;
+    /* Barlow digits are proportional by default. The font has the tnum feature, so this works. */
+    font-variant-numeric: tabular-nums;
   }
 
-  /* One visible focus style everywhere. Sections on Ink swap --color-focus (see .theme-ink). */
+  /* Avoids a last line with one word on it, such as "engineer." in the hero lead at 390 px. */
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  /* One visible focus style everywhere. Sections on Ink swap --color-focus (see .theme-ink). Never outline: none. */
   :focus-visible {
-    outline: 3px solid var(--color-focus);
-    outline-offset: 3px;
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
   }
 
   ::selection {
@@ -66,59 +75,65 @@
   }
 }
 
-/*
- * Ink sections. The brand guide's dark column applies to any Ink band, so a band only needs this class.
- * It redefines the semantic tokens, and every utility that reads them follows.
- */
 @layer components {
-  .theme-ink {
-    --color-bg: var(--color-ink);
-    --color-surface: var(--color-ink-800);
-    --color-border: var(--color-ink-700);
-    --color-fg: var(--color-paper);
-    --color-muted: var(--color-steel-300);
-    --color-link: var(--color-signal-400);
-    --color-focus: var(--color-signal-400);
-    --color-placeholder: var(--color-steel-300);
-    --color-success: #30b264;
-    --color-warning: #c9940d;
-    --color-error: #f6747c;
-    background-color: var(--color-bg);
-    color: var(--color-fg);
-  }
-
-  /* An underlined text link. Hover thickens the rule (canvas Components.dc.html, "Buttons and links"). */
+  /*
+   * An underlined text link (tokens.md 5.4). The weight is 400, because the brand uses 400 and 600 only.
+   * Hover thickens the rule. A standalone link gets the 44 px target, a link inside a sentence keeps its line box.
+   */
   .link {
     color: var(--color-link);
-    font-weight: var(--font-weight-medium);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
   .link:hover {
     text-decoration-thickness: 2px;
   }
+  .link-standalone {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target-min);
+  }
+
+  /* A navigation link in the header (tokens.md 5.4). No underline until hover. */
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target-min);
+    color: var(--color-fg);
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+  .nav-link:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
 
   /*
-   * A missing fact. It shows as a dashed tag and keeps its brackets, so check:dist in launch mode still finds it
-   * and blocks the launch. Used by the Inline component and by the rehype plugin for Markdown.
+   * A missing fact, shown as a dashed tag (tokens.md 5.12). It keeps its brackets, so check:dist in launch mode
+   * still finds it and blocks the launch. Used by the Inline component and by the rehype plugin for Markdown.
+   * It is inline and may wrap, so a long tag fits a 350 px column. Never smaller than 14 px.
    */
-  .placeholder {
-    display: inline;
-    border: 1px dashed var(--color-placeholder);
-    padding: 0 calc(var(--spacing) * 1.5);
+  .tbc {
+    border: 1px dashed var(--color-border-strong);
+    padding: 0 calc(var(--spacing) * 1);
     font-family: var(--font-mono);
-    font-size: 0.875em;
+    font-size: var(--text-sm);
     font-weight: var(--font-weight-normal);
     text-decoration: none;
-    overflow-wrap: anywhere;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .theme-ink .tbc {
+    border-color: var(--color-muted);
   }
 
   /*
    * Long text from Markdown, for the privacy notice. Hand written, so no typography plugin is needed.
-   * Matches the article in the canvas board Privacy.dc.html.
+   * Running text is at most 28em wide (tokens.md 3.3).
    */
   .prose {
-    max-width: var(--container-measure-xl);
+    max-width: var(--container-prose);
   }
   .prose > * + * {
     margin-top: calc(var(--spacing) * 4);
@@ -157,12 +172,9 @@
   .prose a:hover {
     text-decoration-thickness: 2px;
   }
-  .prose strong {
-    font-weight: var(--font-weight-semibold);
-  }
 }
 
-/* A small mono label above a heading: "01 / Problem". Brand guide section 3. */
+/* A small mono label above a heading: "01 / Problem" (tokens.md 3.3). Balanced, so "TEAMS" never sits alone. */
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
@@ -170,11 +182,18 @@
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--color-muted);
+  text-wrap: balance;
 }
 
-/* Route 01 device: a 45 degree cut on the top right and bottom left corners (brand guide section 5). */
-@utility chamfer {
-  --chamfer: 1.75rem;
+/*
+ * Route 01 device: a 45 degree cut on the top right and bottom left corners (tokens.md 5.13).
+ * An inset shadow stops at the cut, so the hairline needs two layers: the outer one draws the line as
+ * a 1 px padding in the border colour, the inner one is the surface, cut 0.59 px smaller so the diagonal line is 1 px too.
+ * Use `frame` on the outer element and `frame-inner` on its only child. Keep focusable content 8 px inside.
+ */
+@utility frame {
+  padding: 1px;
+  background: var(--color-border);
   clip-path: polygon(
     0 0,
     calc(100% - var(--chamfer)) 0,
@@ -184,8 +203,19 @@
     0 calc(100% - var(--chamfer))
   );
 }
+@utility frame-inner {
+  background: var(--color-surface);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--chamfer-inner)) 0,
+    100% var(--chamfer-inner),
+    100% 100%,
+    var(--chamfer-inner) 100%,
+    0 calc(100% - var(--chamfer-inner))
+  );
+}
 
-/* The skip link is hidden until it receives keyboard focus. */
+/* The skip link is hidden until it receives keyboard focus (tokens.md 5.1). Ink fill with Paper text. */
 @utility skip-link {
   position: absolute;
   left: calc(var(--spacing) * 4);

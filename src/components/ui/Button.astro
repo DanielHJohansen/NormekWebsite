@@ -1,11 +1,12 @@
 ---
 /**
- * The primary action is a Signal fill with an Ink label (5.54:1). White on Signal fails contrast.
- * The secondary button is an Ink outline and fills on hover. On an Ink band the same classes follow
- * the swapped tokens. Radius 2 px, never chamfered. One primary Signal fill per view (brand guide section 2).
- * Heights: 52 px for the main buttons, 44 px in the header.
+ * Buttons (tokens.md 5.2 and 5.3). The primary action is a Signal fill with an Ink label (5.54:1), and white on
+ * Signal fails contrast. The secondary button is a 2 px outline that fills on hover. On an Ink band the same
+ * classes follow the swapped tokens. Radius 2 px, never chamfered. One primary Signal fill per view.
+ * Heights: 52 px for the main buttons, 44 px (size "sm") in the header. No transition: changes are instant.
  *
  * It renders a link by default. Pass as="button" for a form button.
+ * A sending button keeps its focus, so it carries aria-disabled and never the disabled attribute.
  */
 interface Props {
   as?: "a" | "button";
@@ -15,7 +16,8 @@ interface Props {
   size?: "md" | "sm";
   class?: string;
   id?: string;
-  disabled?: boolean;
+  /** Any other attribute goes to the element, for example aria-disabled or data-*. */
+  [attribute: string]: unknown;
 }
 
 const {
@@ -29,13 +31,15 @@ const {
 } = Astro.props;
 
 const variants = {
-  primary: "bg-accent text-on-accent hover:bg-accent-hover disabled:bg-paper-200 disabled:text-muted",
-  secondary: "border-2 border-fg text-fg hover:bg-fg hover:text-bg",
+  primary:
+    "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-hover active:shadow-[inset_0_0_0_2px_var(--color-on-accent)] aria-disabled:cursor-progress aria-disabled:hover:bg-accent aria-disabled:active:shadow-none",
+  secondary:
+    "border-2 border-fg text-fg hover:bg-fg hover:text-bg active:bg-fg active:text-bg active:shadow-[inset_0_0_0_2px_var(--color-bg)]",
 } as const;
 
 const sizes = {
-  md: "min-h-13 px-7 text-base",
-  sm: "min-h-11 px-5 text-ui",
+  md: "min-h-(--target-primary) px-7 text-base",
+  sm: "min-h-(--target-min) px-5 text-sm",
 } as const;
 ---
 
@@ -43,7 +47,7 @@ const sizes = {
   href={Tag === "a" ? href : undefined}
   type={Tag === "button" ? (type ?? "button") : undefined}
   class:list={[
-    "inline-flex items-center justify-center rounded-sm text-center font-semibold transition-colors disabled:cursor-not-allowed",
+    "inline-flex cursor-pointer items-center justify-center rounded-sm text-center font-semibold",
     variants[variant],
     sizes[size],
     className,

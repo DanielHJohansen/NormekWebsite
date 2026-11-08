@@ -1,7 +1,7 @@
 /**
  * A missing fact is written in square brackets with "TO CONFIRM" in it, for example [TO CONFIRM],
  * [1 working day, TO CONFIRM] or [TO CONFIRM link]. A [TARGET ...] marker follows the same rule.
- * The page shows each one as a dashed tag (see .placeholder in global.css) and keeps the brackets,
+ * The page shows each one as a dashed tag (see .tbc in global.css) and keeps the brackets,
  * so check:dist in launch mode still finds them and blocks the launch while any remain.
  */
 

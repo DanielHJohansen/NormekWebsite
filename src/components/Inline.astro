@@ -8,25 +8,27 @@ import { parseInline } from "../lib/inline";
 
 interface Props {
   text: string;
+  /** The class of every link in the text. Use "link link-standalone" for a link on its own line. */
+  linkClass?: string;
 }
 
-const { text } = Astro.props;
+const { text, linkClass = "link" } = Astro.props;
 const tokens = parseInline(text);
 ---
 
 {
   tokens.map((token) => {
-    if (token.type === "placeholder") return <span class="placeholder">{token.text}</span>;
-    if (token.type === "strong") return <strong class="font-semibold">{token.text}</strong>;
+    if (token.type === "placeholder") return <span class="tbc">{token.text}</span>;
+    if (token.type === "strong") return <strong class="font-semibold text-fg">{token.text}</strong>;
     if (token.type === "link")
       return (
-        <a class="link" href={token.href}>
+        <a class={linkClass} href={token.href}>
           {token.text}
         </a>
       );
     if (token.type === "email")
       return token.link ? (
-        <a class="link" href={`mailto:${SITE.email}`}>
+        <a class={linkClass} href={`mailto:${SITE.email}`}>
           {SITE.email}
         </a>
       ) : (

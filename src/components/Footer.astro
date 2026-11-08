@@ -1,55 +1,50 @@
 ---
+/**
+ * The footer (tokens.md 5.18): an Ink band with three wrapping columns and a bottom row.
+ * The text comes from src/content/site/<locale>/footer.yaml. Links are standalone links with the 44 px target.
+ */
+import Inline from "./Inline.astro";
 import Logo from "./ui/Logo.astro";
-import { SITE } from "../config/site";
-import type { NavLink } from "../lib/nav";
+import type { FooterData } from "../lib/schemas";
 
 interface Props {
-  links: readonly NavLink[];
+  footer: FooterData;
 }
 
-const { links } = Astro.props;
-const { company } = SITE;
+const { footer } = Astro.props;
 ---
 
-<footer class="theme-ink">
-  <div class="mx-auto grid max-w-page gap-8 px-4 py-12 md:grid-cols-2 md:px-6 lg:px-8">
-    <div>
-      <Logo reversed class="h-8 w-auto" />
+<footer class="theme-ink py-footer">
+  <div class="mx-auto max-w-page px-gutter">
+    <div class="flex flex-wrap justify-between gap-x-14 gap-y-8">
+      <div class="flex min-w-0 flex-1 basis-65 flex-col gap-4">
+        <Logo reversed class="h-7 w-auto self-start md:h-8" />
+        <p class="text-sm text-muted"><Inline text={footer.tagline} /></p>
+      </div>
+      <ul class="flex min-w-0 flex-1 basis-65 flex-col gap-2 text-sm">
+        {
+          footer.facts.map((fact) => (
+            <li>
+              {fact.label} <Inline text={fact.value} />
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="flex min-w-0 flex-1 basis-50 flex-col text-sm">
+        {
+          footer.links.map((link) => (
+            <li>
+              <Inline text={link} linkClass="link link-standalone" />
+            </li>
+          ))
+        }
+      </ul>
     </div>
-    <div class="space-y-4 text-base">
-      <p class="font-semibold">{SITE.name}</p>
-      <dl class="space-y-1 text-muted">
-        <div class="flex gap-x-2">
-          <dt>Legal name</dt>
-          <dd>{company.legalName}</dd>
-        </div>
-        <div class="flex gap-x-2">
-          <dt>CVR</dt>
-          <dd>{company.cvr}</dd>
-        </div>
-        <div class="flex gap-x-2">
-          <dt>Address</dt>
-          <dd>{company.address}</dd>
-        </div>
-      </dl>
-      <p>
-        <a class="link" href={`mailto:${SITE.email}`}>
-          {SITE.email}
-        </a>
-      </p>
-      {links.length > 0 && (
-        <nav aria-label="Footer">
-          <ul class="flex flex-wrap gap-x-6 gap-y-2">
-            {links.map((link) => (
-              <li>
-                <a class="link inline-flex min-h-11 items-center" href={link.href}>
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
+    <div
+      class="mt-8 flex flex-wrap justify-between gap-x-8 gap-y-3 border-t border-border pt-6 text-sm text-muted"
+    >
+      <p class="max-w-prose"><Inline text={footer.agreement} /></p>
+      <p><Inline text={footer.copyright} /></p>
     </div>
   </div>
 </footer>

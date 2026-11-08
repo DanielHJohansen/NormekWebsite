@@ -1,16 +1,20 @@
 ---
 /**
- * Every page in the `pages` collection: /privacy/, and the v1 pages once they are published.
+ * Every page in the `pages` collection: /privacy/, /thanks/ and the v1 pages once they are published.
  * getStaticPaths goes through isPublished(), so a draft has no route in a production build.
+ * The 404 page is not routed here. src/pages/404.astro renders its own entry.
  */
 import { render } from "astro:content";
+import DefaultPage from "../components/pages/DefaultPage.astro";
+import LegalPage from "../components/pages/LegalPage.astro";
+import ThanksPage from "../components/pages/ThanksPage.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getPages } from "../lib/content";
 import { isDraft } from "../lib/drafts";
 import { RESERVED_SLUGS, splitId } from "../lib/routes";
 
 export async function getStaticPaths() {
-  const pages = await getPages();
+  const pages = (await getPages()).filter((entry) => entry.data.layout !== "notfound");
   return pages.map((entry) => {
     const { slug } = splitId(entry.id);
     if (RESERVED_SLUGS.includes(slug)) {
@@ -21,19 +25,30 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { data } = entry;
+const { Content, headings } = await render(entry);
 ---
 
 <BaseLayout
-  title={entry.data.title}
-  description={entry.data.description}
-  lang={entry.data.lang}
+  title={data.title}
+  description={data.description}
+  lang={data.lang}
   draft={isDraft(entry)}
+  noindex={data.noindex}
 >
-  <article class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
-    <h1 class="text-3xl">{entry.data.title}</h1>
-    <div class="prose mt-8">
-      <Content />
-    </div>
-  </article>
+  {
+    data.layout === "legal" && (
+      <LegalPage data={data} headings={headings}>
+        <Content />
+      </LegalPage>
+    )
+  }
+  {data.layout === "thanks" && <ThanksPage data={data} />}
+  {
+    data.layout === "default" && (
+      <DefaultPage data={data}>
+        <Content />
+      </DefaultPage>
+    )
+  }
 </BaseLayout>

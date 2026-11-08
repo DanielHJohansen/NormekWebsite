@@ -4,16 +4,19 @@ import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import Seo from "../components/Seo.astro";
 import { SITE } from "../config/site";
-import { getHomeSections, getPages } from "../lib/content";
-import { pageNav, sectionNav } from "../lib/nav";
+import { getFooter, getHomeSections } from "../lib/content";
+import { sectionNav } from "../lib/nav";
 
 interface Props {
+  /** The whole <title>. */
   title?: string;
   description?: string;
   lang?: string;
   /** True when this page is a draft. That is only possible with SHOW_DRAFTS=true. */
   draft?: boolean;
   canonical?: boolean;
+  /** True keeps the page out of search at launch too. */
+  noindex?: boolean;
 }
 
 const {
@@ -22,12 +25,13 @@ const {
   lang = SITE.defaultLocale,
   draft = false,
   canonical = true,
+  noindex = false,
 } = Astro.props;
 
 // Navigation is built from content that is part of this build, so it never links to a draft in production.
-const [sections, pages] = await Promise.all([getHomeSections(lang), getPages(lang)]);
+// Only the display and the text face are preloaded below. The mono face is not (tokens.md section 3).
+const [sections, footer] = await Promise.all([getHomeSections(lang), getFooter(lang)]);
 const headerNav = sectionNav(sections, lang);
-const footerNav = pageNav(SITE.footerPages, pages, lang);
 ---
 
 <!doctype html>
@@ -35,16 +39,28 @@ const footerNav = pageNav(SITE.footerPages, pages, lang);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <Seo title={title} description={description} canonical={canonical} />
+    <link
+      rel="preload"
+      href="/fonts/barlow-semi-condensed-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-sans-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <Seo title={title} description={description} canonical={canonical} noindex={noindex} />
   </head>
   <body class="flex min-h-dvh flex-col">
-    <a href="#main" class="skip-link">
-      Skip to main content
-    </a>
+    <a href="#main" class="skip-link">{SITE.skipLinkLabel}</a>
     <Header nav={headerNav} {lang} {draft} />
     <main id="main" tabindex="-1" class="flex-1 focus:outline-none">
       <slot />
     </main>
-    <Footer links={footerNav} />
+    <Footer {footer} />
   </body>
 </html>

@@ -53,10 +53,15 @@ const heroSection = z.object({
   ...sectionBase,
   kind: z.literal("hero"),
   subhead: text,
+  /** The note beside the button. */
+  buttonNote: text,
   /** The text of the link under the button. {email} becomes the address. */
   emailLabel: text,
-  ledBy: text,
+  /** The one-person line under the button. */
+  byline: text,
   caption: text,
+  /** The description of the drawing for people who cannot see it. The caption is not repeated in it. */
+  figureAlt: text,
 });
 
 const problemSection = z.object({
@@ -94,7 +99,8 @@ const scopeSection = z.object({
 const dataSection = z.object({
   ...sectionBase,
   kind: z.literal("data"),
-  cards: z.array(z.object({ lead: text, text })).min(1),
+  /** Each item is one inline string that starts with a **bold lead-in**. */
+  items: z.array(text).min(1),
   link: text,
 });
 
@@ -233,9 +239,10 @@ export const offerSchema = z
     order: z.number().int().nonnegative(),
     name: text,
     summary: text,
-    youGet: text,
-    iNeed: text,
-    notIncluded: text.optional(),
+    /** Bullet lists. Each item is one inline string. */
+    youGet: z.array(text).min(1),
+    iNeed: z.array(text).min(1),
+    notIncluded: z.array(text).min(1).optional(),
     /** In euros or kroner as decided later. Null means "on request". */
     price: z.number().nonnegative().nullable().default(null),
     /** A price renders only when confirmed. A hypothesis is kept for internal reference. */

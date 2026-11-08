@@ -1,16 +1,9 @@
 /*
  * Design tokens. This is the one place where values live.
- *
- * Source: brand/brand-guide.md v0.1 (sections 2 and 3), docs/plan/work-breakdown.md section 8 and the
- * canvas snapshot in docs/design/canvas/ (Type.dc.html "Layout" and Components.dc.html).
- * The names are fixed. Components use tokens only, never raw hex values.
+ * Spec and reasoning: docs/design/tokens.md (ui-designer, 2026-11-08).
+ * Values: brand/brand-guide.md v0.1 sections 2 and 3, and the Claude Design canvas.
+ * Components use tokens only, never raw hex values.
  * Tailwind v4 turns every @theme variable into a CSS variable, so plain CSS can use var(--color-ink) too.
- *
- * Contrast rules (measured in the brand guide, WCAG 2.x):
- *   - Buttons are Signal with Ink text (5.54:1). White on Signal fails (3.11:1).
- *   - Signal never carries text on Paper or white (2.84:1 and 3.11:1). Text links use `link`.
- *   - Steel is for large text and decoration only (4.20:1 on Paper). Small secondary text uses `muted`.
- *   - Sections on Ink use the `.theme-ink` class in global.css, which swaps the semantic tokens.
  */
 
 /* Remove Tailwind's default scales, so only the tokens below exist as utilities. */
@@ -19,10 +12,14 @@
   --font-*: initial;
   --font-weight-*: initial;
   --text-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
   --radius-*: initial;
   --shadow-*: initial;
   --breakpoint-*: initial;
   --container-*: initial;
+  --ease-*: initial;
+  --animate-*: initial;
 }
 
 /* `static` emits every variable, also those only used from plain CSS. */
@@ -64,26 +61,19 @@
   --color-success: #067239;
   --color-warning: #805c05;
   --color-error: #b13544;
-  /* The dashed outline of a [TO CONFIRM] tag. It blocks launch while it is visible. */
-  --color-placeholder: var(--color-steel);
 
   /* ---------- Typography ---------- */
-  /*
-   * Three self-hosted families (ADR 0001 amendment A11, brand guide section 3). The @font-face rules are in
-   * fonts.css, the files in public/fonts/. If a font budget ever fails, drop the mono and set specifications in Plex Sans.
-   */
   --font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
   --font-sans: "IBM Plex Sans", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 
   --font-weight-normal: 400;
-  --font-weight-medium: 500;
   --font-weight-semibold: 600;
 
-  /* Eyebrow labels: Mono, sm, uppercase, 0.06em tracking (brand guide section 3). */
+  /* Eyebrow labels: Mono, sm, uppercase, 0.06em tracking. */
   --tracking-eyebrow: 0.06em;
 
-  /* Fluid scale for 390 to 1280 px viewports (brand guide section 3). */
+  /* Fluid scale for 390 to 1280 px viewports. */
   --text-sm: clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem);
   --text-sm--line-height: 1.5;
   --text-base: clamp(1rem, 0.9452rem + 0.2247vw, 1.125rem);
@@ -99,50 +89,61 @@
   --text-4xl: clamp(2.5rem, 1.8427rem + 2.6966vw, 4rem);
   --text-4xl--line-height: 1.05;
 
-  /*
-   * Two fixed sizes the canvas uses beside the fluid scale: 14 px for labels, numbers and helper text,
-   * and 15 px for navigation, field labels, notes and the footer. Added in the code step, to be agreed with ui-designer.
-   */
-  --text-xs: 0.875rem;
-  --text-xs--line-height: 1.5;
-  --text-ui: 0.9375rem;
-  --text-ui--line-height: 1.5;
-
   /* ---------- Space: 4 px base ---------- */
-  /* Utilities multiply this: p-1 is 4 px, p-4 is 16 px, p-6 is 24 px, p-12 is 48 px. */
+  /* p-1 is 4 px, p-4 is 16 px, p-6 is 24 px, p-7 is 28 px, p-12 is 48 px. */
   --spacing: 0.25rem;
-  /* Page gutter and the padding above and below a section (canvas Type.dc.html, "Layout"). */
-  --spacing-gutter: clamp(1.25rem, 4vw, 3rem);
-  --spacing-section: clamp(3.5rem, 8vw, 6rem);
-  --spacing-hero-top: clamp(3rem, 7vw, 6rem);
-  --spacing-hero-bottom: clamp(3.5rem, 8vw, 7rem);
-  --spacing-footer: clamp(2.5rem, 6vw, 4rem);
-  /* The gap between the two halves of a split section, and the padding of a large panel or the form card. */
-  --spacing-split: clamp(2rem, 5vw, 4.5rem);
-  --spacing-split-sm: clamp(2rem, 4vw, 3.5rem);
-  --spacing-panel: clamp(1.25rem, 3vw, 2.25rem);
+  /* Named fluid values, used as px-gutter, py-section, gap-columns and so on. */
+  --spacing-gutter: clamp(20px, 4vw, 48px);
+  --spacing-section: clamp(56px, 8vw, 96px);
+  --spacing-hero-top: clamp(48px, 7vw, 96px);
+  --spacing-hero-bottom: clamp(56px, 8vw, 112px);
+  --spacing-panel: clamp(20px, 3vw, 36px); /* hero panel and form card padding */
+  --spacing-columns: clamp(32px, 5vw, 72px); /* gap between hero, process and about columns */
+  --spacing-columns-tight: clamp(32px, 4vw, 56px); /* gap between scope and contact columns */
+  --spacing-footer: clamp(40px, 6vw, 64px); /* footer padding above and below (tokens.md 5.18, named in code) */
 
   /* ---------- Layout widths ---------- */
-  --container-page: 75rem; /* 1200 px, centred */
-  --container-form: 47.5rem; /* the narrow pages: confirmation and not found, 760 px */
-  /* Text blocks sit inside the container at 34 to 46 em. */
-  --container-measure-sm: 34em;
-  --container-measure-md: 38em;
-  --container-measure-lg: 40em;
-  --container-measure-xl: 46em;
+  --container-page: 75rem; /* 1200 px including the gutters, so content is 1104 px at the cap */
+  --container-prose: 28em; /* 65 characters of Plex Sans, measured on the page copy */
+  --container-narrow: 47.5rem; /* /thanks/ and the 404 page, 760 px (canvas Thanks.dc.html, named in code) */
 
-  /* ---------- Radii ---------- */
-  /* 2 px on buttons and inputs. Nothing else is rounded. The route 01 chamfer is a clip-path, see global.css. */
-  --radius-sm: 2px;
-
-  /* ---------- Shadows ---------- */
-  /* Unused in v0: the canvas draws borders instead of shadows. Placeholders until ui-designer sets them. */
-  --shadow-sm: 0 1px 2px 0 rgb(15 27 45 / 0.08);
-  --shadow-md: 0 4px 12px 0 rgb(15 27 45 / 0.1);
-  --shadow-lg: 0 12px 32px 0 rgb(15 27 45 / 0.14);
+  /* ---------- Radius and shadow ---------- */
+  --radius-sm: 2px; /* buttons and inputs. Cards and panels are square */
+  --shadow-hairline: inset 0 0 0 1px var(--color-border); /* the only shadow */
 
   /* ---------- Breakpoints: the three design widths ---------- */
   --breakpoint-sm: 390px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1280px;
+
+  /* ---------- Plain variables for component CSS ---------- */
+  --target-min: 44px; /* header button, nav links, standalone links, checkbox row */
+  --target-input: 48px;
+  --target-primary: 52px;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --chamfer: 28px; /* route 01 device, 45 degrees */
+  --chamfer-inner: calc(var(--chamfer) - 0.59px); /* keeps a 1 px hairline along the cut */
+}
+
+/*
+ * Ink sections. The dark column of section 1.2 applies to any element with this class.
+ * The three status values live here as raw hex because this file is the one place raw values may live.
+ */
+@layer components {
+  .theme-ink {
+    color-scheme: dark;
+    --color-bg: var(--color-ink);
+    --color-surface: var(--color-ink-800);
+    --color-border: var(--color-ink-700);
+    --color-fg: var(--color-paper);
+    --color-muted: var(--color-steel-300);
+    --color-link: var(--color-signal-400);
+    --color-focus: var(--color-signal-400);
+    --color-success: #30b264;
+    --color-warning: #c9940d;
+    --color-error: #f6747c;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
 }

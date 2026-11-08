@@ -2,7 +2,7 @@
 
 Version 0.1, 8 November 2026. Written by `ui-designer` for `frontend-developer`. Private preview only: the name Normek is not cleared.
 
-This is the single hand-off for how the site looks. Implement it in `src/styles/tokens.css` (section 2), `src/styles/global.css` and the components. Where the canvas and this file disagree, this file wins, and the differences are listed in the canvas review.
+This is the single hand-off for how the site looks. Implement it in `src/styles/tokens.css` (section 2), `src/styles/global.css` and the components. Order of authority (`docs/design/claude-design.md`): the brand guide, then this file for names and values, then the canvas for layout and component states. Where the canvas breaks the guide, the guide wins and `docs/design/canvas-review-2026-11-08.md` lists the fix. Line numbers below cite `Main.dc.html` as it was before copy 2.1 (409 lines). To find an element in the current 452 line file, use its section: header 20 to 35, hero 39 to 91, problem 93 to 118, offers 122 to 228, process 230 to 287, scope 289 to 315, data 319 to 332, about 334 to 352, contact 354 to 390, footer 395 to 421.
 
 Sources: the Claude Design canvas (`Main.dc.html` is the home page and, through its slice prop, the three phone boards, `Foundations.dc.html` is logo and colour), `brand/brand-guide.md` v0.1, `docs/plan/work-breakdown.md` section 8 and `docs/copy/v0-home-copy.md`. Line numbers are from `Main.dc.html` unless a file is named.
 
@@ -184,10 +184,12 @@ Paste this over the current file. It keeps every name and value from the current
   --spacing-panel: clamp(20px, 3vw, 36px); /* hero panel and form card padding */
   --spacing-columns: clamp(32px, 5vw, 72px); /* gap between hero, process and about columns */
   --spacing-columns-tight: clamp(32px, 4vw, 56px); /* gap between scope and contact columns */
+  --spacing-footer: clamp(40px, 6vw, 64px); /* footer padding above and below */
 
   /* ---------- Layout widths ---------- */
   --container-page: 75rem; /* 1200 px including the gutters, so content is 1104 px at the cap */
-  --container-prose: 28em; /* 65 characters of Plex Sans, measured on the page copy */
+  --container-form: 47.5rem; /* the confirmation and not found pages, 760 px */
+  --container-measure: 28em; /* 65 characters of Plex Sans, measured on the page copy. Use max-w-measure. Tailwind's max-w-prose is a fixed 65ch and ignores the theme */
 
   /* ---------- Radius and shadow ---------- */
   --radius-sm: 2px; /* buttons and inputs. Cards and panels are square */
@@ -233,7 +235,7 @@ Paste this over the current file. It keeps every name and value from the current
 
 ## 3. Type
 
-Plex Sans and Plex Mono were drawn as a pair and sit quietly beside the condensed headings. All three are SIL Open Font License 1.1, self-hosted in `public/fonts/` with each `OFL.txt`. Never load them from a third-party CDN. The directory does not exist yet.
+Plex Sans and Plex Mono were drawn as a pair and sit quietly beside the condensed headings. All three are SIL Open Font License 1.1, self-hosted in `public/fonts/` with each `OFL.txt`. Never load them from a third-party CDN. The files and licence texts are in place in `public/fonts/`, and `src/styles/fonts.css` holds the rules and matches this section.
 
 | Token | Family | File | Size | Weights | Use |
 |---|---|---|---|---|---|
@@ -244,7 +246,7 @@ Plex Sans and Plex Mono were drawn as a pair and sit quietly beside the condense
 Total 83,404 B, latin subset. Measured from the files: the Plex Sans file has a `wght` axis from 100 to 700. æ ø å ° × ’ “ and the en dash are in all three. ≤ ≥ and Ω are in none, so write "up to" and "at least".
 
 ```css
-/* global.css, before everything else */
+/* Reference only. This is already in src/styles/fonts.css, which adds unicode-range */
 @font-face {
   font-family: "Barlow Semi Condensed";
   font-style: normal;
@@ -306,7 +308,7 @@ For 390 to 1280 px viewports. The clamp values are the brand guide's. The pixel 
 - Eyebrows: Mono, `text-sm`, uppercase, `letter-spacing: var(--tracking-eyebrow)`, `muted`. Add `text-wrap: balance` (proposed), because the hero eyebrow is 351 px wide in a 350 px column at 390 and would leave "TEAMS" alone on a second line.
 - Headings: sentence case, `text-wrap: balance`, `font-variant-numeric: tabular-nums` where a heading holds figures. Barlow digits are proportional by default (313 to 522 units wide) and the file has the `tnum` feature (507 units for every digit), so the property works. Plex Sans digits are already tabular (600 units each) and Plex Mono is 600 units per character, so they need nothing.
 - Paragraphs: `text-wrap: pretty` (proposed), which avoids one-word last lines such as "engineer." in the hero lead at 390.
-- **Measure**: running text is at most 28em wide (`max-w-prose`). Measured on the page copy in Plex Sans, 28em keeps the longest wrapped line at 65 characters (mean full line 58). The old `65ch` is 39em because Plex Sans zero is 0.6em wide, and it fits up to 86 characters.
+- **Measure**: running text is at most 28em wide (`max-w-measure`, from `--container-measure`). Never use `max-w-prose`: Tailwind fixes it at 65ch and ignores the theme. Measured on the page copy in Plex Sans, 28em keeps the longest wrapped line at 65 characters (mean full line 58). The old `65ch` is 39em because Plex Sans zero is 0.6em wide, and it fits up to 86 characters.
 - Units take a space (2 mm, 85 °C), ranges read "2 to 4 weeks", dates read 8 November 2026.
 - Fallback metrics are still unmeasured (brand guide, open items). Generate metric-matched fallback faces with Capsize or Fontaine once the files are in `public/fonts/`, and keep cumulative layout shift under 0.05.
 
@@ -317,6 +319,7 @@ For 390 to 1280 px viewports. The clamp values are the brand guide's. The pixel 
 | Token | Value | Where in the canvas |
 |---|---|---|
 | Container | `max-w-page`, 1200 px with the gutter inside it, centred | 22, 41, 93 and every section |
+| Narrow page container | `max-w-form`, 760 px (47.5rem), centred, same gutter | `Thanks` 22, `NotFound` 22 |
 | Gutter | `px-gutter`, `clamp(20px, 4vw, 48px)` (20 / 30.7 / 48 at 390 / 768 / 1280) | every container |
 | Section padding | `py-section`, `clamp(56px, 8vw, 96px)` | 92, 121, 186, 245, 273, 292, 311 |
 | Hero padding | top `clamp(48px, 7vw, 96px)`, bottom `clamp(56px, 8vw, 112px)` | 40 |
@@ -405,8 +408,8 @@ Canvas lines 47 and 335. One per view. Label is a verb phrase: "Request a feasib
 | Hover | `accent-hover` | `on-accent` 7.09:1 | Instant, no transition |
 | Focus | as default | | Ring, section 5.1 |
 | Pressed | `accent-hover` | `on-accent` | 2 px inset line in `on-accent` |
-| Sending | `accent` | `on-accent` | Label "Sending...", `aria-disabled="true"`, `aria-busy="true"`, `cursor: progress`, no hover change. Never `disabled`, so focus is kept |
-| Disabled (not in v0) | `paper-300` | `steel-700` 5.86:1 | `aria-disabled="true"`, `cursor: not-allowed`, no hover |
+| Sending | `paper-200` | `muted` 5.03:1 | Canvas (`Components` 52). Label "Sending...", `aria-disabled="true"`, `aria-busy="true"`, `cursor: progress`, no hover change. Never the `disabled` attribute, so focus is kept |
+| Disabled (not in v0) | `paper-200` | `muted` 5.03:1 | As sending, with `cursor: not-allowed` |
 | On Ink | as default | | Ring is signal-400 |
 
 ### 5.3 Secondary button
@@ -485,7 +488,7 @@ textarea.field { min-height: 140px; padding: 12px 16px; resize: vertical; } /* c
 .field:hover { border-color: var(--color-fg); } /* proposed */
 .field:focus-visible { border-color: var(--color-fg); } /* proposed, plus the ring */
 .field[aria-invalid="true"] {
-  border-color: var(--color-error); /* proposed */
+  border-color: var(--color-error); /* canvas draws a 2 px error border (Components 152) */
   box-shadow: inset 0 0 0 1px var(--color-error); /* 2 px in total, no layout shift */
 }
 .field:disabled, .field[readonly] {
@@ -547,49 +550,49 @@ Validate on submit, not on blur, so nobody is scolded mid-typing. After a failed
 ### 5.8 Field error
 
 ```css
-.field-error { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; font-size: var(--text-sm); font-weight: 600; color: var(--color-error); } /* proposed */
-.field-error svg { flex: none; width: 16px; height: 16px; margin-top: 0.2em; }
+.field-error { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; font-size: var(--text-sm); color: var(--color-error); } /* canvas, Components 153 */
+.field-error svg { flex: none; width: 20px; height: 20px; margin-top: 2px; } /* canvas */
 ```
 
-An icon (16 px) then the message from the copy doc, directly under the control. The control gets `aria-invalid="true"`, and its `aria-describedby` lists the helper id and the error id. Error text on white is 6.06:1.
+An icon (20 px, the error icon of 5.9) then the message from the copy doc, directly under the control. The control gets `aria-invalid="true"`, and its `aria-describedby` lists the helper id and the error id. Error text on white is 6.06:1.
 
 ### 5.9 Status messages
 
-Foundations lines 288 and 296 fix the 4 px left rule. Role: success `role="status"`, failure `role="alert"`, warning `role="status"`. Warning has no use in v0 and is reserved.
+`Components` 167 to 189 and `Thanks` 24 draw them, so the canvas values stand. Role: success `role="status"`, failure `role="alert"`, warning `role="status"`.
 
 ```css
 .status {
   --status: var(--color-fg);
-  display: flex; gap: 16px; align-items: flex-start;
-  padding: 20px 24px; /* proposed */
+  display: flex; gap: 12px; align-items: flex-start; /* canvas gap is 10, off the 4 px base */
+  padding: 24px 28px; /* canvas */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-left: 4px solid var(--status); /* canvas */
   color: var(--color-fg);
 }
-.status svg { flex: none; width: 24px; height: 24px; color: var(--status); }
+.status svg { flex: none; width: 20px; height: 20px; margin-top: 3px; color: var(--status); } /* canvas */
 .status-title { margin: 0; font-weight: 600; }
 .status-success { --status: var(--color-success); }
 .status-warning { --status: var(--color-warning); }
 .status-error { --status: var(--color-error); }
 ```
 
-The three icons differ in shape as well as colour. They are 24 px, 2 px stroke, miter joins, `aria-hidden`, and sit in the status colour. The success shape reuses the logo chamfer and the error shape is an octagon, so both stay on the 45 degree geometry.
+The icons are the canvas's: 20 px, 2 px stroke, in the status colour, `aria-hidden`. Success and error are a circle with a tick or a cross, and warning is a triangle with a bar and a dot, so the glyph differs as well as the colour.
 
 ```html
-<!-- success: chamfered square with a tick -->
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" aria-hidden="true" focusable="false"><path d="M3 3h13l5 5v13H8l-5-5z"/><path d="M7.5 12l3 3 6-6.5"/></svg>
-<!-- warning: triangle -->
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" aria-hidden="true" focusable="false"><path d="M12 3l10 18H2z"/><path d="M12 9.5v4.5M12 16.5v1.5"/></svg>
-<!-- error: octagon -->
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" aria-hidden="true" focusable="false"><path d="M8 3h8l5 5v8l-5 5H8l-5-5V8z"/><path d="M12 7.5v6M12 16.5v1.5"/></svg>
+<!-- success: circle with a tick -->
+<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="8"/><path d="M6 10.5L9 13.5L14 7.5"/></svg>
+<!-- warning: triangle with a bar and a dot -->
+<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 2.5L18 16.5H2Z"/><path d="M10 8V11.5"/><circle cx="10" cy="14" r="1.1" fill="currentColor" stroke="none"/></svg>
+<!-- error: circle with a cross -->
+<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="8"/><path d="M7 7L13 13M13 7L7 13"/></svg>
 ```
 
 | Status | Text (from the copy doc) | Rule and icon | Behaviour |
 |---|---|---|---|
-| Success | "Request received. This is your confirmation. I reply from daniel@normek.dk within [1 working day, TO CONFIRM]." | success 6.04:1 | Replaces the form in the same card, focus moves to it |
+| Success | "Request received. This is your confirmation. I reply from daniel@normek.dk within [1 working day, TO CONFIRM]." The lead-in "Request received." is `success` at weight 600 | success 6.04:1 | Replaces the form in the same card, focus moves to it |
 | Send failed | "Your request was not sent. Your text is still here. Try again or email daniel@normek.dk." | error 6.06:1 | Above the button, the text is kept, the button is active again |
-| Person check failed | "The check could not confirm you are a person. Try again or email daniel@normek.dk." | error | As send failed |
+| Person check failed | "The check could not confirm you are a person. Try again or email daniel@normek.dk." | warning 6.08:1 | As send failed. Warning because the visitor can simply try again |
 | Validation | The error summary, 5.7 | error | Focus moves to it |
 
 ### 5.10 Form states in order
@@ -735,26 +738,14 @@ Canvas lines 353 to 377. An Ink band, so it has the class `theme-ink`.
 
 None by default. No transitions, no animations, no smooth scrolling, no spinner (a sending state is text). Hover, pressed and focus changes are instant. If motion is ever added, it lives inside `@media (prefers-reduced-motion: no-preference)` and is short and purposeful. The `--ease-*` and `--animate-*` resets in section 2 remove the easing and animation utilities. Do not use `transition-*` either, because it still works without a theme value.
 
-## 7. Differences from the files in `src/` (read on 8 November 2026)
+## 7. Differences from the files in `src/styles/` (read again on 8 November 2026 after the 13:05 update)
 
-I did not edit these. `src/styles/tokens.css` and `global.css` were read in full. For components I read `Button.astro`, `Header.astro` and `ContactSection.astro` only.
+The developer has applied section 2. `tokens.css` now matches it, with one extra variable, `--spacing-footer`, which is accepted and added to section 2. `fonts.css` matches section 3. I did not edit any of these files. One error of mine is live in the build and needs a fix now.
 
-| File | Now | Should be |
+| Where | Now | Should be |
 |---|---|---|
-| `tokens.css` fonts | System stacks and a TODO | The three stacks in section 2, and the `@font-face` rules in section 3 |
-| `tokens.css` `--container-page` | 72rem (1152 px) | 75rem (1200 px, as the canvas) |
-| `tokens.css` `--container-prose` | 65ch, which fits up to 86 characters of Plex Sans | 28em |
-| `tokens.css` `--container-hero`, `--container-heading` | 18ch and 24ch | Remove. The canvas sets no heading width |
-| `tokens.css` radii and shadows | `radius-md`, `radius-lg`, three drop shadows | Remove them. Add `shadow-hairline`. The canvas uses none of them |
-| `tokens.css` layout | No gutter, section, target, focus or chamfer tokens | Add them as in section 2 |
-| `global.css` `chamfer` | 1.5rem (24 px) | `var(--chamfer)` at 28 px, and the two layer frame in 5.13 |
-| `global.css` `.theme-ink` | Three raw hex values, though the file says it has none | Move into `tokens.css` as in section 2, with `color-scheme: dark` |
-| `global.css` smooth scroll | Smooth scrolling when motion is allowed | Remove (section 6) |
-| `global.css` focus ring | 3 px, offset 3 px | Matches. Read it from `--focus-width` and `--focus-offset` |
-| `Button.astro` | Primary only, `transition-colors`, `min-h-11`, `px-6` | Add the secondary variant. Primary is `min-h-13` (52) and `px-7` (28). Remove the transition. The small size is 44 px with `px-5` |
-| `Header.astro` | Header button uses the Signal Button | Use the secondary small button, as the canvas |
-| `Header.astro` | Links from `lg` (1280), `px-4 md:px-6 lg:px-8` | Links from 1280 match. Use `px-gutter` |
-| `ContactSection.astro` | `py-12 md:py-16 lg:py-24` | `py-section`. The form itself is not built yet |
+| `--container-prose` and every `max-w-prose` class | Tailwind compiles `max-w-prose` to a fixed `65ch` (about 87 characters of Plex Sans) and ignores the 28em token. The first version of this file told you to use it, which was wrong. Only `.prose` honours the token. `max-w-measure-md` in `TextSection.astro` generates nothing, because that token is gone | Rename the token to `--container-measure`, which generates `max-w-measure`. Point `.prose` in `global.css` at `var(--container-measure)`. Replace every `max-w-prose` and `max-w-measure-md` with `max-w-measure` (seen in `HeroSection`, `OffersSection`, `ScopeSection`, `TextSection`, `Footer`, `404` and the work page). I compiled the renamed token with the repo's Tailwind and it generates the class |
+| Narrow pages | No narrow container | Add `--container-form: 47.5rem` (760 px) for the confirmation and not found pages, as in section 2 |
 
 ## 8. Decisions
 
@@ -775,16 +766,15 @@ These follow from the measurements. Push back on any of them.
 
 | Choice | Why |
 |---|---|
-| Prose measure 28em instead of 65ch | Plex Sans is wide, so 65ch gave lines of up to 86 characters against the guide's 65 |
+| Prose measure 28em as `max-w-measure`, not 65ch | Plex Sans is wide, so 65ch gave lines of up to 86 characters against the guide's 65, and the canvas's 34 to 46em is worse at 71 to 103 |
 | Header links from 1280, lockup size switch stays at 768 | The full header needs 765 px and overflows by 58 px at 768, and `Header.astro` already does this |
-| Weights 400 and 600 only | The guide lists them, and the canvas's 500 adds a third weight for no gain |
-| Hover, pressed, error and disabled states as in section 5 | The canvas draws none, and the plan hands them to the developer |
+| Weights 400 and 600 only | The guide lists them. The canvas sets links and nav at 500, which the canvas review asks to change |
+| Component states follow `Components.dc.html` where it draws them | The order of authority gives the canvas the states. I add pressed, disabled and the checkbox, which it does not draw |
 | Chamfer hairline as a second layer | An inset shadow stops at the cut, so the diagonal edge had no line |
 | Tag text at `text-sm`, padding 4 px | The `em` size fell to 12.25 px in small text and 6 px is off the 4 px base |
-| Status icons by shape (chamfered square, triangle, octagon) | State must not rest on colour alone, and two shapes reuse the 45 degree geometry |
 | No motion at all, including smooth scroll | The rule is none by default, and one long scroll to anchors gains nothing from easing |
 
 ### Open items
 
-- Fallback face metrics are unmeasured. `frontend-developer` generates them when the font files land in `public/fonts/`.
-- The canvas needs a Components board for the states in section 5 and frames at 768. The manager republishes it, see `docs/design/canvas-review-2026-11-08.md`.
+- Fallback face metrics are unmeasured. `frontend-developer` generates them with the font files now in `public/fonts/`.
+- The canvas still lacks states and frames, see finding 11 in `docs/design/canvas-review-2026-11-08.md`. The manager republishes it.

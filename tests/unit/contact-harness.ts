@@ -235,6 +235,8 @@ export function useContactHarness() {
       calls
         .filter((call) => call.url === RESEND_URL)
         .map((call) => JSON.parse(String(call.init.body)) as SentMail),
+    /** The arguments of every console call, from any method. */
+    consoleCalls: (): unknown[][] => spies.flatMap((spy) => spy.mock.calls as unknown[][]),
     /** Everything written to any console method, one string per call. */
     consoleLines: (): string[] =>
       spies.flatMap((spy) =>
@@ -246,6 +248,17 @@ export function useContactHarness() {
 }
 
 export type Harness = ReturnType<typeof useContactHarness>;
+
+/**
+ * Waits, by yielding to the event loop, until a condition holds. setImmediate is not one of the
+ * timers the tests replace, so this also works while fake timers are on.
+ */
+export async function until(condition: () => boolean): Promise<void> {
+  for (let attempt = 0; attempt < 500 && !condition(); attempt += 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  expect(condition()).toBe(true);
+}
 
 export async function readJson(response: Response): Promise<unknown> {
   return JSON.parse(await response.text());

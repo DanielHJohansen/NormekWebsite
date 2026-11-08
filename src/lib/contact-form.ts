@@ -2,7 +2,7 @@
  * The logic of the contact form, kept free of the DOM so it can be unit tested.
  * The browser code in src/scripts/contact-form.ts only connects it to the page.
  *
- * The rules follow the function's rules CF-07 and CF-14 in docs/security/threat-model-and-requirements.md.
+ * The rules follow docs/security/contact-api.md sections 2 and 3 (the function's CF-07 and CF-14).
  * The client is a little stricter than the server (company is required here, optional there),
  * and the server repeats every rule, because the client can be bypassed.
  */
@@ -10,7 +10,10 @@
 export const FIELD_NAMES = ["name", "email", "company", "message"] as const;
 export type FieldName = (typeof FIELD_NAMES)[number];
 
-/** Field limits. They are also the maxlength attributes in the markup. */
+/**
+ * Field limits. They are also the maxlength attributes in the markup. A maxlength counts UTF-16 code units
+ * and the server counts code points, so the markup is never looser than the server.
+ */
 export const LIMITS: Readonly<Record<FieldName, number>> = {
   name: 100,
   email: 254,
@@ -20,43 +23,57 @@ export const LIMITS: Readonly<Record<FieldName, number>> = {
 
 export const MIN_MESSAGE_LENGTH = 20;
 
+/** How long the browser waits for the function before it gives up. The function can take about 10 seconds. */
+export const REQUEST_TIMEOUT_MS = 20_000;
+
 export type FieldError = "empty" | "no-at" | "invalid" | "too-short";
 
 export type FieldValues = Readonly<Record<FieldName, string>>;
 
-/** Control characters that the function rejects in a single line field, and U+2028 and U+2029. */
-// eslint-disable-next-line no-control-regex
-const CONTROL = /[\u0000-\u001f\u007f  ]/g;
+/** Length in Unicode code points, which is how the function counts. */
+function length(value: string): number {
+  return Array.from(value).length;
+}
 
 /**
- * Cleans a value before it is checked or sent: Unicode NFC, control characters in single line fields
- * replaced by a space, CRLF in the message turned into LF, then trimmed. The function does the same.
+ * Cleans a value before it is checked or sent: Unicode NFC, control characters replaced by a space,
+ * CRLF in the message turned into LF, then trimmed. The function applies the same rules and rejects
+ * what is left, so a stray tab from a paste never causes a failed send.
+ * In the message only line breaks and tabs stay (U+000A and U+0009).
  */
 export function normalizeValue(field: FieldName, raw: string): string {
   const text = raw.normalize("NFC");
   if (field === "message") {
-    // The message may keep line breaks and tabs. Every other control character goes.
-    // eslint-disable-next-line no-control-regex
-    return text.replace(/\r\n?/g, "\n").replace(/[\u0000-\u0008\u000b-\u001f\u007f  ]/g, " ").trim();
+    return (
+      text
+        .replace(/\r\n?/g, "\n")
+        // eslint-disable-next-line no-control-regex
+        .replace(/[\u0000-\u0008\u000b-\u001f\u007f\u2028\u2029]/g, " ")
+        .trim()
+    );
   }
-  return text.replace(CONTROL, " ").trim();
+  // eslint-disable-next-line no-control-regex
+  return text.replace(/[\u0000-\u001f\u007f\u2028\u2029]/g, " ").trim();
 }
+
+/** What the browser's own email input accepts, with a dot required in the domain. */
+const LOCAL_PART = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/;
+const DOMAIN_LABEL = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
 
 function emailError(value: string): FieldError | null {
   if (value === "") return "empty";
   if (!value.includes("@")) return "no-at";
   const parts = value.split("@");
-  const [local, domain] = parts;
+  if (parts.length !== 2) return "invalid";
+  const [local = "", domain = ""] = parts;
   const ok =
-    parts.length === 2 &&
-    value.length <= LIMITS.email &&
-    !/\s/.test(value) &&
-    local !== undefined &&
-    local.length > 0 &&
-    domain !== undefined &&
+    length(value) <= LIMITS.email &&
+    LOCAL_PART.test(local) &&
+    !local.startsWith(".") &&
+    !local.endsWith(".") &&
+    !local.includes("..") &&
     domain.includes(".") &&
-    !domain.startsWith(".") &&
-    !domain.endsWith(".");
+    domain.split(".").every((label) => DOMAIN_LABEL.test(label));
   return ok ? null : "invalid";
 }
 
@@ -67,7 +84,7 @@ export function validateField(field: FieldName, raw: string): FieldError | null 
     case "email":
       return emailError(value);
     case "message":
-      return value.length < MIN_MESSAGE_LENGTH ? "too-short" : null;
+      return length(value) < MIN_MESSAGE_LENGTH ? "too-short" : null;
     default:
       return value === "" ? "empty" : null;
   }
@@ -97,7 +114,7 @@ export function messageKey(field: FieldName, error: FieldError): string {
 
 /**
  * The error for a field the server rejected. The client usually knows why. When it does not,
- * the server and the client disagree, and the generic "invalid" text is the honest answer.
+ * the server and the client disagree, and the generic text for that field is the honest answer.
  */
 export function errorForServerField(field: FieldName, raw: string): FieldError {
   const own = validateField(field, raw);
@@ -105,7 +122,7 @@ export function errorForServerField(field: FieldName, raw: string): FieldError {
   return field === "email" ? "invalid" : field === "message" ? "too-short" : "empty";
 }
 
-/** The request body: application/x-www-form-urlencoded with the fields the function accepts (CF-05). */
+/** The request body: application/x-www-form-urlencoded with exactly the fields the function accepts. */
 export function encodeBody(values: FieldValues, honeypot: string, turnstileToken: string): string {
   const body = new URLSearchParams();
   for (const field of FIELD_NAMES) body.set(field, normalizeValue(field, values[field]));
@@ -125,20 +142,23 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Maps the answer of POST /api/contact (rule CF-14) to what the visitor sees.
- * 200 {"ok":true}, 400 {"ok":false,"error":"validation","fields":[...]}, 403 {"ok":false,"error":"turnstile"}.
- * Anything else, including an answer that is not JSON, is "failed".
+ * Maps the answer of POST /api/contact to what the visitor sees (docs/security/contact-api.md section 3).
+ * It branches on `error`, never on the status alone, because 403 and 500 each carry two meanings.
+ *   200 {"ok":true}                                        success
+ *   {"ok":false,"error":"validation","fields":[...]}       the error summary and the field errors
+ *   {"ok":false,"error":"turnstile"}                       the person check failed
+ *   anything else, also an answer that is not JSON         the send failed
  */
 export function interpretResponse(status: number, body: unknown): SubmitOutcome {
   if (!isRecord(body)) return { kind: "failed" };
-  if (status === 200 && body["ok"] === true) return { kind: "success" };
+  if (body["ok"] === true) return status === 200 ? { kind: "success" } : { kind: "failed" };
   if (body["ok"] !== false) return { kind: "failed" };
-  if (status === 400 && body["error"] === "validation" && Array.isArray(body["fields"])) {
+  if (body["error"] === "validation" && Array.isArray(body["fields"])) {
     const fields = body["fields"].filter((f): f is FieldName =>
       (FIELD_NAMES as readonly unknown[]).includes(f),
     );
     return fields.length > 0 ? { kind: "validation", fields } : { kind: "failed" };
   }
-  if (status === 403 && body["error"] === "turnstile") return { kind: "turnstile" };
+  if (body["error"] === "turnstile") return { kind: "turnstile" };
   return { kind: "failed" };
 }

@@ -1,0 +1,20 @@
+---
+/** An ordinary page: a heading and Markdown text. The v1 pages use it while they are drafts. */
+import Inline from "../Inline.astro";
+import type { PageOf } from "../../lib/schemas";
+
+interface Props {
+  data: PageOf<"default">;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="py-section">
+  <div class="mx-auto max-w-page px-gutter">
+    <h1 class="mb-8 text-3xl"><Inline text={data.heading ?? data.title} /></h1>
+    <div class="prose">
+      <slot />
+    </div>
+  </div>
+</section>

@@ -1,8 +1,24 @@
 order: 30
 name: Production package
 summary: Take the design to manufacturers and compare quotes.
-youGet: "Drawings with material, finish and critical tolerances. A request for quote (RFQ) pack for [2 to 3, TO CONFIRM] manufacturers, comparing unit price, tooling, lead time and tooling ownership. You approve the manufacturer list before I send any files. The manufacturers' design for manufacturing (DFM) feedback, with my changes. A review of the first samples: the manufacturer's inspection report against my drawing, and a fit check on your board. Up to two revisions after DFM feedback. Later tool changes are quoted."
-iNeed: An accepted prototype, a frozen board, volumes, a target unit price, and someone who can sign for tooling and orders.
-notIncluded: "Tooling and part costs (you pay manufacturers directly [TO CONFIRM]), certification, testing, warranty on parts others make."
+youGet:
+  - Drawings with material, finish and critical tolerances.
+  - A request for quote (RFQ) pack for [2 to 3, TO CONFIRM] manufacturers, comparing unit price, tooling, lead time and tooling ownership.
+  - I choose the manufacturers with you, and you approve the list before I send any files [TO CONFIRM].
+  - The manufacturers' design for manufacturing (DFM) feedback, with my changes.
+  - Up to two revisions after DFM feedback. Later tooling changes are quoted [TO CONFIRM].
+  - "A review of the first samples: the manufacturer's inspection report against my drawing, and a fit check on your board."
+  - "First batch support: I answer the manufacturer's questions and assess any part that misses the drawing [limit TO CONFIRM]."
+iNeed:
+  - An accepted prototype
+  - A frozen board
+  - Volumes
+  - A target unit price
+  - Someone who can sign for tooling and orders
+notIncluded:
+  - Tooling and part costs (manufacturers invoice you directly and you own the tooling [TO CONFIRM, lawyer])
+  - Certification
+  - Testing
+  - Warranty on parts others make
 price: null
 priceStatus: hypothesis

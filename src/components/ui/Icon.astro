@@ -1,0 +1,33 @@
+---
+/**
+ * Status icons (tokens.md 5.9). Three shapes, so a state never rests on colour alone:
+ * success is a chamfered square with a tick, warning a triangle, error an octagon.
+ * Both the chamfer and the octagon sit on the 45 degree geometry of the logo.
+ * The stroke is the text colour of the parent, 2 px, with miter joins. Size it with a class (size-6 or size-4).
+ */
+interface Props {
+  name: "success" | "warning" | "error";
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+
+const shapes = {
+  success: ["M3 3h13l5 5v13H8l-5-5z", "M7.5 12l3 3 6-6.5"],
+  warning: ["M12 3l10 18H2z", "M12 9.5v4.5M12 16.5v1.5"],
+  error: ["M8 3h8l5 5v8l-5 5H8l-5-5V8z", "M12 7.5v6M12 16.5v1.5"],
+} as const;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linejoin="miter"
+  aria-hidden="true"
+  focusable="false"
+  class:list={["flex-none", className]}
+>
+  {shapes[name].map((d) => <path d={d} />)}
+</svg>
