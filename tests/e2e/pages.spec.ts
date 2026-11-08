@@ -1,6 +1,5 @@
-import AxeBuilder from "@axe-core/playwright";
 import { listPages } from "../../scripts/lib/dist.mjs";
-import { expect, test } from "./fixtures";
+import { blockingAxeFindings, expect, test } from "./fixtures";
 
 // Every page in dist/ is tested, so a new page needs no new test. Run `npm run build` first.
 const pages = listPages("dist");
@@ -10,8 +9,6 @@ if (pages.length === 0) {
     throw new Error("dist/ has no pages. Run `npm run build` before `npm run test:a11y`.");
   });
 }
-
-const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
 for (const built of pages) {
   test.describe(`page ${built.route}`, () => {
@@ -37,20 +34,7 @@ for (const built of pages) {
 
     test("accessibility: no serious or critical issues (axe-core)", async ({ page }) => {
       await page.goto(built.route);
-      const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze();
-
-      const describe = (violation: (typeof results.violations)[number]) =>
-        `${violation.id} (${violation.impact}): ${violation.help}. ` +
-        violation.nodes.map((node) => node.target.join(" ")).join(" | ");
-
-      const blocking = results.violations.filter(
-        (violation) => violation.impact === "serious" || violation.impact === "critical",
-      );
-      // Moderate and minor findings are listed in the report, but they do not fail the run.
-      for (const violation of results.violations.filter((v) => !blocking.includes(v))) {
-        test.info().annotations.push({ type: "axe-note", description: describe(violation) });
-      }
-      expect(blocking.map(describe)).toEqual([]);
+      expect(await blockingAxeFindings(page)).toEqual([]);
     });
   });
 }
@@ -59,7 +43,7 @@ test.describe("behaviour", () => {
   test("an unknown address returns 404 with the 404 page", async ({ page }) => {
     const response = await page.goto("/this-page-does-not-exist/");
     expect(response?.status()).toBe(404);
-    await expect(page.locator("h1")).toHaveText("Page not found");
+    await expect(page.locator("h1")).toHaveText("This page does not exist.");
   });
 
   test("the skip link is the first tab stop, becomes visible and moves focus to main", async ({

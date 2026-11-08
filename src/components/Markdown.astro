@@ -1,0 +1,25 @@
+---
+/**
+ * The rendered body of a Markdown entry, with its [TO CONFIRM] gaps shown as dashed tags like everywhere else
+ * and the straight quotes of the copy put back (the processor curls them).
+ * Astro renders the Markdown at build time. The HTML comes from our own content files, so it is trusted.
+ * If an entry has no rendered HTML (it should always have), the plain Astro output is used.
+ */
+import { render, type CollectionEntry } from "astro:content";
+import { straightenQuotesInHtml } from "../lib/html-text";
+import { wrapPlaceholdersInHtml } from "../lib/placeholders";
+
+interface Props {
+  entry: CollectionEntry<"home"> | CollectionEntry<"pages">;
+}
+
+const { entry } = Astro.props;
+const html = entry.rendered?.html;
+const { Content } = html === undefined ? await render(entry) : { Content: undefined };
+---
+
+{html === undefined && Content ? (
+  <Content />
+) : (
+  <Fragment set:html={wrapPlaceholdersInHtml(straightenQuotesInHtml(html ?? ""))} />
+)}

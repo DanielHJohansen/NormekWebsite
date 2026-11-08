@@ -13,27 +13,39 @@ const { data, draft = false } = Astro.props;
 ---
 
 <SectionShell id={data.id} {draft}>
-  {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
-  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl"><Inline text={data.heading} /></h2>
+  {data.eyebrow && (
+    <p class="eyebrow mb-3">
+      <Inline text={data.eyebrow} />
+    </p>
+  )}
+  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl">
+    <Inline text={data.heading} />
+  </h2>
   <div class="flex flex-wrap items-start gap-x-columns-tight gap-y-columns-tight">
     <div class="min-w-0 grow-7 basis-120">
       <ContactForm form={data.form} />
     </div>
     <div class="flex min-w-0 grow-5 basis-80 flex-col gap-6">
-      <h3 class="text-xl"><Inline text={data.nextStepsHeading} /></h3>
+      <h3 class="text-xl">
+        <Inline text={data.nextStepsHeading} />
+      </h3>
       <ol role="list" class="flex flex-col gap-6">
-        {
-          data.steps.map((step, index) => (
-            <li class="flex gap-4">
-              <span class="flex-none font-mono text-muted" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <p><Inline text={step} /></p>
-            </li>
-          ))
-        }
+        {data.steps.map((step, index) => (
+          <li class="flex gap-4">
+            <span class="flex-none font-mono text-muted" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <p class="max-w-measure">
+              <Inline text={step} />
+            </p>
+          </li>
+        ))}
       </ol>
-      <p class="border-t border-border pt-5"><Inline text={data.capacity} /></p>
+      <div class="border-t border-border pt-5">
+        <p class="max-w-measure">
+          <Inline text={data.capacity} />
+        </p>
+      </div>
     </div>
   </div>
 </SectionShell>

@@ -20,26 +20,34 @@ function linkName(title: string): string {
 ---
 
 <SectionShell id={data.id} {draft}>
-  {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
-  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl"><Inline text={data.heading} /></h2>
+  {data.eyebrow && (
+    <p class="eyebrow mb-3">
+      <Inline text={data.eyebrow} />
+    </p>
+  )}
+  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl">
+    <Inline text={data.heading} />
+  </h2>
   <ul class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-6">
-    {
-      data.cards.map((card, index) => (
-        <li class="flex min-w-0 flex-col gap-3 border border-border bg-surface p-7">
-          <p class="font-mono text-sm tracking-eyebrow text-muted" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </p>
-          <h3 class="text-xl"><Inline text={card.title} /></h3>
-          <p class="text-muted"><Inline text={card.text} /></p>
-          <a
-            class="link link-standalone mt-auto self-start"
-            href={SITE.cta.anchor}
-            aria-label={linkName(card.title)}
-          >
-            {data.cardLink}
-          </a>
-        </li>
-      ))
-    }
+    {data.cards.map((card, index) => (
+      <li class="flex min-w-0 flex-col gap-3 border border-border bg-surface p-7">
+        <p class="font-mono text-sm tracking-eyebrow text-muted" aria-hidden="true">
+          {String(index + 1).padStart(2, "0")}
+        </p>
+        <h3 class="text-xl">
+          <Inline text={card.title} />
+        </h3>
+        <p class="text-muted">
+          <Inline text={card.text} />
+        </p>
+        <a
+          class="link link-standalone mt-auto self-start"
+          href={SITE.cta.anchor}
+          aria-label={linkName(card.title)}
+        >
+          {data.cardLink}
+        </a>
+      </li>
+    ))}
   </ul>
 </SectionShell>

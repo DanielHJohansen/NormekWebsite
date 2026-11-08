@@ -12,7 +12,9 @@ import { getPages } from "../lib/content";
 
 const entry = (await getPages()).find((page) => page.data.layout === "notfound");
 if (!entry || entry.data.layout !== "notfound") {
-  throw new Error("Missing the pages entry with layout: notfound (src/content/pages/en/not-found.md).");
+  throw new Error(
+    "Missing the pages entry with layout: notfound (src/content/pages/en/not-found.md).",
+  );
 }
 const { data } = entry;
 ---
@@ -21,14 +23,22 @@ const { data } = entry;
   <section class="py-section">
     <div class="mx-auto max-w-narrow px-gutter">
       <p class="eyebrow mb-4">{data.eyebrow}</p>
-      <h1 class="mb-6 text-3xl"><Inline text={data.heading} /></h1>
-      <p class="mb-8 max-w-measure text-lg text-muted"><Inline text={data.lead} /></p>
-      <p class="mb-12"><a class="link link-standalone" href="/">{data.homeLink}</a></p>
+      <h1 class="mb-6 text-3xl">
+        <Inline text={data.heading} />
+      </h1>
+      <p class="mb-8 max-w-measure text-lg text-muted">
+        <Inline text={data.lead} />
+      </p>
+      <p class="mb-12">
+        <a class="link link-standalone" href="/">
+          {data.homeLink}
+        </a>
+      </p>
       <div class="flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-border pt-8">
         <Button href={SITE.cta.href}>{SITE.cta.label}</Button>
-        <a class="link link-standalone" href={`mailto:${SITE.email}`}
-          >{plainText(data.emailLabel, SITE.email)}</a
-        >
+        <a class="link link-standalone" href={`mailto:${SITE.email}`}>
+          {plainText(data.emailLabel, SITE.email)}
+        </a>
       </div>
     </div>
   </section>

@@ -107,7 +107,8 @@ export function validateAll(values: FieldValues): FieldErrors {
  */
 export function messageKey(field: FieldName, error: FieldError): string {
   // A field only has the codes that make sense for it. Anything else falls back to the plain "empty" text.
-  if (field === "email") return `email.${error === "no-at" || error === "invalid" ? error : "empty"}`;
+  if (field === "email")
+    return `email.${error === "no-at" || error === "invalid" ? error : "empty"}`;
   if (field === "message") return "message.too-short";
   return `${field}.empty`;
 }

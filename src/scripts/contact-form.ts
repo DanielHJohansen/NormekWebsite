@@ -44,7 +44,10 @@ function setUp(form: HTMLFormElement): void {
   const submit = required<HTMLButtonElement>(form, "#contact-submit");
   const summary = required<HTMLElement>(form, "#contact-summary");
   const summaryList = required<HTMLElement>(summary, "[data-summary-list]");
-  const notice = required<HTMLElement>(form, "#contact-notice");
+  // Two live regions that exist before anything is put in them: a failure is announced as an alert,
+  // a failed person check as a status (tokens.md 5.9).
+  const alertRegion = required<HTMLElement>(form, "#contact-notice");
+  const statusRegion = required<HTMLElement>(form, "#contact-warning");
   const honeypot = required<HTMLInputElement>(form, "#contact-website");
   const turnstile = createTurnstile(required<HTMLElement>(form, "[data-turnstile]"), siteKey);
 
@@ -79,7 +82,10 @@ function setUp(form: HTMLFormElement): void {
     const describedBy = field === "message" ? ["contact-message-help"] : [];
     if (error) {
       shown[field] = error;
-      required<HTMLElement>(errorElement, "[data-error-text]").textContent = messageFor(field, error);
+      required<HTMLElement>(errorElement, "[data-error-text]").textContent = messageFor(
+        field,
+        error,
+      );
       errorElement.hidden = false;
       control.setAttribute("aria-invalid", "true");
       describedBy.push(errorElement.id);
@@ -124,8 +130,15 @@ function setUp(form: HTMLFormElement): void {
 
   // ---- notices and the sending state ----------------------------------------------------------
 
+  function clearNotices(): void {
+    alertRegion.replaceChildren();
+    statusRegion.replaceChildren();
+  }
+
   function showNotice(kind: keyof typeof notices): void {
-    notice.replaceChildren(notices[kind].content.cloneNode(true));
+    clearNotices();
+    const region = kind === "person" ? statusRegion : alertRegion;
+    region.replaceChildren(notices[kind].content.cloneNode(true));
   }
 
   function setSending(on: boolean): void {
@@ -171,7 +184,7 @@ function setUp(form: HTMLFormElement): void {
 
   async function onSubmit(): Promise<void> {
     if (sending) return;
-    notice.replaceChildren();
+    clearNotices();
 
     const values = collect();
     const errors = validateAll(values);

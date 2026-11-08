@@ -19,13 +19,23 @@ const toc = headings.filter((heading) => heading.depth === 2);
 
 <section class="py-section">
   <div class="mx-auto max-w-page px-gutter">
-    <h1 class="mb-4 text-3xl"><Inline text={data.heading} /></h1>
-    <p class="mb-10 font-mono text-sm text-muted"><Inline text={data.lastUpdated} /></p>
+    <h1 class="mb-4 text-3xl">
+      <Inline text={data.heading} />
+    </h1>
+    <p class="mb-10 font-mono text-sm text-muted">
+      <Inline text={data.lastUpdated} />
+    </p>
 
     <div class="mb-14 max-w-measure border border-l-4 border-border border-l-fg bg-surface px-8 py-7">
-      <h2 class="mb-3 text-xl"><Inline text={data.summaryTitle} /></h2>
+      <h2 class="mb-3 text-xl">
+        <Inline text={data.summaryTitle} />
+      </h2>
       <ul class="flex list-disc flex-col gap-2 pl-5">
-        {data.summary.map((item) => <li><Inline text={item} /></li>)}
+        {data.summary.map((item) => (
+          <li>
+            <Inline text={item} />
+          </li>
+        ))}
       </ul>
     </div>
 
@@ -33,15 +43,13 @@ const toc = headings.filter((heading) => heading.depth === 2);
       <nav aria-label={data.tocTitle} class="min-w-0 max-w-75 flex-1 basis-60">
         <p class="eyebrow mb-3">{data.tocTitle}</p>
         <ul class="border-t-2 border-fg">
-          {
-            toc.map((heading) => (
-              <li class="border-b border-border">
-                <a class="nav-link w-full" href={`#${heading.slug}`}>
-                  {heading.text}
-                </a>
-              </li>
-            ))
-          }
+          {toc.map((heading) => (
+            <li class="border-b border-border">
+              <a class="nav-link w-full" href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
+            </li>
+          ))}
         </ul>
       </nav>
       <article class="min-w-0 grow-3 basis-120">

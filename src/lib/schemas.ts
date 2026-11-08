@@ -57,9 +57,11 @@ const heroSection = z.object({
   buttonNote: text,
   /** The text of the link under the button. {email} becomes the address. */
   emailLabel: text,
-  /** The one-person line under the button. */
+  /** The one-person line. It comes before the button (copy 2.1). */
   byline: text,
   caption: text,
+  /** Names the parts of the drawing from the top. The drawing itself carries no text, so it stays readable when scaled. */
+  legend: text,
   /** The description of the drawing for people who cannot see it. The caption is not repeated in it. */
   figureAlt: text,
 });
@@ -221,7 +223,9 @@ export const workSchema = z
     client: text,
     clearance: z.enum(CLEARANCE).default("none"),
     /** Ids of rows in docs/claims-ledger.md, for example C-001. */
-    claims: z.array(z.string().regex(/^C-\d{3,}$/, "Use a claims ledger id such as C-001")).default([]),
+    claims: z
+      .array(z.string().regex(/^C-\d{3,}$/, "Use a claims ledger id such as C-001"))
+      .default([]),
     updated: z.coerce.date().optional(),
     draft: z.boolean().default(true),
   })

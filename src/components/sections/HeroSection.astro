@@ -1,13 +1,17 @@
 ---
+/**
+ * The hero (canvas Main.dc.html, copy 2.1). Order in the text column: eyebrow, h1, lead, the one-person line, then the
+ * button with its note and the email link. The one-person line is the only proof on the page, so it comes before the button.
+ * Below 480 px the button is full width, the note and the link are 44 px rows and the lead is Ink instead of Muted.
+ * The drawing has no text in it: a scaled SVG shrinks its labels, so the parts are named in the legend below it.
+ */
 import Inline from "../Inline.astro";
 import SectionShell from "../SectionShell.astro";
 import Button from "../ui/Button.astro";
 import { SITE } from "../../config/site";
 import { plainText } from "../../lib/inline";
 import type { SectionOf } from "../../lib/schemas";
-// The drawing is the file from the visual-media-producer. The outlined version turns text into paths,
-// so it needs no font when it is shown as an image.
-import illustration from "../../assets/illustrations/enclosure-section-outlined.svg?url";
+import illustration from "../../assets/illustrations/enclosure-section-no-text.svg?url";
 
 interface Props {
   data: SectionOf<"hero">;
@@ -25,20 +29,32 @@ const { data, draft = false } = Astro.props;
   innerClass="flex flex-wrap items-center gap-x-columns gap-y-columns"
 >
   <div class="min-w-0 flex-1 basis-120">
-    {data.eyebrow && <p class="eyebrow mb-5"><Inline text={data.eyebrow} /></p>}
-    <h1 id={`${data.id}-heading`} class="mb-6 text-4xl"><Inline text={data.heading} /></h1>
-    <p class="mb-8 max-w-measure text-lg text-muted"><Inline text={data.subhead} /></p>
-    <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
-      <Button href={SITE.cta.anchor}>{SITE.cta.label}</Button>
-      <p class="max-w-[16em] text-sm text-muted"><Inline text={data.buttonNote} /></p>
-    </div>
-    <p class="mt-2">
-      <a class="link link-standalone" href={`mailto:${SITE.email}`}
-        >{plainText(data.emailLabel, SITE.email)}</a
-      >
+    {data.eyebrow && (
+      <p class="eyebrow mb-5">
+        <Inline text={data.eyebrow} />
+      </p>
+    )}
+    <h1 id={`${data.id}-heading`} class="mb-6 text-4xl">
+      <Inline text={data.heading} />
+    </h1>
+    <p class="mb-4 max-w-measure text-lg text-fg min-[480px]:text-muted">
+      <Inline text={data.subhead} />
     </p>
-    <p class="mt-10 border-t border-border pt-5 font-mono text-sm text-muted">
+    <p class="mb-8 max-w-measure font-mono text-sm text-muted">
       <Inline text={data.byline} />
+    </p>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+      <Button href={SITE.cta.anchor} class="w-full min-[480px]:w-auto">
+        {SITE.cta.label}
+      </Button>
+      <p class="max-w-[18em] py-3 text-sm text-muted">
+        <Inline text={data.buttonNote} />
+      </p>
+    </div>
+    <p>
+      <a class="link link-standalone" href={`mailto:${SITE.email}`}>
+        {plainText(data.emailLabel, SITE.email)}
+      </a>
     </p>
   </div>
   <figure class="m-0 min-w-0 flex-1 basis-95">
@@ -46,13 +62,20 @@ const { data, draft = false } = Astro.props;
       <div class="frame-inner p-panel">
         <img
           src={illustration}
-          width="560"
-          height="440"
+          width="441"
+          height="420"
           alt={data.figureAlt}
-          class="block h-auto w-full"
+          class="mx-auto block h-auto w-full max-w-112"
         />
       </div>
     </div>
-    <figcaption class="mt-3 font-mono text-sm text-muted"><Inline text={data.caption} /></figcaption>
+    <figcaption class="mt-3 flex flex-col gap-2 font-mono text-sm text-muted">
+      <p>
+        <Inline text={data.caption} />
+      </p>
+      <p>
+        <Inline text={data.legend} />
+      </p>
+    </figcaption>
   </figure>
 </SectionShell>

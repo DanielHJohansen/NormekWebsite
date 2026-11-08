@@ -103,10 +103,7 @@ export function createTurnstile(container: HTMLElement, siteKey: string): Turnst
       if (failed) return { status: "blocked" };
       const left = deadline - Date.now();
       if (left <= 0) return { status: "blocked" };
-      await Promise.race([
-        nextChange(),
-        new Promise<void>((resolve) => setTimeout(resolve, left)),
-      ]);
+      await Promise.race([nextChange(), new Promise<void>((resolve) => setTimeout(resolve, left))]);
     }
   }
 

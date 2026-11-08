@@ -13,6 +13,7 @@
 //     Drafts are read from the front matter in src/content. Only an explicit `draft: false` publishes.
 //   - Inline code: no <script> without src, no <style> element, no style= attribute, no on*= handler.
 //   - Noindex: every page says noindex and robots.txt disallows everything (until PUBLIC_INDEXABLE).
+//   - Private pages: /thanks/ and the 404 page stay out of the sitemap, and no page links to /thanks/.
 //   - Links: every internal link and asset resolves to a file, and every #fragment to an id.
 //   - Resources load only from origins the Content-Security-Policy allows.
 //   - Headers: _headers has a CSP without unsafe-inline, unsafe-eval or data:, frame-ancestors 'none',
@@ -20,7 +21,8 @@
 // Launch mode adds
 //   - No "[TO CONFIRM" or "[TARGET" anywhere in the output.
 //   - No absolute URL outside the allowed origins.
-//   - No noindex in any page, robots.txt open, and no catch-all X-Robots-Tag noindex in _headers.
+//   - No noindex in any page except /thanks/ and the 404 page (they must keep it), robots.txt open,
+//     and no catch-all X-Robots-Tag noindex in _headers.
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -35,6 +37,17 @@ export const SITE_ORIGINS = ["https://www.normek.dk", "https://normek.dk"];
  * (plan section 6: only challenges.cloudflare.com, loaded when the form comes into view).
  */
 export const ALLOWED_THIRD_PARTY = ["https://challenges.cloudflare.com"];
+
+/**
+ * Pages that stay out of search after launch: the confirmation page after a send and the error page.
+ * They keep their noindex tag in launch mode, they are never in sitemap.xml, and no page links to them.
+ * The form sends the visitor to /thanks/ from a script. A list here is stricter than reading the content,
+ * because a stray `noindex: true` on the home page must not pass as a choice.
+ */
+export const ALWAYS_NOINDEX_ROUTES = ["/thanks/", "/404.html"];
+
+/** Licence texts quote web addresses that are never requested. They are still checked for placeholders. */
+const LICENCE_TEXT = /(^|\/)(OFL|LICENSE|LICENCE|COPYING|NOTICE)[^/]*\.txt$/i;
 
 /** Namespace identifiers. They look like URLs but nothing is ever fetched from them. */
 const NAMESPACE_ORIGINS = ["http://www.w3.org", "https://www.w3.org", "http://www.sitemaps.org"];
@@ -398,11 +411,18 @@ export function checkDist(options = {}) {
         where,
         'Missing <meta name="robots" content="noindex, nofollow">. Every page is noindex until launch.',
       );
-    if (launch && noindex)
+    const staysPrivate = ALWAYS_NOINDEX_ROUTES.includes(route);
+    if (launch && noindex && !staysPrivate)
       fail(
         "noindex",
         where,
         "Launch mode, but the page still says noindex. Build with PUBLIC_INDEXABLE=true.",
+      );
+    if (launch && !noindex && staysPrivate)
+      fail(
+        "noindex",
+        where,
+        "This page must keep noindex after launch. It is a confirmation or error page, not content for search.",
       );
 
     // Ids, for fragment checks.
@@ -427,6 +447,10 @@ export function checkDist(options = {}) {
     }
   });
   const draftRouteSet = new Set(content.draftRoutes.map((d) => d.route));
+  for (const route of ALWAYS_NOINDEX_ROUTES) {
+    if (sitemapPaths.includes(route))
+      fail("private-page", "sitemap.xml", `Lists ${route}, which must stay out of search.`);
+  }
 
   if (!showDrafts) {
     for (const draft of content.draftRoutes) {
@@ -508,6 +532,14 @@ export function checkDist(options = {}) {
     const pathname = resolved.pathname;
     if (FUNCTION_PREFIXES.some((p) => pathname.startsWith(p))) continue;
 
+    if (ref.kind === "link" && ALWAYS_NOINDEX_ROUTES.includes(pathname) && pathname !== ref.from) {
+      fail(
+        "private-page",
+        ref.from,
+        `Links to ${pathname}. The confirmation page is reached by the form script only, so it is not linked.`,
+      );
+      continue;
+    }
     if (draftRouteSet.has(pathname)) {
       // A page may point at itself, for example the skip link #main. That is not a link to a draft.
       if (!showDrafts && pathname !== ref.from)
@@ -588,6 +620,7 @@ export function checkDist(options = {}) {
             `Contains "${marker}": "${snippet(text, index)}". Resolve it before launch.`,
           );
       }
+      if (LICENCE_TEXT.test(where)) continue;
       // URLs in /* */ comments are never requested, for example the license line Tailwind writes into the CSS.
       const scanned = /\.(css|m?js)$/.test(file) ? text.replace(/\/\*[\s\S]*?\*\//g, "") : text;
       for (const match of scanned.matchAll(/https?:\/\/[^\s"'<>)\]}\\,;]+/g)) {

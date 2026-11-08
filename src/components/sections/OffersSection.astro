@@ -16,51 +16,76 @@ const { labels } = data;
 const offers = await getOffers();
 
 /** The spec rows hold bullet lists. */
-const listClass = "flex max-w-measure list-disc flex-col gap-2 pl-5";
+// box-content: the 28 em cap is the width of the text, and the bullet indent comes on top (as in the canvas).
+const listClass = "box-content flex max-w-measure list-disc flex-col gap-2 pl-5";
 ---
 
 <SectionShell id={data.id} {draft}>
-  {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
-  <h2 id={`${data.id}-heading`} class="mb-4 text-2xl"><Inline text={data.heading} /></h2>
-  <p class="mb-10 max-w-measure text-muted"><Inline text={data.lead} /></p>
+  {data.eyebrow && (
+    <p class="eyebrow mb-3">
+      <Inline text={data.eyebrow} />
+    </p>
+  )}
+  <h2 id={`${data.id}-heading`} class="mb-4 text-2xl">
+    <Inline text={data.heading} />
+  </h2>
+  <p class="mb-10 max-w-measure text-muted">
+    <Inline text={data.lead} />
+  </p>
 
   <ol class="border-t-2 border-fg">
-    {
-      offers.map((offer, index) => (
-        <li class="flex flex-wrap gap-x-12 gap-y-6 border-b border-border py-8">
-          <div class="min-w-0 flex-1 basis-70">
-            <p class="eyebrow mb-2">
-              {labels.stage} {index + 1}
-            </p>
-            <h3 class="mb-2 text-xl"><Inline text={offer.data.name} /></h3>
-            <p class="text-muted"><Inline text={offer.data.summary} /></p>
-          </div>
-          <div class="min-w-0 grow-2 basis-90">
-            <p class="eyebrow mb-2">{labels.youGet}</p>
-            <ul class={listClass}>
-              {offer.data.youGet.map((item) => <li><Inline text={item} /></li>)}
-            </ul>
-          </div>
-          <div class="min-w-0 grow-[1.4] basis-70">
-            <p class="eyebrow mb-2">{labels.iNeed}</p>
-            <ul class={listClass}>
-              {offer.data.iNeed.map((item) => <li><Inline text={item} /></li>)}
-            </ul>
-            {offer.data.notIncluded && (
-              <>
-                <p class="eyebrow mt-5 mb-2">{labels.notIncluded}</p>
-                <ul class={listClass}>
-                  {offer.data.notIncluded.map((item) => <li><Inline text={item} /></li>)}
-                </ul>
-              </>
-            )}
-          </div>
-        </li>
-      ))
-    }
+    {offers.map((offer, index) => (
+      <li class="flex flex-wrap gap-x-12 gap-y-6 border-b border-border py-8">
+        <div class="min-w-0 flex-1 basis-70">
+          <p class="eyebrow mb-2">
+            {labels.stage} {index + 1}
+          </p>
+          <h3 class="mb-2 text-xl">
+            <Inline text={offer.data.name} />
+          </h3>
+          <p class="max-w-measure text-muted">
+            <Inline text={offer.data.summary} />
+          </p>
+        </div>
+        <div class="min-w-0 grow-2 basis-90">
+          <p class="eyebrow mb-2">{labels.youGet}</p>
+          <ul class={listClass}>
+            {offer.data.youGet.map((item) => (
+              <li>
+                <Inline text={item} />
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="min-w-0 grow-[1.4] basis-70">
+          <p class="eyebrow mb-2">{labels.iNeed}</p>
+          <ul class={listClass}>
+            {offer.data.iNeed.map((item) => (
+              <li>
+                <Inline text={item} />
+              </li>
+            ))}
+          </ul>
+          {offer.data.notIncluded && (
+            <>
+              <p class="eyebrow mt-5 mb-2">{labels.notIncluded}</p>
+              <ul class={listClass}>
+                {offer.data.notIncluded.map((item) => (
+                  <li>
+                    <Inline text={item} />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </li>
+    ))}
   </ol>
 
   <div class="mt-10">
-    <Button variant="secondary" href={SITE.cta.anchor}>{SITE.cta.label}</Button>
+    <Button variant="secondary" href={SITE.cta.anchor}>
+      {SITE.cta.label}
+    </Button>
   </div>
 </SectionShell>

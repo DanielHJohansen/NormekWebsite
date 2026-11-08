@@ -25,7 +25,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 const labelClass = "mb-2 block text-sm font-semibold";
 const fieldClass =
   "block w-full min-h-(--target-input) rounded-sm border border-border-strong bg-surface px-4 text-fg hover:border-fg focus-visible:border-fg aria-invalid:border-error aria-invalid:shadow-[inset_0_0_0_1px_var(--color-error)]";
-const errorClass = "mt-2 flex items-start gap-2 text-sm font-semibold text-error";
+const errorClass = "mt-2 flex items-start gap-2 text-sm text-error";
 
 const fields = [
   { name: "name", type: "text", autocomplete: "name", copy: form.name },
@@ -46,7 +46,11 @@ const fields = [
   class="flex flex-col gap-5 border border-border bg-surface p-panel"
 >
   <noscript>
-    <Status tone="warning"><p><Inline text={form.noscript} /></p></Status>
+    <Status tone="warning">
+      <p>
+        <Inline text={form.noscript} />
+      </p>
+    </Status>
   </noscript>
 
   <Status
@@ -57,38 +61,42 @@ const fields = [
     hidden
     aria-labelledby="contact-summary-title"
   >
-    <p id="contact-summary-title" class="font-semibold">{form.summaryTitle}</p>
+    <p id="contact-summary-title" class="font-semibold">
+      {form.summaryTitle}
+    </p>
     <ul data-summary-list class="mt-2 flex flex-col gap-2"></ul>
   </Status>
 
   <p class="text-sm text-muted">{form.required}</p>
 
-  {
-    fields.map((field) => (
-      <div>
-        <label for={`contact-${field.name}`} class={labelClass}>
-          {field.copy.label}
-        </label>
-        <input
-          id={`contact-${field.name}`}
-          name={field.name}
-          type={field.type}
-          autocomplete={field.autocomplete}
-          maxlength={LIMITS[field.name]}
-          required
-          class={fieldClass}
-        />
-        <p id={`contact-${field.name}-error`} hidden class={errorClass}>
-          <Icon name="error" class="mt-0.5 size-4" />
-          <span data-error-text />
-        </p>
-      </div>
-    ))
-  }
+  {fields.map((field) => (
+    <div>
+      <label for={`contact-${field.name}`} class={labelClass}>
+        {field.copy.label}
+      </label>
+      <input
+        id={`contact-${field.name}`}
+        name={field.name}
+        type={field.type}
+        autocomplete={field.autocomplete}
+        maxlength={LIMITS[field.name]}
+        required
+        class={fieldClass}
+      />
+      <p id={`contact-${field.name}-error`} hidden class={errorClass}>
+        <Icon name="error" class="mt-0.5" />
+        <span data-error-text />
+      </p>
+    </div>
+  ))}
 
   <div>
-    <label for="contact-message" class={labelClass}>{form.message.label}</label>
-    <p id="contact-message-help" class="mb-2 text-sm text-muted">{form.message.help}</p>
+    <label for="contact-message" class={labelClass}>
+      {form.message.label}
+    </label>
+    <p id="contact-message-help" class="mb-2 max-w-measure text-sm text-muted">
+      {form.message.help}
+    </p>
     <textarea
       id="contact-message"
       name="message"
@@ -96,9 +104,10 @@ const fields = [
       required
       rows="5"
       aria-describedby="contact-message-help"
-      class:list={[fieldClass, "min-h-35 resize-y py-3"]}></textarea>
+      class:list={[fieldClass, "min-h-35 resize-y py-3"]}
+    ></textarea>
     <p id="contact-message-error" hidden class={errorClass}>
-      <Icon name="error" class="mt-0.5 size-4" />
+      <Icon name="error" class="mt-0.5" />
       <span data-error-text />
     </p>
   </div>
@@ -110,13 +119,16 @@ const fields = [
 
   <div data-turnstile></div>
 
-  <div id="contact-notice" role="alert"></div>
+  <div id="contact-notice" role="alert" class="empty:hidden"></div>
+  <div id="contact-warning" role="status" class="empty:hidden"></div>
 
   <Button as="button" type="submit" id="contact-submit" disabled class="self-start">
     {form.submit}
   </Button>
 
-  <p class="text-sm text-muted"><Inline text={form.privacy} /></p>
+  <p class="max-w-measure text-sm text-muted">
+    <Inline text={form.privacy} />
+  </p>
 
   <template data-messages>
     <p data-message="name.empty">{form.name.empty}</p>
@@ -128,10 +140,18 @@ const fields = [
     <p data-message="button.sending">{form.sending}</p>
   </template>
   <template data-notice="failed">
-    <Status tone="error"><p><Inline text={form.failed} /></p></Status>
+    <Status tone="error">
+      <p>
+        <Inline text={form.failed} />
+      </p>
+    </Status>
   </template>
   <template data-notice="person-check">
-    <Status tone="error"><p><Inline text={form.personCheck} /></p></Status>
+    <Status tone="warning">
+      <p>
+        <Inline text={form.personCheck} />
+      </p>
+    </Status>
   </template>
 </form>
 

@@ -56,7 +56,9 @@ const headerNav = sectionNav(sections, lang);
     <Seo title={title} description={description} canonical={canonical} noindex={noindex} />
   </head>
   <body class="flex min-h-dvh flex-col">
-    <a href="#main" class="skip-link">{SITE.skipLinkLabel}</a>
+    <a href="#main" class="skip-link">
+      {SITE.skipLinkLabel}
+    </a>
     <Header nav={headerNav} {lang} {draft} />
     <main id="main" tabindex="-1" class="flex-1 focus:outline-none">
       <slot />

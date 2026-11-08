@@ -1,8 +1,9 @@
 ---
 /**
- * A status message (tokens.md 5.9): the surface colour, a 4 px left rule, a shape coded icon and text.
- * Colour is never the only cue. Success uses role="status", a failure role="alert", a warning role="status".
- * The error summary of the form uses this too, with tabindex="-1" and no role, because it takes focus.
+ * A status message (tokens.md 5.9): the surface colour, a 4 px left rule, an icon and text.
+ * The glyph of the icon differs from state to state, so colour is never the only cue.
+ * Success uses role="status", a failure role="alert", a warning role="status".
+ * The error summary of the form uses this too, with tabindex="-1" and no role="alert", because it takes focus.
  */
 import Icon from "./Icon.astro";
 
@@ -29,12 +30,14 @@ const ink = {
 
 <div
   class:list={[
-    "flex items-start gap-4 border border-l-4 border-border bg-surface px-6 py-5 text-fg",
+    "flex items-start gap-3 border border-l-4 border-border bg-surface px-7 py-6 text-fg",
     rule[tone],
     className,
   ]}
   {...rest}
 >
-  <Icon name={tone} class:list={["size-6", ink[tone]]} />
-  <div class="min-w-0"><slot /></div>
+  <Icon name={tone} class:list={["mt-1", ink[tone]]} />
+  <div class="min-w-0">
+    <slot />
+  </div>
 </div>

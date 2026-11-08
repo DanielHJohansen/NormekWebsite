@@ -30,9 +30,11 @@ const {
   ...rest
 } = Astro.props;
 
+// Sending and disabled look the same (Paper 200 fill, Muted label, 5.03:1). Sending is aria-disabled with a progress
+// cursor and no hover change. The disabled attribute is only the state before the script starts (not-allowed cursor).
 const variants = {
   primary:
-    "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-hover active:shadow-[inset_0_0_0_2px_var(--color-on-accent)] aria-disabled:cursor-progress aria-disabled:hover:bg-accent aria-disabled:active:shadow-none",
+    "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-hover active:shadow-[inset_0_0_0_2px_var(--color-on-accent)] aria-disabled:cursor-progress aria-disabled:bg-paper-200 aria-disabled:text-muted aria-disabled:hover:bg-paper-200 aria-disabled:active:shadow-none disabled:cursor-not-allowed disabled:bg-paper-200 disabled:text-muted disabled:hover:bg-paper-200 disabled:active:shadow-none",
   secondary:
     "border-2 border-fg text-fg hover:bg-fg hover:text-bg active:bg-fg active:text-bg active:shadow-[inset_0_0_0_2px_var(--color-bg)]",
 } as const;

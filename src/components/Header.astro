@@ -22,33 +22,34 @@ const { nav, lang, draft = false } = Astro.props;
 ---
 
 <header class="border-b border-border bg-bg">
-  {
-    draft && (
-      <p data-draft-banner class="bg-signal-100 px-4 py-2 text-center font-mono text-sm text-signal-800">
-        Draft page. Not published. Shown only in the private preview.
-      </p>
-    )
-  }
+  {draft && (
+    <p
+      data-draft-banner
+      class="bg-signal-100 px-4 py-2 text-center font-mono text-sm text-signal-800"
+    >
+      Draft page. Not published. Shown only in the private preview.
+    </p>
+  )}
   <div class="mx-auto flex max-w-page items-center justify-between gap-6 px-gutter py-4">
     <a href={homePath(lang)} class="inline-flex min-h-(--target-min) items-center">
       <Logo class="h-7 w-auto md:h-8" />
     </a>
 
     <nav aria-label="Main" class="flex items-center gap-8">
-      {
-        nav.length > 0 && (
-          <ul class="hidden items-center gap-8 lg:flex">
-            {nav.map((link) => (
-              <li>
-                <a href={link.href} class="nav-link">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
-      <Button variant="secondary" size="sm" href={SITE.cta.href}>{SITE.cta.shortLabel}</Button>
+      {nav.length > 0 && (
+        <ul class="hidden items-center gap-8 lg:flex">
+          {nav.map((link) => (
+            <li>
+              <a href={link.href} class="nav-link">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Button variant="secondary" size="sm" href={SITE.cta.href}>
+        {SITE.cta.shortLabel}
+      </Button>
     </nav>
   </div>
 </header>

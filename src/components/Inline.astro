@@ -2,9 +2,12 @@
 /**
  * Renders a string from the content with its inline markup: links, strong text, the site's address and
  * [TO CONFIRM] placeholders (see src/lib/inline.ts). It builds elements, never HTML from a string.
+ *
+ * The text goes in with set:text, not between the tags. Astro keeps the line breaks that Prettier adds between
+ * a tag and an expression, and inside a link that would show as an underlined space before a full stop.
  */
 import { SITE } from "../config/site";
-import { parseInline } from "../lib/inline";
+import { bindShortWords, parseInline } from "../lib/inline";
 
 interface Props {
   text: string;
@@ -16,24 +19,16 @@ const { text, linkClass = "link" } = Astro.props;
 const tokens = parseInline(text);
 ---
 
-{
-  tokens.map((token) => {
-    if (token.type === "placeholder") return <span class="tbc">{token.text}</span>;
-    if (token.type === "strong") return <strong class="font-semibold text-fg">{token.text}</strong>;
-    if (token.type === "link")
-      return (
-        <a class={linkClass} href={token.href}>
-          {token.text}
-        </a>
-      );
-    if (token.type === "email")
-      return token.link ? (
-        <a class={linkClass} href={`mailto:${SITE.email}`}>
-          {SITE.email}
-        </a>
-      ) : (
-        SITE.email
-      );
-    return token.text;
-  })
-}
+{tokens.map((token) => {
+  if (token.type === "placeholder") return <span class="tbc" set:text={token.text} />;
+  if (token.type === "strong")
+    return <strong class="font-semibold text-fg" set:text={token.text} />;
+  if (token.type === "link") return <a class={linkClass} href={token.href} set:text={token.text} />;
+  if (token.type === "email")
+    return token.link ? (
+      <a class={linkClass} href={`mailto:${SITE.email}`} set:text={SITE.email} />
+    ) : (
+      SITE.email
+    );
+  return bindShortWords(token.text);
+})}

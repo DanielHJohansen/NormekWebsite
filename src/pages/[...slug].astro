@@ -5,6 +5,7 @@
  * The 404 page is not routed here. src/pages/404.astro renders its own entry.
  */
 import { render } from "astro:content";
+import Markdown from "../components/Markdown.astro";
 import DefaultPage from "../components/pages/DefaultPage.astro";
 import LegalPage from "../components/pages/LegalPage.astro";
 import ThanksPage from "../components/pages/ThanksPage.astro";
@@ -26,7 +27,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { data } = entry;
-const { Content, headings } = await render(entry);
+const { headings } = await render(entry);
 ---
 
 <BaseLayout
@@ -36,19 +37,15 @@ const { Content, headings } = await render(entry);
   draft={isDraft(entry)}
   noindex={data.noindex}
 >
-  {
-    data.layout === "legal" && (
-      <LegalPage data={data} headings={headings}>
-        <Content />
-      </LegalPage>
-    )
-  }
+  {data.layout === "legal" && (
+    <LegalPage data={data} headings={headings}>
+      <Markdown {entry} />
+    </LegalPage>
+  )}
   {data.layout === "thanks" && <ThanksPage data={data} />}
-  {
-    data.layout === "default" && (
-      <DefaultPage data={data}>
-        <Content />
-      </DefaultPage>
-    )
-  }
+  {data.layout === "default" && (
+    <DefaultPage data={data}>
+      <Markdown {entry} />
+    </DefaultPage>
+  )}
 </BaseLayout>

@@ -111,7 +111,7 @@
 
   /*
    * A missing fact, shown as a dashed tag (tokens.md 5.12). It keeps its brackets, so check:dist in launch mode
-   * still finds it and blocks the launch. Used by the Inline component and by the rehype plugin for Markdown.
+   * still finds it and blocks the launch. Used by the Inline component and, for Markdown text, by wrapPlaceholdersInHtml (src/lib/placeholders.ts).
    * It is inline and may wrap, so a long tag fits a 350 px column. Never smaller than 14 px.
    */
   .tbc {

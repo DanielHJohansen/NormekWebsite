@@ -20,29 +20,39 @@ const contact = sections.map((section) => section.data).find((item) => item.kind
 
 <section class="py-section">
   <div class="mx-auto max-w-narrow px-gutter">
-    <h1 class="mb-6 text-3xl"><Inline text={data.heading} /></h1>
-    <Status tone="success" role="status"><p><Inline text={data.confirmation} /></p></Status>
+    <h1 class="mb-6 text-3xl">
+      <Inline text={data.heading} />
+    </h1>
+    <Status tone="success" role="status">
+      <p>
+        <Inline text={data.confirmation} />
+      </p>
+    </Status>
 
-    {
-      contact && (
-        <>
-          <h2 class="mt-14 mb-6 text-2xl"><Inline text={contact.nextStepsHeading} /></h2>
-          <ol role="list" class="flex flex-col gap-6">
-            {contact.steps.map((step, index) => (
-              <li class="flex gap-4">
-                <span class="flex-none font-mono text-muted" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <p><Inline text={step} /></p>
-              </li>
-            ))}
-          </ol>
-        </>
-      )
-    }
+    {contact && (
+      <>
+        <h2 class="mt-14 mb-6 text-2xl">
+          <Inline text={contact.nextStepsHeading} />
+        </h2>
+        <ol role="list" class="flex flex-col gap-6">
+          {contact.steps.map((step, index) => (
+            <li class="flex gap-4">
+              <span class="flex-none font-mono text-muted" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <p class="max-w-measure">
+                <Inline text={step} />
+              </p>
+            </li>
+          ))}
+        </ol>
+      </>
+    )}
 
     <p class="mt-12 border-t border-border pt-6">
-      <a class="link link-standalone" href="/">{data.homeLink}</a>
+      <a class="link link-standalone" href="/">
+        {data.homeLink}
+      </a>
     </p>
   </div>
 </section>

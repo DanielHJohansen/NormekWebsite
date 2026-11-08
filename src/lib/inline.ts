@@ -66,3 +66,12 @@ export function plainText(text: string, email: string): string {
     .map((token) => (token.type === "email" ? email : token.text))
     .join("");
 }
+
+/**
+ * Binds a one letter word to the word after it with a no-break space, so a line never ends with "I" or "a"
+ * (the hero heading broke as "...works. I" and "design the box..." at 768 px). English only for now.
+ * It changes what the page shows and never the words, so the content files keep their plain spaces.
+ */
+export function bindShortWords(text: string): string {
+  return text.replace(/(^|[\s(])([IAa]) (?=\S)/g, "$1$2\u00A0");
+}

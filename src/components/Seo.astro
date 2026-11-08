@@ -22,8 +22,12 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title = SITE.homeTitle, description = SITE.description, canonical = true, noindex = false } =
-  Astro.props;
+const {
+  title = SITE.homeTitle,
+  description = SITE.description,
+  canonical = true,
+  noindex = false,
+} = Astro.props;
 const keepOut = !FLAGS.indexable || noindex;
 const canonicalUrl =
   !keepOut && canonical && Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;

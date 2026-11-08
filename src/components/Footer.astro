@@ -19,32 +19,32 @@ const { footer } = Astro.props;
     <div class="flex flex-wrap justify-between gap-x-14 gap-y-8">
       <div class="flex min-w-0 flex-1 basis-65 flex-col gap-4">
         <Logo reversed class="h-7 w-auto self-start md:h-8" />
-        <p class="text-sm text-muted"><Inline text={footer.tagline} /></p>
+        <p class="text-sm text-muted">
+          <Inline text={footer.tagline} />
+        </p>
       </div>
       <ul class="flex min-w-0 flex-1 basis-65 flex-col gap-2 text-sm">
-        {
-          footer.facts.map((fact) => (
-            <li>
-              {fact.label} <Inline text={fact.value} />
-            </li>
-          ))
-        }
+        {footer.facts.map((fact) => (
+          <li>
+            {fact.label} <Inline text={fact.value} />
+          </li>
+        ))}
       </ul>
       <ul class="flex min-w-0 flex-1 basis-50 flex-col text-sm">
-        {
-          footer.links.map((link) => (
-            <li>
-              <Inline text={link} linkClass="link link-standalone" />
-            </li>
-          ))
-        }
+        {footer.links.map((link) => (
+          <li>
+            <Inline text={link} linkClass="link link-standalone" />
+          </li>
+        ))}
       </ul>
     </div>
-    <div
-      class="mt-8 flex flex-wrap justify-between gap-x-8 gap-y-3 border-t border-border pt-6 text-sm text-muted"
-    >
-      <p class="max-w-measure"><Inline text={footer.agreement} /></p>
-      <p><Inline text={footer.copyright} /></p>
+    <div class="mt-8 flex flex-wrap justify-between gap-x-8 gap-y-3 border-t border-border pt-6 text-sm text-muted">
+      <p class="max-w-measure">
+        <Inline text={footer.agreement} />
+      </p>
+      <p>
+        <Inline text={footer.copyright} />
+      </p>
     </div>
   </div>
 </footer>
