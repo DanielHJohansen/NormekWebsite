@@ -99,7 +99,10 @@ const short = (value) => String(round(value)).replace(/^(-?)0\./, "$1.");
 function join(values) {
   let text = "";
   for (const value of values.map(short)) {
-    const needsSpace = text && !value.startsWith("-") && !(value.startsWith(".") && /\./.test(text.split(/[\s-]/).pop() ?? ""));
+    const needsSpace =
+      text &&
+      !value.startsWith("-") &&
+      !(value.startsWith(".") && /\./.test(text.split(/[\s-]/).pop() ?? ""));
     text += (needsSpace ? " " : "") + value;
   }
   return text;

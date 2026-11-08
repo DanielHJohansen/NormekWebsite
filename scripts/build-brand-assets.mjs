@@ -29,7 +29,14 @@
 // After a rename: node brand/logo/source/build.mjs --name "New Name", copy the lockups into
 // src/assets/brand/, then run this script again (og-default.png shows the name).
 import { createRequire } from "node:module";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { crc32, deflateSync, inflateSync } from "node:zlib";
@@ -110,7 +117,7 @@ function decodePng(png) {
   if (!png.subarray(0, 8).equals(PNG_SIGNATURE)) throw new Error("Chromium did not return a PNG.");
   const idat = [];
   let header;
-  for (let pos = 8; pos < png.length; ) {
+  for (let pos = 8; pos < png.length;) {
     const length = png.readUInt32BE(pos);
     const type = png.toString("latin1", pos + 4, pos + 8);
     const data = png.subarray(pos + 8, pos + 8 + length);
@@ -280,7 +287,9 @@ function loadChromium() {
       // try the next package
     }
   }
-  throw new Error("Playwright is not installed. Run `npm ci`, then `npx playwright install chromium`.");
+  throw new Error(
+    "Playwright is not installed. Run `npm ci`, then `npx playwright install chromium`.",
+  );
 }
 
 /**
