@@ -63,9 +63,11 @@
   --color-error: #b13544;
 
   /* ---------- Typography ---------- */
-  --font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
-  --font-sans: "IBM Plex Sans", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-display:
+    "Barlow Semi Condensed", "Barlow Semi Condensed Fallback", "Arial Narrow", sans-serif;
+  --font-sans:
+    "IBM Plex Sans", "IBM Plex Sans Fallback", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, Menlo, Consolas, monospace;
 
   --font-weight-normal: 400;
   --font-weight-semibold: 600;

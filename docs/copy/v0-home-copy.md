@@ -156,7 +156,7 @@ Four fields only (plan). Optional details, the call tick box and a hidden `situa
 - **Name.** Empty: "Enter your name so I know who to reply to."
 - **Work email.** Empty: "Enter your work email so I can reply." No @: "The email address needs an @ sign." Otherwise invalid: "That address looks incomplete. Try name@company.com."
 - **Company.** Empty: "Enter your company name."
-- **What do you need?** Helper: "Product, where it is used, board stage. No confidential details yet: files follow a non-disclosure agreement (NDA)." Under 20 characters: "Add a sentence or two on the product and what you need (at least 20 characters)."
+- **What do you need?** Helper: "Product, where it is used, board stage. No confidential details yet: files follow a non-disclosure agreement (NDA). Up to 2,000 characters." Under 20 characters: "Add a sentence or two on the product and what you need (at least 20 characters)."
 - **Honeypot label:** "Website. Leave this field empty." Hide it from view and screen readers.
 - **Error summary:** "Fix these fields to send your request:"
 - **Button:** Request a feasibility review. While sending: "Sending..."

@@ -28,7 +28,7 @@ function linkName(title: string): string {
   <h2 id={`${data.id}-heading`} class="mb-10 text-2xl">
     <Inline text={data.heading} />
   </h2>
-  <ul class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-6">
+  <ul role="list" class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,290px),1fr))] gap-6">
     {data.cards.map((card, index) => (
       <li class="flex min-w-0 flex-col gap-3 border border-border bg-surface p-7">
         <p class="font-mono text-sm tracking-eyebrow text-muted" aria-hidden="true">

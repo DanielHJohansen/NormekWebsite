@@ -147,9 +147,11 @@ Paste this over the current file. It keeps every name and value from the current
   --color-error: #b13544;
 
   /* ---------- Typography ---------- */
-  --font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
-  --font-sans: "IBM Plex Sans", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-display:
+    "Barlow Semi Condensed", "Barlow Semi Condensed Fallback", "Arial Narrow", sans-serif;
+  --font-sans:
+    "IBM Plex Sans", "IBM Plex Sans Fallback", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, Menlo, Consolas, monospace;
 
   --font-weight-normal: 400;
   --font-weight-semibold: 600;
@@ -310,7 +312,7 @@ For 390 to 1280 px viewports. The clamp values are the brand guide's. The pixel 
 - Paragraphs: `text-wrap: pretty` (proposed), which avoids one-word last lines such as "engineer." in the hero lead at 390.
 - **Measure**: running text is at most 28em wide (`max-w-measure`, from `--container-measure`). Never use `max-w-prose`: Tailwind fixes it at 65ch and ignores the theme. Measured on the page copy in Plex Sans, 28em keeps the longest wrapped line at 65 characters (mean full line 58). The old `65ch` is 39em because Plex Sans zero is 0.6em wide, and it fits up to 86 characters.
 - Units take a space (2 mm, 85 °C), ranges read "2 to 4 weeks", dates read 8 November 2026.
-- Fallback metrics are still unmeasured (brand guide, open items). Generate metric-matched fallback faces with Capsize or Fontaine once the files are in `public/fonts/`, and keep cumulative layout shift under 0.05.
+- Fallback faces are in `src/styles/fonts.css` (QA-04): Arial and Courier New with `size-adjust` and the three overrides, measured from the files in `public/fonts/`, listed second in each font stack. Keep cumulative layout shift under 0.05 (`tests/e2e/fonts.spec.ts` holds the fonts back two seconds and measures it).
 
 ## 4. Layout
 
@@ -545,7 +547,7 @@ Not in the canvas. Text from the copy doc. It is an error status message (5.9) h
 </div>
 ```
 
-Validate on submit, not on blur, so nobody is scolded mid-typing. After a failed submit, move focus to the summary. It has `tabindex="-1"` and no `role="alert"`, because moving focus already announces it. Each link goes to its field. Remove the summary when the form is fixed and sent.
+Validate each field when the visitor leaves it, and every field on submit (the UX brief and the code do this, QA-11). One exception: when focus goes straight from a field to the submit button, that field is not checked on blur, because the submit checks everything and an error that appears under the pointer would move the button before the click lands. A field that shows an error is checked again as the visitor types, so the error goes as soon as the value is fine. After a failed submit, move focus to the summary. It has `tabindex="-1"` and no `role="alert"`, because moving focus already announces it. Each link goes to its field. Remove the summary when the form is fixed and sent.
 
 ### 5.8 Field error
 
@@ -775,5 +777,5 @@ These follow from the measurements. Push back on any of them.
 
 ### Open items
 
-- Fallback face metrics are unmeasured. `frontend-developer` generates them with the font files now in `public/fonts/`.
+- Fallback face metrics: done by `frontend-developer` on 8 November 2026 (QA-04), see `src/styles/fonts.css` for how they were derived. Redo them when a font file changes.
 - The canvas still lacks states and frames, see finding 11 in `docs/design/canvas-review-2026-11-08.md`. The manager republishes it.

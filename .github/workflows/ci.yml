@@ -185,11 +185,11 @@ jobs:
         run: npm run build
 
       # Budgets are in lighthouserc.json. Mobile emulation, 3 runs, median of the runs.
-      # The version is fixed here. It is not tracked by Dependabot, so check it now and then.
-      # Better: the frontend-developer adds @lhci/cli to devDependencies, so the lockfile pins it.
-      # Then this line becomes "npx lhci autorun --config=./lighthouserc.json".
+      # @lhci/cli is a devDependency: the exact version is in package.json, every package under it is in the lockfile,
+      # and Dependabot tracks it. npm ci installed it above with install scripts off, so npx finds it in node_modules
+      # and fetches nothing (security review S5, gate G6).
       - name: Lighthouse CI
-        run: npx --yes @lhci/cli@0.15.1 autorun --config=./lighthouserc.json
+        run: npx lhci autorun --config=./lighthouserc.json
 
       - name: Upload Lighthouse reports
         if: ${{ !cancelled() }}

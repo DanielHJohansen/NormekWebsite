@@ -17,6 +17,16 @@ export const SITE = {
   homeTitle: "Normek: enclosure design for electronics teams",
   description:
     "Enclosure design for electronics teams with no mechanical engineer. Feasibility review, prototypes and manufacturer hand-off by Daniel Hessellund Johansen.",
+  /**
+   * The link preview card (Open Graph and Twitter card). public/og-default.png, 1200 by 630, the reversed lockup on Ink.
+   * The alt text is the one in docs/media-manifest.md. The address is made absolute from the site origin in Seo.astro.
+   */
+  socialImage: {
+    path: "/og-default.png",
+    width: 1200,
+    height: 630,
+    alt: "Normek logo on a dark blue background. A chamfered square outline holds the letter N with two orange pads, beside the name.",
+  },
   /** Matches --color-paper in src/styles/tokens.css. Used for the browser UI colour only. */
   themeColor: "#F4F5F2",
   /**

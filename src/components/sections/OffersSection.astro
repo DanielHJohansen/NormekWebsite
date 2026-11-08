@@ -15,7 +15,10 @@ const { data, draft = false } = Astro.props;
 const { labels } = data;
 const offers = await getOffers();
 
-/** The spec rows hold bullet lists. */
+/**
+ * The spec rows hold bullet lists. Each list is named by the label above it (aria-labelledby), and every list carries
+ * role="list", because Safari with VoiceOver drops the list semantics of a list that has no marker or is reset (QA-09).
+ */
 // box-content: the 28 em cap is the width of the text, and the bullet indent comes on top (as in the canvas).
 const listClass = "box-content flex max-w-measure list-disc flex-col gap-2 pl-5";
 ---
@@ -33,10 +36,10 @@ const listClass = "box-content flex max-w-measure list-disc flex-col gap-2 pl-5"
     <Inline text={data.lead} />
   </p>
 
-  <ol class="border-t-2 border-fg">
+  <ol role="list" class="border-t-2 border-fg">
     {offers.map((offer, index) => (
       <li class="flex flex-wrap gap-x-12 gap-y-6 border-b border-border py-8">
-        <div class="min-w-0 flex-1 basis-70">
+        <div class="min-w-0 flex-1 basis-60">
           <p class="eyebrow mb-2">
             {labels.stage} {index + 1}
           </p>
@@ -48,8 +51,10 @@ const listClass = "box-content flex max-w-measure list-disc flex-col gap-2 pl-5"
           </p>
         </div>
         <div class="min-w-0 grow-2 basis-90">
-          <p class="eyebrow mb-2">{labels.youGet}</p>
-          <ul class={listClass}>
+          <p id={`stage-${index + 1}-you-get`} class="eyebrow mb-2">
+            {labels.youGet}
+          </p>
+          <ul role="list" aria-labelledby={`stage-${index + 1}-you-get`} class={listClass}>
             {offer.data.youGet.map((item) => (
               <li>
                 <Inline text={item} />
@@ -57,9 +62,11 @@ const listClass = "box-content flex max-w-measure list-disc flex-col gap-2 pl-5"
             ))}
           </ul>
         </div>
-        <div class="min-w-0 grow-[1.4] basis-70">
-          <p class="eyebrow mb-2">{labels.iNeed}</p>
-          <ul class={listClass}>
+        <div class="min-w-0 grow-[1.4] basis-60">
+          <p id={`stage-${index + 1}-i-need`} class="eyebrow mb-2">
+            {labels.iNeed}
+          </p>
+          <ul role="list" aria-labelledby={`stage-${index + 1}-i-need`} class={listClass}>
             {offer.data.iNeed.map((item) => (
               <li>
                 <Inline text={item} />
@@ -68,8 +75,10 @@ const listClass = "box-content flex max-w-measure list-disc flex-col gap-2 pl-5"
           </ul>
           {offer.data.notIncluded && (
             <>
-              <p class="eyebrow mt-5 mb-2">{labels.notIncluded}</p>
-              <ul class={listClass}>
+              <p id={`stage-${index + 1}-not-included`} class="eyebrow mt-5 mb-2">
+                {labels.notIncluded}
+              </p>
+              <ul role="list" aria-labelledby={`stage-${index + 1}-not-included`} class={listClass}>
                 {offer.data.notIncluded.map((item) => (
                   <li>
                     <Inline text={item} />

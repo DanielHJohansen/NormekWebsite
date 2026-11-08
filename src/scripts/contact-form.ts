@@ -205,11 +205,13 @@ function setUp(form: HTMLFormElement): void {
     try {
       const result = await turnstile.getToken();
       if (result.status === "unavailable") {
-        // No site key: the preview before the Cloudflare setup. The form still works as far as this.
+        // The check cannot run here: no site key (the preview before the Cloudflare setup), the script is blocked
+        // or the widget will not start. Nothing was sent, so it is the "not sent" text. The next submit asks again.
         showNotice("failed");
         return;
       }
       if (result.status === "blocked") {
+        // The widget ran and gave no token (an error, or it took too long): the person check text.
         showNotice("person");
         turnstile.reset();
         return;

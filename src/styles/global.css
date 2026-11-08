@@ -134,6 +134,8 @@
    */
   .prose {
     max-width: var(--container-measure);
+    /* A long address or tag breaks instead of pushing the page wider at 200 percent text on a phone (QA-07). */
+    overflow-wrap: anywhere;
   }
   .prose > * + * {
     margin-top: calc(var(--spacing) * 4);
@@ -213,6 +215,24 @@
     var(--chamfer-inner) 100%,
     0 calc(100% - var(--chamfer-inner))
   );
+}
+
+/*
+ * Forced colours (Windows High Contrast, QA-03). The logos and the hero drawing are images with fixed colours.
+ * They sit on the page background, which the system replaces, so a dark logo can vanish on a dark forced background.
+ * Each gets its own opaque ground and keeps its colours: white under the header logo and the drawing, Ink under the
+ * reversed footer logo. Text, borders and links follow the system colours, as they should.
+ */
+@media (forced-colors: active) {
+  header img,
+  .frame-inner img {
+    forced-color-adjust: none;
+    background-color: var(--color-white);
+  }
+  footer img {
+    forced-color-adjust: none;
+    background-color: var(--color-ink);
+  }
 }
 
 /* The skip link is hidden until it receives keyboard focus (tokens.md 5.1). Ink fill with Paper text. */

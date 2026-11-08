@@ -6,8 +6,10 @@ import {
   ALLOWED_INLINE_SCRIPT_TYPES,
   ALWAYS_NOINDEX_ROUTES,
   checkDist,
+  cssUrls,
   readTags,
 } from "../../scripts/check-dist.mjs";
+import { buildHeadersFile } from "../../scripts/lib/build-headers.mjs";
 
 // The real headers file, so these tests also fail if public/_headers drifts from the checker's rules.
 const REAL_HEADERS = readFileSync("public/_headers", "utf8");
@@ -89,16 +91,24 @@ const run = (overrides: Overrides = {}, options: Options = {}) =>
 const rules = (result: ReturnType<typeof checkDist>) =>
   [...new Set(result.problems.map((p) => p.rule))].sort();
 
+/** The form as the build writes it, with a real looking site key (not one of Cloudflare's dummy keys). */
+const FORM =
+  '<form method="post" action="/api/contact" data-contact-form data-sitekey="0x4AAAAAAAtestSiteKey0000"></form>';
+
+/** The home page of a launch build: no noindex, and the form with its key. */
+const launchHome = ({ head = "", body = "" }: { head?: string; body?: string } = {}) =>
+  html({ robots: null, head, body: body + FORM });
+
 /**
- * The launch flip: pages drop noindex, robots opens, and _headers loses the catch-all noindex.
+ * The launch flip: pages drop noindex, robots opens, and _headers is the launch variant the build writes.
  * The 404 page keeps its noindex tag, as /thanks/ does.
  */
 const LAUNCH: Overrides = {
-  "dist/index.html": html({ robots: null }),
+  "dist/index.html": launchHome(),
   "dist/404.html": html(),
   "dist/privacy/index.html": html({ robots: null }),
   "dist/robots.txt": "User-agent: *\nAllow: /\n\nSitemap: https://www.normek.dk/sitemap.xml\n",
-  "dist/_headers": REAL_HEADERS.replace(/^\s*X-Robots-Tag:.*\n?/m, ""),
+  "dist/_headers": buildHeadersFile(REAL_HEADERS, { indexable: true }),
 };
 
 describe("a clean production build", () => {
@@ -296,9 +306,9 @@ describe("no inline code in the output (security requirement)", () => {
     expect(result.problems).toEqual([]);
   });
 
-  it("ignores code inside an HTML comment, which the browser never runs", () => {
+  it("does not call code inside an HTML comment inline code, because the browser never runs it, but fails the comment", () => {
     const result = run({ "dist/index.html": html({ body: "<!-- <script>alert(1)</script> -->" }) });
-    expect(result.problems).toEqual([]);
+    expect(rules(result)).toEqual(["html-comment"]);
   });
 
   it("also checks SVG files", () => {
@@ -454,7 +464,7 @@ describe("launch mode (PUBLIC_INDEXABLE=true)", () => {
 
   it("fails on [TO CONFIRM] anywhere in the output", () => {
     const result = launch({
-      "dist/index.html": html({ robots: null, body: "<p>Price: [TO CONFIRM]</p>" }),
+      "dist/index.html": launchHome({ body: "<p>Price: [TO CONFIRM]</p>" }),
     });
     expect(rules(result)).toEqual(["launch-placeholder"]);
   });
@@ -468,7 +478,7 @@ describe("launch mode (PUBLIC_INDEXABLE=true)", () => {
 
   it("fails on an origin that is not on the allowed list, in a link or in the CSS", () => {
     const anchor = launch({
-      "dist/index.html": html({ robots: null, body: '<a href="https://example.com/x/">x</a>' }),
+      "dist/index.html": launchHome({ body: '<a href="https://example.com/x/">x</a>' }),
     });
     expect(rules(anchor)).toEqual(["launch-origin"]);
     const css = launch({
@@ -484,7 +494,7 @@ describe("launch mode (PUBLIC_INDEXABLE=true)", () => {
     const head = '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>';
     const body =
       '<a href="https://www.normek.dk/privacy/">p</a><svg xmlns="http://www.w3.org/2000/svg"></svg>';
-    expect(launch({ "dist/index.html": html({ robots: null, head, body }) }).problems).toEqual([]);
+    expect(launch({ "dist/index.html": launchHome({ head, body }) }).problems).toEqual([]);
   });
 
   it("ignores a URL in a CSS comment, like the license line Tailwind writes", () => {
@@ -525,9 +535,75 @@ describe("launch mode (PUBLIC_INDEXABLE=true)", () => {
     ]);
   });
 
-  it("allows noindex on host rules, which is how the pages.dev hosts keep it at launch", () => {
-    const hostRules = `${LAUNCH["dist/_headers"]}\nhttps://normek-web.pages.dev/*\n  X-Robots-Tag: noindex, nofollow\n`;
-    expect(launch({ "dist/_headers": hostRules }).problems).toEqual([]);
+  it("passes the variant the build writes: no global noindex, the two pages.dev host rules", () => {
+    const written = LAUNCH["dist/_headers"] ?? "";
+    expect(written).not.toMatch(/^\s+X-Robots-Tag:.*\n(?=\/_astro)/m);
+    expect(written).toContain("https://:project.pages.dev/*");
+    expect(written).toContain("https://:version.:project.pages.dev/*");
+    expect(launch().problems).toEqual([]);
+  });
+
+  it("refuses a host rule that the build does not write", () => {
+    const text = `${LAUNCH["dist/_headers"]}\nhttps://normek-web.pages.dev/*\n  X-Robots-Tag: noindex, nofollow\n`;
+    expect(rules(launch({ "dist/_headers": text }))).toEqual(["headers"]);
+  });
+
+  it("fails when the launch build lost a host rule, because pages.dev would then be indexable", () => {
+    const text = (LAUNCH["dist/_headers"] ?? "").replace(
+      /https:\/\/:version\.:project\.pages\.dev\/\*\n {2}X-Robots-Tag: noindex, nofollow\n/,
+      "",
+    );
+    expect(rules(launch({ "dist/_headers": text }))).toEqual(["noindex"]);
+  });
+
+  it("fails the preview file in launch mode, and the launch file in a preview build", () => {
+    expect(rules(launch({ "dist/_headers": REAL_HEADERS }))).toEqual(["noindex"]);
+    // In a preview build the host rules are not expected, and the global noindex is missing.
+    expect(rules(run({ "dist/_headers": LAUNCH["dist/_headers"] ?? "" }))).toEqual([
+      "headers",
+      "noindex",
+    ]);
+  });
+});
+
+describe("the contact form needs a real site key at launch (QA-05)", () => {
+  const launch = (home: string) => run({ ...LAUNCH, "dist/index.html": home }, { launch: true });
+
+  it("passes with the key of the widget", () => {
+    expect(launch(launchHome()).problems).toEqual([]);
+  });
+
+  it("fails an empty data-sitekey, and says which variable to set", () => {
+    const form = '<form data-contact-form data-sitekey=""></form>';
+    const result = launch(html({ robots: null, body: form }));
+    expect(rules(result)).toEqual(["launch-sitekey"]);
+    expect(result.problems[0]?.message).toContain("PUBLIC_TURNSTILE_SITE_KEY");
+  });
+
+  it("fails a form with no data-sitekey at all", () => {
+    expect(rules(launch(html({ robots: null, body: "<form data-contact-form></form>" })))).toEqual([
+      "launch-sitekey",
+    ]);
+  });
+
+  it("fails Cloudflare's dummy test keys, which belong in tests only", () => {
+    for (const key of [
+      "1x00000000000000000000AA",
+      "2x00000000000000000000AB",
+      "3x00000000000000000000FF",
+    ]) {
+      const form = `<form data-contact-form data-sitekey="${key}"></form>`;
+      expect(rules(launch(html({ robots: null, body: form }))), key).toEqual(["launch-sitekey"]);
+    }
+  });
+
+  it("fails a launch build whose home page has no form at all", () => {
+    expect(rules(launch(html({ robots: null })))).toEqual(["launch-sitekey"]);
+  });
+
+  it("does not ask for a key in the private preview, which has none until the Cloudflare setup", () => {
+    const form = '<form data-contact-form data-sitekey=""></form>';
+    expect(run({ "dist/index.html": html({ body: form }) }).problems).toEqual([]);
   });
 });
 
@@ -580,9 +656,9 @@ describe("pages that stay out of search", () => {
     expect(rules(run({ ...thanks(), "dist/index.html": html({ body }) }))).toEqual([
       "private-page",
     ]);
-    expect(rules(launch({ ...thanks(), "dist/index.html": html({ robots: null, body }) }))).toEqual(
-      ["private-page"],
-    );
+    expect(rules(launch({ ...thanks(), "dist/index.html": launchHome({ body }) }))).toEqual([
+      "private-page",
+    ]);
   });
 
   it("catches an absolute link to /thanks/ on the canonical origin", () => {
@@ -617,5 +693,155 @@ describe("readTags", () => {
 
   it("skips comments", () => {
     expect(readTags("<!-- <a href='/x/'> --><b>")).toHaveLength(1);
+  });
+});
+
+describe("the guard on _headers is wired in, and a host it names is not trusted (G1)", () => {
+  it("fails a changed CSP in a build, with the rule name headers", () => {
+    const text = REAL_HEADERS.replace("script-src 'self'", "script-src 'self' https://cdn.example");
+    const result = run({ "dist/_headers": text });
+    expect(rules(result)).toEqual(["headers"]);
+    expect(result.problems[0]?.where).toBe("_headers");
+  });
+
+  it("does not accept a script from a host that _headers added to the CSP", () => {
+    const text = REAL_HEADERS.replace("script-src 'self'", "script-src 'self' https://cdn.example");
+    const result = run({
+      "dist/_headers": text,
+      "dist/index.html": html({ head: '<script src="https://cdn.example/lib.js"></script>' }),
+    });
+    // Both findings: the policy changed, and the page loads from a host that is not on the fixed list.
+    expect(rules(result)).toEqual(["headers", "third-party"]);
+  });
+
+  it("fails a /privacy/* rule that detaches the CSP", () => {
+    const result = run({
+      "dist/_headers": `${REAL_HEADERS}/privacy/*\n  ! Content-Security-Policy\n`,
+    });
+    expect(rules(result)).toEqual(["headers"]);
+  });
+});
+
+describe("source maps, comments and redirects (G3)", () => {
+  it("fails a .map file in the output", () => {
+    const result = run({ "dist/_astro/app.js.map": '{"version":3}' });
+    expect(rules(result)).toEqual(["source-map"]);
+    expect(result.problems[0]?.where).toBe("_astro/app.js.map");
+  });
+
+  it("fails a sourceMappingURL comment in a script or a stylesheet, in every mode", () => {
+    for (const file of ["dist/_astro/app.js", "dist/_astro/app.mjs", "dist/_astro/site.css"]) {
+      const text = file.endsWith(".css")
+        ? "a{color:red}\n/*# sourceMappingURL=site.css.map */"
+        : "export {};\n//# sourceMappingURL=app.js.map";
+      expect(rules(run({ [file]: text })), file).toEqual(["source-map"]);
+    }
+  });
+
+  it("fails an HTML comment, and reports where it starts", () => {
+    const result = run({
+      "dist/index.html": html({ body: "<!-- note to self: price is 5000 -->" }),
+    });
+    expect(rules(result)).toEqual(["html-comment"]);
+    expect(result.problems[0]?.message).toContain("note to self");
+  });
+
+  it("fails a comment in any page, not only the home page", () => {
+    expect(rules(run({ "dist/privacy/index.html": html({ body: "<!-- x -->" }) }))).toEqual([
+      "html-comment",
+    ]);
+  });
+
+  it("fails a meta refresh in any form", () => {
+    for (const tag of [
+      '<meta http-equiv="refresh" content="0; url=https://evil.example/">',
+      "<meta http-equiv='Refresh' content='5'>",
+      '<META HTTP-EQUIV="REFRESH" CONTENT="0;url=/">',
+    ]) {
+      expect(rules(run({ "dist/index.html": html({ head: tag }) })), tag).toEqual(["meta-refresh"]);
+    }
+  });
+
+  it("does not mistake another meta tag for a refresh", () => {
+    const head = '<meta http-equiv="content-language" content="en">';
+    expect(run({ "dist/index.html": html({ head }) }).problems).toEqual([]);
+  });
+
+  it("treats formaction like action: to another origin it is a resource from a host that is not allowed", () => {
+    const body =
+      '<form action="/api/contact"><button formaction="https://evil.example/steal">Send</button></form>';
+    expect(rules(run({ "dist/index.html": html({ body }) }))).toEqual(["third-party"]);
+    const input = '<form><input type="submit" formaction="https://evil.example/x"></form>';
+    expect(rules(run({ "dist/index.html": html({ body: input }) }))).toEqual(["third-party"]);
+  });
+
+  it("lets formaction point at the contact function or a page in the build, and fails one that is not there", () => {
+    const ok =
+      '<form><button formaction="/api/contact">Send</button><button formaction="/privacy/">x</button></form>';
+    expect(run({ "dist/index.html": html({ body: ok }) }).problems).toEqual([]);
+    const gone = '<form><button formaction="/nowhere/">Send</button></form>';
+    expect(rules(run({ "dist/index.html": html({ body: gone }) }))).toEqual(["link"]);
+  });
+});
+
+describe("what a stylesheet loads (G3)", () => {
+  it("fails url() and @import to a host that is not allowed, in a production build too", () => {
+    for (const css of [
+      "@font-face{src:url(https://fonts.example.org/a.woff2)}",
+      'a{background:url("https://images.example.org/a.png")}',
+      "@import url(https://cdn.example/x.css);a{color:red}",
+      '@import "https://cdn.example/x.css";',
+      "a{background:url( 'https://x.example/y.svg' )}",
+    ]) {
+      expect(rules(run({ "dist/_astro/site.css": css })), css).toEqual(["third-party"]);
+    }
+  });
+
+  it("fails a file of this site that is not in the build, resolved from the stylesheet's own folder", () => {
+    expect(rules(run({ "dist/_astro/site.css": "a{background:url(missing.png)}" }))).toEqual([
+      "link",
+    ]);
+    expect(
+      rules(run({ "dist/_astro/site.css": "a{background:url(/fonts/missing.woff2)}" })),
+    ).toEqual(["link"]);
+  });
+
+  it("passes a file that is there, with an absolute or a relative path", () => {
+    const files = { "dist/fonts/a.woff2": "x", "dist/_astro/img.png": "x" };
+    expect(
+      run({ ...files, "dist/_astro/site.css": "@font-face{src:url(/fonts/a.woff2)}" }).problems,
+    ).toEqual([]);
+    expect(
+      run({ ...files, "dist/_astro/site.css": "a{background:url(img.png)}" }).problems,
+    ).toEqual([]);
+  });
+
+  it("fails a data: or blob: address, which the CSP would not load", () => {
+    expect(
+      rules(run({ "dist/_astro/site.css": "a{background:url(data:image/png;base64,AAAA)}" })),
+    ).toEqual(["css-url"]);
+    expect(rules(run({ "dist/_astro/site.css": 'a{background:url("blob:https://x/1")}' }))).toEqual(
+      ["css-url"],
+    );
+  });
+
+  it("ignores an address in a comment and a fragment reference", () => {
+    const css =
+      "/*! tailwindcss | https://tailwindcss.com */a{filter:url(#blur)}/* url(https://x.example/y.png) */";
+    expect(run({ "dist/_astro/site.css": css }).problems).toEqual([]);
+  });
+});
+
+describe("cssUrls", () => {
+  it("finds every kind of address and leaves comments, fragments and empty values out", () => {
+    const css = `/* url(https://comment.example/) */
+      @import "a.css"; @import 'b.css'; @import url(c.css);
+      a{background:url("d.png")} b{background:url( e.png )} c{filter:url(#f)} d{background:url()}`;
+    // url(...) values first, in the order they appear, then the @import strings.
+    expect(cssUrls(css)).toEqual(["c.css", "d.png", "e.png", "a.css", "b.css"]);
+  });
+
+  it("returns nothing for a stylesheet that loads nothing", () => {
+    expect(cssUrls("a{color:red}")).toEqual([]);
   });
 });

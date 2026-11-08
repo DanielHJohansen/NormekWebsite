@@ -42,7 +42,7 @@ const toc = headings.filter((heading) => heading.depth === 2);
     <div class="flex flex-wrap items-start gap-x-columns gap-y-columns">
       <nav aria-label={data.tocTitle} class="min-w-0 max-w-75 flex-1 basis-60">
         <p class="eyebrow mb-3">{data.tocTitle}</p>
-        <ul class="border-t-2 border-fg">
+        <ul role="list" class="border-t-2 border-fg">
           {toc.map((heading) => (
             <li class="border-b border-border">
               <a class="nav-link w-full" href={`#${heading.slug}`}>

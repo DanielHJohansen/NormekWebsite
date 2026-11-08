@@ -10,8 +10,17 @@ import {
 describe("the real public/_headers", () => {
   const rules = parseHeadersFile(readFileSync("public/_headers", "utf8"));
 
-  it("has one rule for every path", () => {
-    expect(rules.map((rule) => rule.pattern)).toEqual(["/*"]);
+  it("has one rule for every path and one cache rule for the hashed files", () => {
+    expect(rules.map((rule) => rule.pattern)).toEqual(["/*", "/_astro/*"]);
+  });
+
+  it("caches hashed files for a year and nothing else (G7)", () => {
+    expect(headersForPath(rules, "/_astro/BaseLayout.DBFviziq.css")["Cache-Control"]).toBe(
+      "public, max-age=31536000, immutable",
+    );
+    for (const path of ["/", "/privacy/", "/404.html", "/fonts/a.woff2", "/robots.txt"]) {
+      expect(headersForPath(rules, path)["Cache-Control"], path).toBeUndefined();
+    }
   });
 
   it("sends the security headers to pages, assets and the 404 alike", () => {

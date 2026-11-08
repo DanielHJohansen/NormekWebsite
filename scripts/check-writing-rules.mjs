@@ -1,18 +1,25 @@
 #!/usr/bin/env node
 // Daniel's writing rule: no em dash and no semicolon in prose.
-// Scans Markdown and MDX files. Fenced code blocks and inline code are skipped.
+// Scans Markdown and MDX files, with fenced code blocks and inline code skipped, and the YAML content files under
+// src/content (the text, not the comments: the offers and the footer are prose too).
 // Usage: node scripts/check-writing-rules.mjs [file-or-folder ...]
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, extname } from "node:path";
+import { extname, join, sep } from "node:path";
+import { findProblems, stripCode, yamlProse } from "./lib/writing-rules.mjs";
 
-const EM_DASH = "—";
 const args = process.argv.slice(2);
 const targets = args.length
   ? args
   : ["CLAUDE.md", "README.md", "docs", ".claude", "brand", "src/content"];
 const skipDirs = new Set(["node_modules", ".git", "dist", ".astro", "qa"]);
-const exts = new Set([".md", ".mdx"]);
+const markdown = new Set([".md", ".mdx"]);
+const yaml = new Set([".yaml", ".yml"]);
 
+/** YAML elsewhere (workflows, configuration) is code. Only the content under src/content is prose. */
+const isContentYaml = (/** @type {string} */ path) =>
+  yaml.has(extname(path)) && path.split(sep).join("/").includes("src/content/");
+
+/** @param {string} path @param {string[]} out */
 function walk(path, out) {
   let st;
   try {
@@ -24,39 +31,29 @@ function walk(path, out) {
     for (const name of readdirSync(path)) {
       if (!skipDirs.has(name)) walk(join(path, name), out);
     }
-  } else if (exts.has(extname(path))) {
+  } else if (markdown.has(extname(path)) || isContentYaml(path)) {
     out.push(path);
   }
 }
 
-// Blank out code but keep newlines so reported line numbers stay correct.
-function stripCode(text) {
-  const blank = (m) => m.replace(/[^\n]/g, " ");
-  return text
-    .replace(/```[\s\S]*?```/g, blank)
-    .replace(/~~~[\s\S]*?~~~/g, blank)
-    .replace(/`[^`\n]*`/g, blank);
-}
-
+/** @type {string[]} */
 const files = [];
-for (const t of targets) walk(t, files);
+for (const target of targets) walk(target, files);
 
 let problems = 0;
 for (const file of files) {
-  const lines = stripCode(readFileSync(file, "utf8")).split("\n");
-  lines.forEach((line, i) => {
-    const hits = [];
-    if (line.includes(EM_DASH)) hits.push("em dash");
-    if (line.includes(";")) hits.push("semicolon");
-    if (hits.length) {
-      problems++;
-      console.log(`${file}:${i + 1}: ${hits.join(" and ")}: ${line.trim().slice(0, 100)}`);
-    }
-  });
+  const text = readFileSync(file, "utf8");
+  const prose = isContentYaml(file) ? yamlProse(text) : stripCode(text);
+  for (const problem of findProblems(prose)) {
+    problems++;
+    console.log(`${file}:${problem.line}: ${problem.what}: ${problem.text}`);
+  }
 }
 
 if (problems) {
-  console.log(`\n${problems} line(s) break the writing rules. Rewrite with a period, comma, colon or parentheses.`);
+  console.log(
+    `\n${problems} line(s) break the writing rules. Rewrite with a period, comma, colon or parentheses.`,
+  );
   process.exit(1);
 }
 console.log(`OK: ${files.length} file(s) checked, no em dash or semicolon in prose.`);

@@ -23,14 +23,14 @@ const { footer } = Astro.props;
           <Inline text={footer.tagline} />
         </p>
       </div>
-      <ul class="flex min-w-0 flex-1 basis-65 flex-col gap-2 text-sm">
+      <ul role="list" class="flex min-w-0 flex-1 basis-65 flex-col gap-2 text-sm">
         {footer.facts.map((fact) => (
           <li>
             {fact.label} <Inline text={fact.value} />
           </li>
         ))}
       </ul>
-      <ul class="flex min-w-0 flex-1 basis-50 flex-col text-sm">
+      <ul role="list" class="flex min-w-0 flex-1 basis-50 flex-col text-sm">
         {footer.links.map((link) => (
           <li>
             <Inline text={link} linkClass="link link-standalone" />

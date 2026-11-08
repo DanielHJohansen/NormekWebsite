@@ -179,6 +179,20 @@ for (const built of pages) {
 
 for (const built of pages) {
   test.describe(`details on ${built.route}`, () => {
+    test("every list with its markers reset says it is a list, because Safari with VoiceOver drops the semantics otherwise (QA-09)", async ({
+      page,
+    }) => {
+      await visit(page, built.route);
+      const bare = await page.evaluate(() =>
+        [...document.querySelectorAll("ul, ol")]
+          .filter((list) => getComputedStyle(list).display !== "none")
+          .filter((list) => getComputedStyle(list).listStyleType === "none")
+          .filter((list) => list.getAttribute("role") !== "list")
+          .map((list) => list.outerHTML.slice(0, 90)),
+      );
+      expect(bare).toEqual([]);
+    });
+
     test("eyebrows balance their lines, and placeholder tags use the 4 px base padding at 14 px or more", async ({
       page,
     }) => {
@@ -486,6 +500,151 @@ test.describe("sections", () => {
         }).length,
     );
     expect(signalButtons).toBe(1);
+  });
+});
+
+test.describe("forced colours (QA-03)", () => {
+  for (const colorScheme of ["light", "dark"] as const) {
+    test(`the images keep an opaque ground and the primary button keeps its border in the ${colorScheme} palette`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ forcedColors: "active", colorScheme });
+      await visit(page, "/");
+      const seen = await page.evaluate(() => {
+        const read = (selector: string) => {
+          const element = document.querySelector(selector);
+          if (!element) return null;
+          const style = getComputedStyle(element);
+          return {
+            adjust: style.getPropertyValue("forced-color-adjust"),
+            background: style.backgroundColor,
+          };
+        };
+        const button = document.querySelector('#top a[href="#contact"]');
+        const buttonStyle = button ? getComputedStyle(button) : null;
+        return {
+          header: read("header img"),
+          drawing: read("#top .frame-inner img"),
+          footer: read("footer img"),
+          border: buttonStyle?.borderTopWidth,
+          borderColor: buttonStyle?.borderTopColor,
+        };
+      });
+      expect(seen.header).toEqual({ adjust: "none", background: "rgb(255, 255, 255)" });
+      expect(seen.drawing).toEqual({ adjust: "none", background: "rgb(255, 255, 255)" });
+      expect(seen.footer).toEqual({ adjust: "none", background: "rgb(15, 27, 45)" });
+      // A transparent border is drawn in the system colour in forced colours, so the button still has an edge.
+      expect(seen.border).toBe("2px");
+      expect(seen.borderColor).not.toBe("rgba(0, 0, 0, 0)");
+    });
+  }
+
+  test("outside forced colours the images have no ground of their own and the fill stays Signal", async ({
+    page,
+  }) => {
+    await visit(page, "/");
+    const seen = await page.evaluate(() => {
+      const background = (selector: string) =>
+        getComputedStyle(document.querySelector(selector) as Element).backgroundColor;
+      return {
+        header: background("header img"),
+        drawing: background("#top .frame-inner img"),
+        footer: background("footer img"),
+        button: background('#top a[href="#contact"]'),
+        border: getComputedStyle(document.querySelector('#top a[href="#contact"]') as Element)
+          .borderTopColor,
+      };
+    });
+    expect(seen.header).toBe("rgba(0, 0, 0, 0)");
+    expect(seen.drawing).toBe("rgba(0, 0, 0, 0)");
+    expect(seen.footer).toBe("rgba(0, 0, 0, 0)");
+    expect(seen.button).toBe("rgb(255, 90, 31)");
+    expect(seen.border).toBe("rgba(0, 0, 0, 0)");
+  });
+});
+
+test.describe("200 percent text on a phone (QA-07)", () => {
+  // Playwright needs the empty pattern to know that no fixture is wanted.
+  // eslint-disable-next-line no-empty-pattern
+  test.beforeEach(({}, testInfo) => {
+    test.skip(testInfo.project.name !== "phone-390", "A phone width test.");
+  });
+
+  for (const route of ["/", "/privacy/", "/thanks/", "/404.html"]) {
+    test(`${route} does not scroll sideways`, async ({ page }) => {
+      await visit(page, route);
+      await page.evaluate(() => {
+        document.documentElement.style.fontSize = "200%";
+      });
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
+
+  test("a status message and long prose may break anywhere", async ({ page }) => {
+    await visit(page, "/thanks/");
+    const wrap = await page.evaluate(() => ({
+      status: getComputedStyle(document.querySelector('[role="status"] > div') as Element)
+        .overflowWrap,
+    }));
+    expect(wrap.status).toBe("anywhere");
+    await visit(page, "/privacy/");
+    const prose = await page.evaluate(
+      () => getComputedStyle(document.querySelector(".prose") as Element).overflowWrap,
+    );
+    expect(prose).toBe("anywhere");
+  });
+});
+
+test.describe("the card grid and the offer columns at 1024 px (QA-08)", () => {
+  runOnceOnDesktop();
+
+  for (const width of [1024, 1100]) {
+    test(`at ${width} px the three problem cards sit in one row`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await visit(page, "/");
+      const tops = await page
+        .locator("#problem ul > li")
+        .evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)));
+      expect(tops).toHaveLength(3);
+      expect(new Set(tops).size).toBe(1);
+    });
+
+    test(`at ${width} px each stage keeps its three columns in one row, so "I need" does not drop under the title`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await visit(page, "/");
+      const rows = await page
+        .locator("#offers ol > li")
+        .evaluateAll((stages) =>
+          stages.map((stage) =>
+            [...stage.children].map((column) => Math.round(column.getBoundingClientRect().top)),
+          ),
+        );
+      expect(rows).toHaveLength(3);
+      for (const tops of rows) {
+        expect(tops).toHaveLength(3);
+        expect(new Set(tops).size, tops.join(",")).toBe(1);
+      }
+    });
+  }
+
+  test("the grid minimum is 290 px, and the first and last offer columns start at 240 px", async ({
+    page,
+  }) => {
+    await visit(page, "/");
+    const grid = await page
+      .locator("#problem ul")
+      .evaluate((list) => getComputedStyle(list).gridTemplateColumns);
+    expect(grid.split(" ").length).toBeGreaterThanOrEqual(1);
+    const bases = await page
+      .locator("#offers ol > li")
+      .first()
+      .evaluate((stage) => [...stage.children].map((column) => getComputedStyle(column).flexBasis));
+    expect(bases).toEqual(["240px", "360px", "240px"]);
   });
 });
 

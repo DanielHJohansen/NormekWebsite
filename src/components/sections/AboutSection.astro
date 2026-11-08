@@ -39,7 +39,7 @@ const { data, entry, draft = false } = Astro.props;
     <div class="prose">
       <Markdown {entry} />
     </div>
-    <ul class="mt-6 flex flex-wrap gap-x-7">
+    <ul role="list" class="mt-6 flex flex-wrap gap-x-7">
       {data.links.map((link) => (
         <li class="inline-flex min-h-(--target-min) items-center gap-2">
           <Inline text={link} linkClass="link link-standalone" />

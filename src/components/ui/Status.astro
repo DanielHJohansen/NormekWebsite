@@ -4,6 +4,7 @@
  * The glyph of the icon differs from state to state, so colour is never the only cue.
  * Success uses role="status", a failure role="alert", a warning role="status".
  * The error summary of the form uses this too, with tabindex="-1" and no role="alert", because it takes focus.
+ * The text may break anywhere, so a long address or tag never pushes the page wider at 200 percent text on a phone (QA-07).
  */
 import Icon from "./Icon.astro";
 
@@ -37,7 +38,7 @@ const ink = {
   {...rest}
 >
   <Icon name={tone} class:list={["mt-1", ink[tone]]} />
-  <div class="min-w-0">
+  <div class="min-w-0 [overflow-wrap:anywhere]">
     <slot />
   </div>
 </div>

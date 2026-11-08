@@ -5,6 +5,10 @@
  * The form needs JavaScript: the submit button stays disabled until the script starts, and a noscript notice
  * names the email address. The messages travel to the script in an inert <template>, so no inline script is needed.
  *
+ * The two notice regions (send failed as an alert, person check as a status) are in the accessibility tree from the
+ * start. Empty they are empty:sr-only, not hidden: a live region that is display:none is not in the tree, and text
+ * put into it is not announced (QA-02). sr-only is out of the flow, so it takes no room and adds no gap.
+ *
  * The Turnstile site key is read at build time from PUBLIC_TURNSTILE_SITE_KEY. When it is empty (the preview before
  * the Cloudflare setup) the form still renders, and a submit shows the "send failed" text.
  */
@@ -64,7 +68,7 @@ const fields = [
     <p id="contact-summary-title" class="font-semibold">
       {form.summaryTitle}
     </p>
-    <ul data-summary-list class="mt-2 flex flex-col gap-2"></ul>
+    <ul role="list" data-summary-list class="mt-2 flex flex-col gap-2"></ul>
   </Status>
 
   <p class="text-sm text-muted">{form.required}</p>
@@ -119,8 +123,8 @@ const fields = [
 
   <div data-turnstile></div>
 
-  <div id="contact-notice" role="alert" class="empty:hidden"></div>
-  <div id="contact-warning" role="status" class="empty:hidden"></div>
+  <div id="contact-notice" role="alert" class="empty:sr-only"></div>
+  <div id="contact-warning" role="status" class="empty:sr-only"></div>
 
   <Button as="button" type="submit" id="contact-submit" disabled class="self-start">
     {form.submit}

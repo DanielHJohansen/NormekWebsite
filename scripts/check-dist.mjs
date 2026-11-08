@@ -27,7 +27,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { listPages, walk } from "./lib/dist.mjs";
-import { headersForPath, parseHeadersFile } from "./lib/headers.mjs";
+import { checkHeadersFile } from "./lib/check-headers.mjs";
 
 /** The site itself. Absolute links to these origins count as internal links. */
 export const SITE_ORIGINS = ["https://www.normek.dk", "https://normek.dk"];
@@ -152,7 +152,30 @@ function urlsOf(tag) {
   const action = attrs.get("action");
   if (name === "form" && action !== undefined)
     out.push({ url: action, kind: /** @type {const} */ ("resource") });
+  // A button can send its form somewhere else with formaction. It is checked like the action of a form.
+  const formaction = attrs.get("formaction");
+  if ((name === "button" || name === "input") && formaction !== undefined)
+    out.push({ url: formaction, kind: /** @type {const} */ ("resource") });
   return out;
+}
+
+/**
+ * Every address a stylesheet asks the browser for: url(...) and @import. Comments are removed first, because the
+ * banner Tailwind writes into the file holds a web address that nothing requests.
+ * @param {string} css
+ * @returns {string[]}
+ */
+export function cssUrls(css) {
+  const text = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  /** @type {string[]} */
+  const out = [];
+  for (const match of text.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s]*))\s*\)/gi)) {
+    out.push((match[1] ?? match[2] ?? match[3] ?? "").trim());
+  }
+  for (const match of text.matchAll(/@import\s+(?:"([^"]*)"|'([^']*)')/gi)) {
+    out.push((match[1] ?? match[2] ?? "").trim());
+  }
+  return out.filter((url) => url !== "" && !url.startsWith("#"));
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -317,36 +340,13 @@ export function checkDist(options = {}) {
   const siteOrigins = [...SITE_ORIGINS, ...(options.extraOrigins ?? [])];
 
   // ---- headers file --------------------------------------------------------------------------
+  // Compared with a fixed description of what may ship (scripts/lib/check-headers.mjs), not with a list of what must
+  // not. The launch build writes its own variant (scripts/lib/build-headers.mjs), and launch mode checks that one.
   const headersPath = join(distDir, "_headers");
-  const headersText = existsSync(headersPath) ? readText(headersPath) : "";
-  const rules = parseHeadersFile(headersText);
-  const catchAll = headersForPath(rules, "/any/page/");
-  const headerOf = (/** @type {string} */ name) =>
-    Object.entries(catchAll).find(([key]) => key.toLowerCase() === name.toLowerCase())?.[1];
-
-  const csp = headerOf("content-security-policy");
-  /** @type {Set<string>} */
-  const cspOrigins = new Set();
   if (existsSync(headersPath)) {
-    if (!csp) fail("headers", "_headers", "No Content-Security-Policy for /*.");
-    else {
-      for (const bad of ["'unsafe-inline'", "'unsafe-eval'", "data:"]) {
-        if (csp.includes(bad))
-          fail(
-            "headers",
-            "_headers",
-            `The CSP contains ${bad}. Report the violation instead of loosening the policy.`,
-          );
-      }
-      if (!csp.includes("frame-ancestors 'none'"))
-        fail("headers", "_headers", "The CSP must contain frame-ancestors 'none'.");
-      for (const origin of csp.match(/https?:\/\/[^\s;]+/g) ?? []) cspOrigins.add(origin);
+    for (const finding of checkHeadersFile(readText(headersPath), { launch })) {
+      fail(finding.rule, "_headers", finding.message);
     }
-    if (!/nosniff/i.test(headerOf("x-content-type-options") ?? ""))
-      fail("headers", "_headers", "X-Content-Type-Options: nosniff is missing.");
-    if (!headerOf("referrer-policy")) fail("headers", "_headers", "Referrer-Policy is missing.");
-    if (!headerOf("permissions-policy"))
-      fail("headers", "_headers", "Permissions-Policy is missing.");
   }
 
   // ---- every HTML and SVG file: inline code, draft markers, noindex, links -------------------
@@ -354,6 +354,8 @@ export function checkDist(options = {}) {
   const references = [];
   /** @type {Map<string, Set<string>>} */
   const idsByRoute = new Map();
+  /** @type {Array<{ route: string, sitekey: string | null }>} */
+  const contactForms = [];
 
   for (const file of files.filter((f) => f.endsWith(".html") || f.endsWith(".svg"))) {
     const where = rel(file);
@@ -361,6 +363,15 @@ export function checkDist(options = {}) {
     const text = readText(file);
     const tags = readTags(text);
     const route = isHtml ? (pages.find((p) => p.file === file)?.route ?? `/${where}`) : `/${where}`;
+
+    // A comment in the HTML is a note to whoever opens the source. The build strips them, so one that is left came
+    // from a template and may say more than it should (security gate G3).
+    if (isHtml && text.includes("<!--"))
+      fail(
+        "html-comment",
+        where,
+        `Contains an HTML comment: "${snippet(text, text.indexOf("<!--"))}". Move the note into the front matter of the component.`,
+      );
 
     // Security requirement: Astro must emit no inline code, so the strict CSP needs no hashes.
     for (const tag of tags) {
@@ -374,6 +385,14 @@ export function checkDist(options = {}) {
           );
         }
       }
+      if (tag.name === "meta" && (tag.attrs.get("http-equiv") ?? "").toLowerCase() === "refresh")
+        fail(
+          "meta-refresh",
+          where,
+          '<meta http-equiv="refresh"> sends the visitor on without a click. Remove it.',
+        );
+      if (isHtml && tag.attrs.has("data-contact-form"))
+        contactForms.push({ route, sitekey: tag.attrs.get("data-sitekey") ?? null });
       if (tag.name === "style")
         fail("inline-style", where, "<style> element. Use a stylesheet file or a class.");
       if (tag.attrs.has("style"))
@@ -433,6 +452,58 @@ export function checkDist(options = {}) {
 
     for (const tag of tags) {
       for (const { url, kind } of urlsOf(tag)) references.push({ from: route, url, kind });
+    }
+  }
+
+  // ---- scripts, stylesheets and source maps -------------------------------------------------------
+  for (const file of files) {
+    const where = rel(file);
+    if (file.endsWith(".map")) {
+      fail(
+        "source-map",
+        where,
+        "A source map ships the original source next to the build. Do not publish it.",
+      );
+      continue;
+    }
+    if (!/\.(css|m?js)$/.test(file)) continue;
+    const text = readText(file);
+    if (/sourceMappingURL/.test(text))
+      fail("source-map", where, "Contains a sourceMappingURL comment. Build without source maps.");
+    if (!file.endsWith(".css")) continue;
+    // A stylesheet loads only what the CSP allows: files of this site. url() and @import are references like any other.
+    for (const url of cssUrls(text)) {
+      if (/^(data|blob):/i.test(url))
+        fail(
+          "css-url",
+          where,
+          `url(${url.slice(0, 30)}...) is a ${url.split(":")[0]}: address. The CSP allows none, so it would not load.`,
+        );
+      else references.push({ from: `/${where}`, url, kind: "resource" });
+    }
+  }
+
+  // ---- launch mode: the contact form needs a real site key -----------------------------------------
+  if (launch) {
+    const home = contactForms.find((form) => form.route === "/");
+    if (!home) {
+      fail(
+        "launch-sitekey",
+        "/",
+        "The home page has no contact form (data-contact-form). The site's one way to reach Daniel is missing.",
+      );
+    } else if (!home.sitekey || home.sitekey.trim() === "") {
+      fail(
+        "launch-sitekey",
+        "/",
+        'The form has data-sitekey="". Every submit would say "Your request was not sent". Set PUBLIC_TURNSTILE_SITE_KEY in the Pages settings of both environments, before the build.',
+      );
+    } else if (/^[123]x0{10,}/.test(home.sitekey)) {
+      fail(
+        "launch-sitekey",
+        "/",
+        "The form has one of Cloudflare's dummy test site keys. They belong in tests only. Use the real key of the widget.",
+      );
     }
   }
 
@@ -519,7 +590,8 @@ export function checkDist(options = {}) {
     const sameSite = resolved.origin === base || siteOrigins.includes(resolved.origin);
     if (!sameSite) {
       // External. Resources must come from an origin the CSP names. Links are checked in launch mode.
-      const allowedByCsp = cspOrigins.has(resolved.origin);
+      // The list is fixed here and in the expected CSP. A host that a changed _headers added is not accepted.
+      const allowedByCsp = ALLOWED_THIRD_PARTY.includes(resolved.origin);
       if (ref.kind === "resource" && !allowedByCsp) {
         fail(
           "third-party",
@@ -593,17 +665,6 @@ export function checkDist(options = {}) {
     if (launch && !/^\s*Sitemap:/im.test(robots))
       fail("noindex", "robots.txt", "Launch mode, but robots.txt names no sitemap.");
   }
-  if (launch) {
-    const robotsHeader = headerOf("x-robots-tag") ?? "";
-    if (/noindex/i.test(robotsHeader)) {
-      fail(
-        "noindex",
-        "_headers",
-        "Launch mode, but /* still sends X-Robots-Tag: noindex. Generate _headers from PUBLIC_INDEXABLE (docs/security/threat-model-and-requirements.md section 2.2).",
-      );
-    }
-  }
-
   // ---- launch mode: placeholders and third-party origins -----------------------------------------
   if (launch) {
     const allowed = new Set([...siteOrigins, ...ALLOWED_THIRD_PARTY, ...NAMESPACE_ORIGINS]);

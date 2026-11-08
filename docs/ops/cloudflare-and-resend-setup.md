@@ -2,7 +2,7 @@
 
 Owner: `devops-engineer`, for Daniel. Written 2026-11-08 and updated the same day after the security review. Plan reference: `docs/plan/work-breakdown.md` section 10 and ADR 0001. Security requirements followed: `docs/security/threat-model-and-requirements.md` sections 4 to 6 and `docs/security/review-setup-and-ci-2026-11-08.md`.
 
-Review status: `security-engineer` reviewed the first version. Findings S2, S3, S6, S7, S9, S10, S12, S13 and S14 are applied below. S5 and S8 are not done and are listed under "Open items" at the end. The review says Daniel can follow this guide once the repository question is decided (Part 0, step 0.1) and S4 is in place (`.npmrc` has `ignore-scripts=true`, so it is). Appendix A also needs S8 and a read of Simply's DMARC policy first.
+Review status: `security-engineer` reviewed the first version. Findings S2, S3, S6, S7, S9, S10, S12, S13 and S14 are applied below. S5 and S8 are done in the code (see "Open items" at the end). The review says Daniel can follow this guide once the repository question is decided (Part 0, step 0.1) and S4 is in place (`.npmrc` has `ignore-scripts=true`, so it is). Appendix A also needs a read of Simply's DMARC policy first.
 
 ## What this gets you
 
@@ -370,8 +370,8 @@ A routine rotation with no leak is gentler. Section 5 of the threat model says: 
 
 Not done yet. Each one changes `package.json`, the build or a decision, so it waits for the right person.
 
-1. Lighthouse tool in the lockfile (review S5). Owner: `frontend-developer`. The Lighthouse job runs `npx --yes @lhci/cli@0.15.1`, so its sub-packages are not locked. Install scripts are already off through `.npmrc`. Fix: add `@lhci/cli` to the dev dependencies and change the CI line to `npx lhci autorun --config=./lighthouserc.json`.
-2. Headers at launch (review S8). Owner: `frontend-developer`. Nothing writes `dist/_headers` for `PUBLIC_INDEXABLE=true`, so A7 step 1 fails. The build must drop the global `noindex` line and add `noindex` rules for `https://:project.pages.dev/*` and `https://:version.:project.pages.dev/*`.
+1. Lighthouse tool in the lockfile (review S5). Done on 8 November 2026 by `frontend-developer`: `@lhci/cli` 0.15.1 is a dev dependency, its packages are in the lockfile, and CI runs `npx lhci autorun --config=./lighthouserc.json` with nothing fetched. The full `npm audit` now lists advisories in that tool's packages (dev only). `npm audit --omit=dev`, which CI gates on, stays at 0.
+2. Headers at launch (review S8). Done on 8 November 2026 by `frontend-developer`: the build writes `dist/_headers` (`scripts/lib/build-headers.mjs`). Without `PUBLIC_INDEXABLE` it is a copy of `public/_headers`. With `PUBLIC_INDEXABLE=true` it drops the global `noindex` line and adds `noindex` rules for `https://:project.pages.dev/*` and `https://:version.:project.pages.dev/*`. `npm run check:dist` validates the variant that was built.
 3. Simply's DMARC policy is unread (threat model section 4, check 6). It is needed before A6. Owner: an assistant, through the connector or a DNS lookup.
 
 ---
@@ -481,7 +481,7 @@ Afterwards an assistant changes the sender address in the contact function to an
 
 ## A7. Turn the site on for search engines (when Daniel says go)
 
-1. First an assistant runs `PUBLIC_INDEXABLE=true npm run build` and then `npm run check:dist` on `main`. It must pass. Launch mode rejects any leftover `[TO CONFIRM]`. This fails until open item 2 is done.
+1. First an assistant runs `PUBLIC_INDEXABLE=true npm run build` and then `npm run check:dist` on `main`. It must pass. Launch mode rejects any leftover `[TO CONFIRM]`, and an empty or test Turnstile site key (`PUBLIC_TURNSTILE_SITE_KEY` has to be set in the Production environment before the build).
 2. In Pages, add `PUBLIC_INDEXABLE` with the value `true` on the **Production** environment only, never on Preview. Retry the production deployment.
 3. Check the headers with `curl -sI`. `https://normek-web.pages.dev` must still send `X-Robots-Tag: noindex`. So must a commit-hash address from the **Deployments** tab, such as `https://<hash>.normek-web.pages.dev`. `https://www.normek.dk` must not send it.
 

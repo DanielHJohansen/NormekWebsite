@@ -25,7 +25,7 @@ form:
     empty: Enter your company name.
   message:
     label: What do you need?
-    help: "Product, where it is used, board stage. No confidential details yet: files follow a non-disclosure agreement (NDA)."
+    help: "Product, where it is used, board stage. No confidential details yet: files follow a non-disclosure agreement (NDA). Up to 2,000 characters."
     tooShort: Add a sentence or two on the product and what you need (at least 20 characters).
     tooLong: Your message is too long. Shorten it and send again.
   honeypot: Website. Leave this field empty.

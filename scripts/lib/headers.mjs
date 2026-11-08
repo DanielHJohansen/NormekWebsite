@@ -92,3 +92,48 @@ export function forLocalHttp(headers) {
   }
   return out;
 }
+
+/**
+ * @typedef {{ pattern: string, headers: Array<[string, string]>, detach: string[], line: number }} StrictRule
+ */
+
+/**
+ * Reads every rule of a `_headers` file for the check that guards it: host rules (https://...) are kept, the
+ * `! Name` detach lines are kept as such, and a line that makes no sense is reported instead of skipped or thrown.
+ * parseHeadersFile above is for pages served locally. This one is for deciding whether the file may ship.
+ * @param {string} text
+ * @returns {{ rules: StrictRule[], problems: string[] }}
+ */
+export function readHeadersStrict(text) {
+  /** @type {StrictRule[]} */
+  const rules = [];
+  /** @type {string[]} */
+  const problems = [];
+  /** @type {StrictRule | undefined} */
+  let current;
+  text.split(/\r?\n/).forEach((raw, index) => {
+    const trimmed = raw.trim();
+    const line = index + 1;
+    if (trimmed === "" || trimmed.startsWith("#")) return;
+    if (!/^\s/.test(raw)) {
+      current = { pattern: trimmed, headers: [], detach: [], line };
+      rules.push(current);
+      return;
+    }
+    if (!current) {
+      problems.push(`Line ${line}: a header line before any path rule.`);
+      return;
+    }
+    if (trimmed.startsWith("!")) {
+      current.detach.push(trimmed.slice(1).trim());
+      return;
+    }
+    const colon = trimmed.indexOf(":");
+    if (colon <= 0) {
+      problems.push(`Line ${line}: "${trimmed.slice(0, 60)}" is not "Name: value".`);
+      return;
+    }
+    current.headers.push([trimmed.slice(0, colon).trim(), trimmed.slice(colon + 1).trim()]);
+  });
+  return { rules, problems };
+}

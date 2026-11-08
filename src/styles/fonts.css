@@ -40,3 +40,50 @@
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+/*
+ * Fallback faces (QA-04 of the pre-launch report). While a web font is on its way the text shows in a system font.
+ * Plex Sans is wider than the generic sans and Barlow is narrower, so a late font moved the lines: layout shift 0.146
+ * at 1280 px and 0.027 at 390 px with the fonts two seconds late, against a budget of 0.05. Each face below is a
+ * system font that is given the size and the vertical metrics of its web font, so the swap changes the shapes of the
+ * letters and nothing else. They are listed second in --font-display, --font-sans and --font-mono (tokens.css).
+ *
+ * How the numbers were derived, on 8 November 2026 (fontkit in a scratch folder outside the repo, nothing in package.json):
+ *  - size-adjust: the advance width of a sample text in the web font file of public/fonts, divided by the width of the
+ *    same text in the fallback font, with kerning. The sample is the text of the four built pages: the headings for
+ *    the display face, the paragraphs and list items for the sans face, the eyebrows, captions and tags for the mono
+ *    face. The fallback fonts are Liberation Sans, which has the advance widths of Arial, and Liberation Mono, which has
+ *    those of Courier New. A machine with Arial or Courier New gets the same numbers.
+ *  - ascent-override, descent-override and line-gap-override: the hhea ascent, descent and line gap of the web font
+ *    (they equal its typographic metrics, and all three files set USE_TYPO_METRICS) divided by the units per em and by
+ *    size-adjust. That is the Capsize formula, because the overrides apply before the size is adjusted.
+ * Barlow is the 600 face and its fallback is regular weight, because body has font-synthesis: none (no faux bold).
+ * Redo the numbers when a font file changes or the copy changes a lot. A few percent of drift is harmless.
+ * A machine with none of the local fonts (Android has Roboto only) skips the face and uses the next family, as before.
+ */
+@font-face {
+  font-family: "Barlow Semi Condensed Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 88.28%;
+  ascent-override: 113.28%;
+  descent-override: 22.66%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 100.34%;
+  ascent-override: 102.16%;
+  descent-override: 27.41%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono Fallback";
+  src: local("Courier New"), local("Liberation Mono"), local("Cousine");
+  size-adjust: 99.98%;
+  ascent-override: 102.52%;
+  descent-override: 27.5%;
+  line-gap-override: 0%;
+}

@@ -72,7 +72,7 @@ Keeping `brand/logo/source` out: it is not an npm workspace, `tsconfig.json` inc
 |---|---|
 | First-party JavaScript | 10 KB gzip on `/`, 0 KB on `/privacy/` and 404 |
 | CSS | 30 KB gzip |
-| Fonts | at most 2 families, self-hosted woff2, 100 KB total, metric-matched fallbacks |
+| Fonts | 3 families (Barlow Semi Condensed 600, IBM Plex Sans, IBM Plex Mono 400, ADR 0001 A11), self-hosted woff2, 100 KB total (83.4 KB shipped), metric-matched fallbacks |
 | Hero image | 150 KB, AVIF or WebP with `srcset` |
 | Page weight before interaction | 500 KB |
 | Largest contentful paint (mobile, simulated 4G) | under 2.0 s |

@@ -32,8 +32,8 @@ interface Form {
 interface OpenOptions {
   /** False leaves the form without a site key, as in the preview before the Cloudflare setup. */
   siteKey?: boolean;
-  /** "blocked" makes the Turnstile script fail to load. */
-  turnstile?: "works" | "blocked";
+  /** "blocked" makes the Turnstile script fail to load, "render-throws" gives a widget whose render throws. */
+  turnstile?: "works" | "blocked" | "render-throws";
 }
 
 /**
@@ -537,14 +537,86 @@ test.describe("the person check", () => {
     await expect.poll(() => requested.length).toBe(1);
   });
 
-  test("a script that cannot load shows the person check warning on submit", async ({ page }) => {
+  test("a script that cannot load fails at once on every submit with the send failed text, and is asked for again each time (QA-01)", async ({
+    page,
+  }) => {
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
     const f = await open(page, { turnstile: "blocked" });
     await fillForm(page);
-    await f.submit.click();
-    await expect(f.statusRegion).toContainText(await copyOf(page, "person-check"));
-    await expect(f.field("message")).toHaveValue(VALID.message);
+
+    for (let attempt = 1; attempt <= 4; attempt++) {
+      const before = Date.now();
+      await f.submit.click();
+      // The old behaviour was a quick failure on the first submit and 15 seconds on "Sending..." after that.
+      await expect(f.alertRegion).toContainText(await copyOf(page, "failed"), { timeout: 3000 });
+      expect(Date.now() - before, "attempt " + attempt).toBeLessThan(3500);
+      await expect(f.submit).not.toHaveAttribute("aria-disabled", /.*/);
+      await expect(f.form).not.toHaveAttribute("aria-busy", /.*/);
+      await expect(f.statusRegion).toBeEmpty();
+      await expect(f.field("message")).toHaveValue(VALID.message);
+    }
     expect(sent, "nothing is sent without a token").toEqual([]);
+    // The first use of the form asked for the script, and every submit asked again.
+    expect(f.requested.length).toBeGreaterThanOrEqual(5);
+    // A failed script leaves no element behind, so a retry is a fresh request and the head does not fill up.
+    await expect(page.locator('script[src*="challenges.cloudflare.com"]')).toHaveCount(0);
+  });
+
+  test("a widget that throws when it starts fails at once on every submit too (G9)", async ({
+    page,
+  }) => {
+    const sent = await mockContact(page, { status: 200, json: { ok: true } });
+    const f = await open(page, { turnstile: "render-throws" });
+    await fillForm(page);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => (window as unknown as { __turnstileRenders: number }).__turnstileRenders,
+        ),
+      )
+      .toBe(1);
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const before = Date.now();
+      await f.submit.click();
+      await expect(f.alertRegion).toContainText(await copyOf(page, "failed"), { timeout: 3000 });
+      expect(Date.now() - before, "attempt " + attempt).toBeLessThan(3500);
+      await expect(f.submit).not.toHaveAttribute("aria-disabled", /.*/);
+    }
+    // Each submit tried to start the widget again, and the script was loaded once.
+    const renders = await page.evaluate(
+      () => (window as unknown as { __turnstileRenders: number }).__turnstileRenders,
+    );
+    expect(renders).toBeGreaterThanOrEqual(4);
+    expect(f.requested).toHaveLength(1);
+    expect(sent).toEqual([]);
+  });
+
+  test("a script that was blocked and then is allowed works on the next submit", async ({
+    page,
+  }) => {
+    const sent = await mockContact(page, { status: 200, json: { ok: true } });
+    let allowed = false;
+    await useSiteKey(page);
+    await page.route("https://challenges.cloudflare.com/turnstile/v0/api.js*", (route) =>
+      allowed
+        ? route.fulfill({
+            contentType: "application/javascript",
+            body: "window.turnstile={render(c,o){setTimeout(()=>o.callback('LATE-TOKEN'),5);return 'w'},reset(){},remove(){}};",
+          })
+        : route.abort("blockedbyclient"),
+    );
+    await page.goto("/");
+    const submit = page.locator("#contact-submit");
+    await expect(submit).toBeEnabled();
+    await fillForm(page);
+    await submit.click();
+    await expect(page.locator("#contact-notice")).toContainText(await copyOf(page, "failed"));
+
+    allowed = true;
+    await submit.click();
+    await page.waitForURL("**/thanks/");
+    expect(sent[0]?.fields.get("cf-turnstile-response")).toBe("LATE-TOKEN");
   });
 
   test("a widget error shows the person check warning on submit", async ({ page }) => {
@@ -575,6 +647,101 @@ test.describe("the person check", () => {
     await expect(f.submit).not.toHaveAttribute("aria-disabled", /.*/);
     expect(sent).toEqual([]);
     expect(f.requested, "no site key, so the script is never asked for").toEqual([]);
+  });
+});
+
+test.describe("the notice regions (QA-02)", () => {
+  test("are in the accessibility tree before any text is put in them, so a notice is announced", async ({
+    page,
+  }) => {
+    const f = await open(page);
+    // Playwright leaves out what the accessibility tree leaves out, so display:none would give a count of 0.
+    await expect(page.getByRole("alert")).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveCount(1);
+    for (const region of [f.alertRegion, f.statusRegion]) {
+      await expect(region).toBeEmpty();
+      const look = await region.evaluate((element) => {
+        const style = getComputedStyle(element);
+        const box = element.getBoundingClientRect();
+        return {
+          display: style.display,
+          visibility: style.visibility,
+          position: style.position,
+          width: box.width,
+          height: box.height,
+        };
+      });
+      expect(look.display).not.toBe("none");
+      expect(look.visibility).toBe("visible");
+      // Out of sight and out of the flow: one pixel, absolutely placed.
+      expect(look.position).toBe("absolute");
+      expect(look.width).toBeLessThanOrEqual(1);
+      expect(look.height).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test("take no room while empty, so the layout is the one the design has", async ({ page }) => {
+    await open(page);
+    // Message block, then the empty person check container, then the button, in a column with a 20 px gap.
+    // The two regions are out of the flow, so they add no gap of their own: 20 + 0 + 20.
+    const distance = await page.evaluate(() => {
+      const block = document
+        .querySelector("#contact-message")
+        ?.parentElement?.getBoundingClientRect();
+      const button = document.querySelector("#contact-submit")?.getBoundingClientRect();
+      return block && button ? Math.round(button.top - block.bottom) : -1;
+    });
+    expect(distance).toBe(40);
+  });
+
+  test("show their text, with the role of the notice, when it arrives", async ({ page }) => {
+    await mockContact(page, { status: 500, json: { ok: false, error: "internal" } });
+    const f = await open(page);
+    await fillForm(page);
+    await f.submit.click();
+    await expect(f.alertRegion).toBeVisible();
+    await expect(page.getByRole("alert")).toContainText(await copyOf(page, "failed"));
+    const box = await f.alertRegion.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThan(20);
+  });
+});
+
+test.describe("the notices at 200 percent text on a phone (QA-07)", () => {
+  const answers = [
+    ["the send failed notice", { status: 500, json: { ok: false, error: "internal" } }],
+    ["the person check notice", { status: 403, json: { ok: false, error: "turnstile" } }],
+  ] as const;
+
+  for (const [name, answer] of answers) {
+    test(`${name} does not push the page wider`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== "phone-390", "A phone width test.");
+      await mockContact(page, answer);
+      const f = await open(page);
+      await fillForm(page);
+      await f.submit.click();
+      await expect(page.locator("#contact-notice > *, #contact-warning > *").first()).toBeVisible();
+      await page.evaluate(() => {
+        document.documentElement.style.fontSize = "200%";
+      });
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
+
+  test("the error summary does not push the page wider either", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "phone-390", "A phone width test.");
+    const f = await open(page);
+    await f.submit.click();
+    await expect(f.summary).toBeVisible();
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = "200%";
+    });
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
   });
 });
 

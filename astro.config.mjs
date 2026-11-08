@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
+import { headersIntegration } from "./scripts/lib/build-headers.mjs";
 
 // Build flags. See .env.example.
 //   PUBLIC_INDEXABLE=true  launch mode: no noindex meta tag, permissive robots.txt.
@@ -21,6 +22,14 @@ const site = process.env.SITE_URL ?? "https://www.normek.dk";
 
 export default defineConfig({
   site,
+  // dist/_headers is written when the build is done: a copy of public/_headers, or at launch the variant without the
+  // global noindex and with the pages.dev host rules (scripts/lib/build-headers.mjs, security gate G2).
+  integrations: [
+    headersIntegration({
+      source: new URL("./public/_headers", import.meta.url),
+      indexable: flag(process.env.PUBLIC_INDEXABLE),
+    }),
+  ],
   // Pure static output. No adapter: the contact form is a Pages Function in functions/ (ADR 0001, A3).
   output: "static",
   trailingSlash: "always",

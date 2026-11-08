@@ -37,7 +37,7 @@ const { nav, lang, draft = false } = Astro.props;
 
     <nav aria-label="Main" class="flex items-center gap-8">
       {nav.length > 0 && (
-        <ul class="hidden items-center gap-8 lg:flex">
+        <ul role="list" class="hidden items-center gap-8 lg:flex">
           {nav.map((link) => (
             <li>
               <a href={link.href} class="nav-link">

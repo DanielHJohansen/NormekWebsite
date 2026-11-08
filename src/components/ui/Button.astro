@@ -4,6 +4,8 @@
  * Signal fails contrast. The secondary button is a 2 px outline that fills on hover. On an Ink band the same
  * classes follow the swapped tokens. Radius 2 px, never chamfered. One primary Signal fill per view.
  * Heights: 52 px for the main buttons, 44 px (size "sm") in the header. No transition: changes are instant.
+ * The primary button has a 2 px transparent border. In forced colours (Windows High Contrast) the fill is replaced
+ * and the border is drawn in the system text colour, so the button still reads as a button (QA-03).
  *
  * It renders a link by default. Pass as="button" for a form button.
  * A sending button keeps its focus, so it carries aria-disabled and never the disabled attribute.
@@ -34,7 +36,7 @@ const {
 // cursor and no hover change. The disabled attribute is only the state before the script starts (not-allowed cursor).
 const variants = {
   primary:
-    "bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-hover active:shadow-[inset_0_0_0_2px_var(--color-on-accent)] aria-disabled:cursor-progress aria-disabled:bg-paper-200 aria-disabled:text-muted aria-disabled:hover:bg-paper-200 aria-disabled:active:shadow-none disabled:cursor-not-allowed disabled:bg-paper-200 disabled:text-muted disabled:hover:bg-paper-200 disabled:active:shadow-none",
+    "border-2 border-transparent bg-accent text-on-accent hover:bg-accent-hover active:bg-accent-hover active:shadow-[inset_0_0_0_2px_var(--color-on-accent)] aria-disabled:cursor-progress aria-disabled:bg-paper-200 aria-disabled:text-muted aria-disabled:hover:bg-paper-200 aria-disabled:active:shadow-none disabled:cursor-not-allowed disabled:bg-paper-200 disabled:text-muted disabled:hover:bg-paper-200 disabled:active:shadow-none",
   secondary:
     "border-2 border-fg text-fg hover:bg-fg hover:text-bg active:bg-fg active:text-bg active:shadow-[inset_0_0_0_2px_var(--color-bg)]",
 } as const;

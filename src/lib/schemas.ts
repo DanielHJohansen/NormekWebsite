@@ -62,7 +62,10 @@ const heroSection = z.object({
   caption: text,
   /** Names the parts of the drawing from the top. The drawing itself carries no text, so it stays readable when scaled. */
   legend: text,
-  /** The description of the drawing for people who cannot see it. The caption is not repeated in it. */
+  /**
+   * The description of the drawing for people who cannot see it, about 130 characters. The caption and the legend say the
+   * rest and are read too, so none of it is repeated here (QA-10).
+   */
   figureAlt: text,
 });
 

@@ -54,16 +54,32 @@ export async function useSiteKey(page: Page, key: string = DUMMY_SITE_KEY): Prom
   }, key);
 }
 
-/** Serves the fake widget, or makes the script fail to load. Returns the addresses asked for. */
+/** A widget whose render always throws, as it does for a site key it refuses. It counts the tries. */
+const FAKE_TURNSTILE_THROWS = `
+(() => {
+  window.__turnstileRenders = 0;
+  window.turnstile = {
+    render() { window.__turnstileRenders += 1; throw new Error('render refused'); },
+    reset() {},
+    remove() {},
+  };
+})();
+`;
+
+/**
+ * Serves the fake widget, makes the script fail to load, or serves a widget whose render throws.
+ * Returns the addresses asked for.
+ */
 export async function mockTurnstile(
   page: Page,
-  mode: "works" | "blocked" = "works",
+  mode: "works" | "blocked" | "render-throws" = "works",
 ): Promise<string[]> {
   const requested: string[] = [];
   await page.route(TURNSTILE_URL, async (route) => {
     requested.push(route.request().url());
     if (mode === "blocked") return route.abort("blockedbyclient");
-    return route.fulfill({ contentType: "application/javascript", body: FAKE_TURNSTILE });
+    const body = mode === "render-throws" ? FAKE_TURNSTILE_THROWS : FAKE_TURNSTILE;
+    return route.fulfill({ contentType: "application/javascript", body });
   });
   return requested;
 }

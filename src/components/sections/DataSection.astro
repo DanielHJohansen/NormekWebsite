@@ -20,7 +20,7 @@ const { data, draft = false } = Astro.props;
   <h2 id={`${data.id}-heading`} class="mb-10 text-2xl">
     <Inline text={data.heading} />
   </h2>
-  <ul class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-x-14">
+  <ul role="list" class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-x-14">
     {data.items.map((item) => (
       <li class="max-w-measure border-t border-border py-5 text-muted">
         <Inline text={item} />

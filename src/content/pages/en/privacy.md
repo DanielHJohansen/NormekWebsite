@@ -28,7 +28,7 @@ There is no separate inquiry database. Copies sit in my mailbox and, briefly, Re
 
 ## What I collect
 
-- **What you type:** name, work email address, company and message [TO CONFIRM against the final form, incl. campaign code].
+- **What you type:** name, work email address, company and message [TO CONFIRM].
 - **Bot check:** Turnstile receives your IP address and browser signals to decide whether you are a person. I get only the result.
 - **Any page visit:** Cloudflare, the host, processes your IP address and request details (page, time, browser) to deliver and protect it [TO CONFIRM: function logs off].
 - **Direct email:** your address, name and what you write.
@@ -59,14 +59,14 @@ Cloudflare and Resend are US companies, and Cloudflare serves pages from servers
 
 ## How long I keep it
 
-- **Inquiries in my mailbox:** [12 months, TO CONFIRM: Daniel must follow it] after the last message, then deleted.
+- **Inquiries in my mailbox:** [TO CONFIRM] after the last message, then deleted.
 - **If we work together:** accounting records for 5 years after the financial year ends (Danish Bookkeeping Act, section 12), project material as the contract says.
 - **Resend's sending log:** [TO CONFIRM period, and whether it stores the message text].
 - **Cloudflare logs and Turnstile data:** under Cloudflare's own terms [TO CONFIRM period, link].
 
 ## Cookies and the bot check
 
-This site sets no cookies of its own and has no analytics, advertising or social media trackers [TO CONFIRM by browser test, including local and session storage].
+This site sets no cookies of its own and has no analytics, advertising or social media trackers [TO CONFIRM].
 
 The form loads Cloudflare Turnstile from challenges.cloudflare.com [TO CONFIRM: on first use of the form]. Cloudflare says it sets a cookie only if an optional pre-clearance feature is on, which I do not use. Whether it stores anything else in your browser is [TO CONFIRM by test].
 
