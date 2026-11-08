@@ -10,6 +10,7 @@ import {
   json,
   neverAnswers,
   readJson,
+  redirectWith,
   SITEVERIFY_URL,
   TURNSTILE_PASS,
   TURNSTILE_SECRET,
@@ -185,6 +186,10 @@ describe("CF-08 Turnstile cannot give a usable answer", () => {
     ["HTTP 502 with a passing body", () => json(TURNSTILE_PASS, 502)],
     ["HTTP 503 with a passing body", () => json(TURNSTILE_PASS, 503)],
     ["HTTP 201 with a passing body", () => json(TURNSTILE_PASS, 201)],
+    ...[301, 302, 307, 308].map((status): [string, () => Response] => [
+      `HTTP ${status}, a redirect, with a passing body`,
+      () => redirectWith(TURNSTILE_PASS, status),
+    ]),
     ["HTTP 204 and no body", () => new Response(null, { status: 204 })],
     ["text that is not JSON", () => new Response("not json", { status: 200 })],
     ["an HTML page", () => new Response("<html><body>Error</body></html>", { status: 200 })],
@@ -274,6 +279,37 @@ describe("CF-08 Turnstile cannot give a usable answer", () => {
     expect(h.resendCalls()).toEqual([]);
   });
 
+  it("answers 503 after 5 seconds when a 200 answer starts and its body never ends", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    // The status line arrives at once and looks fine. The body stops after a few bytes and never closes.
+    h.setSiteverify(
+      () =>
+        new Response(
+          new ReadableStream<Uint8Array>({
+            start(controller) {
+              controller.enqueue(new TextEncoder().encode('{"success": tr'));
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+    );
+    let settled = false;
+    const pending = h.send().then((response) => {
+      settled = true;
+      return response;
+    });
+
+    await until(() => h.siteverifyCalls().length === 1);
+    await vi.advanceTimersByTimeAsync(4999);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+
+    const response = await pending;
+    expect(response.status).toBe(503);
+    expect(await readJson(response)).toEqual({ ok: false, error: "turnstile_unavailable" });
+    expect(h.resendCalls()).toEqual([]);
+  });
+
   it("answers 403 or 503 for every way it can fail, and never sends mail", async () => {
     const replies: (() => Response | Promise<Response>)[] = [
       () => json({ success: false }),
@@ -334,18 +370,25 @@ describe("CF-08 the secret", () => {
       expect(h.calls).toEqual([]);
     });
 
-    it("also refuses it on a host that only looks like localhost", async () => {
-      const lookalike = "http://localhost.evil.example";
+    it.each([
+      ["a host that starts like localhost", "http://localhost.evil.example"],
+      ["a name that ends in localhost", "http://evil-localhost"],
+      ["localhost with a trailing dot", "http://localhost."],
+      ["another address in 127.0.0.0/8", "http://127.0.0.2"],
+      ["the unspecified address", "http://0.0.0.0"],
+    ])("also refuses it at %s", async (_label, host) => {
+      const url = `${host}:8788/api/contact`;
+      // Control: an ordinary secret is served at this host, so only the test secret guard can refuse below.
+      expect((await h.send({ url })).status).toBe(200);
+
+      const before = h.calls.length;
       const response = await h.send({
-        url: `${lookalike}/api/contact`,
-        origin: lookalike,
-        env: {
-          ALLOWED_ORIGINS: lookalike,
-          TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
-        },
+        url,
+        env: { TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA" },
       });
       expect(response.status).toBe(500);
-      expect(h.calls).toEqual([]);
+      expect(await readJson(response)).toEqual({ ok: false, error: "config" });
+      expect(h.calls.length).toBe(before);
     });
 
     it("accepts a secret that only contains the test prefix further in", async () => {

@@ -112,6 +112,17 @@ export function json(body: unknown, status = 200): Response {
   });
 }
 
+/**
+ * A redirect answer that carries a body which would pass if anyone read it, so only its status
+ * can make the function refuse it. The function never follows a redirect (redirect: "manual").
+ */
+export function redirectWith(body: unknown, status: number): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json", location: "https://example.invalid/elsewhere" },
+  });
+}
+
 /** What Turnstile answers for a real person on the right page. */
 export const TURNSTILE_PASS = {
   success: true,

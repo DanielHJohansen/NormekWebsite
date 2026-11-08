@@ -6,18 +6,25 @@ import { describe, expect, it } from "vitest";
 import {
   FIELD_NAMES,
   LIMITS,
+  MAX_BODY_BYTES,
   MIN_MESSAGE_LENGTH,
   REQUEST_TIMEOUT_MS,
   encodeBody,
+  encodedByteLength,
   errorForServerField,
+  fitsBodyLimit,
   interpretResponse,
   messageKey,
   normalizeValue,
   validateAll,
   validateField,
+  validateFieldIn,
+  type FieldName,
   type FieldValues,
 } from "../../src/lib/contact-form";
-import { isValidEmail } from "../../functions/_lib/validate";
+import type { FormField } from "../../functions/_lib/form";
+import { MAX_BODY_BYTES as SERVER_MAX_BODY_BYTES } from "../../functions/_lib/form";
+import { isValidEmail, validateInquiry } from "../../functions/_lib/validate";
 
 const goodMessage = "I need a housing for a sensor board with an antenna.";
 
@@ -31,14 +38,14 @@ const good: FieldValues = {
 describe("normalizeValue", () => {
   it("trims and turns the Unicode form into NFC", () => {
     expect(normalizeValue("name", "  Ada  ")).toBe("Ada");
-    expect(normalizeValue("name", "é")).toBe("é");
-    expect(Array.from(normalizeValue("name", "é"))).toHaveLength(1);
+    expect(normalizeValue("name", "e\u0301")).toBe("\u00e9");
+    expect(Array.from(normalizeValue("name", "e\u0301"))).toHaveLength(1);
   });
 
   it("replaces a control character with a space, so a stray tab from a paste does not fail a send", () => {
     expect(normalizeValue("name", "Ada\tLovelace")).toBe("Ada Lovelace");
     expect(normalizeValue("company", "A\u0000B\u0007C\u007fD")).toBe("A B C D");
-    expect(normalizeValue("name", "a b c")).toBe("a b c");
+    expect(normalizeValue("name", "a\u2028b\u2029c")).toBe("a b c");
   });
 
   it("keeps the line breaks and tabs of a message, and turns CRLF and CR into LF", () => {
@@ -46,7 +53,7 @@ describe("normalizeValue", () => {
   });
 
   it("still replaces the other control characters in a message", () => {
-    expect(normalizeValue("message", "a\u0000b\u001bc\u007fd e")).toBe("a b c d e");
+    expect(normalizeValue("message", "a\u0000b\u001bc\u007fd\u2028e")).toBe("a b c d e");
   });
 
   it("turns a line break in a single line field into a space", () => {
@@ -56,6 +63,229 @@ describe("normalizeValue", () => {
 
   it("does not change an ordinary value", () => {
     expect(normalizeValue("name", "Søren Æbelø")).toBe("Søren Æbelø");
+  });
+});
+
+/** Characters are built from code points, so the source holds no invisible characters. */
+const char = (codePoint: number): string => String.fromCodePoint(codePoint);
+const range = (from: number, to: number): number[] =>
+  Array.from({ length: to - from + 1 }, (_unused, index) => from + index);
+
+/** What the function refuses besides the C0 controls (F2 of the security review). */
+const C1 = range(0x80, 0x9f);
+const BIDI = [...range(0x202a, 0x202e), ...range(0x2066, 0x2069)];
+
+describe("normalizeValue: C1 controls and bidi controls (F2)", () => {
+  const FIELDS_WITH_TEXT = ["name", "company"] as const;
+
+  it("replaces every C1 control, DEL and every bidi control with a space in all four fields", () => {
+    for (const codePoint of [0x7f, ...C1, ...BIDI]) {
+      const hit = char(codePoint);
+      const label = "U+" + codePoint.toString(16).toUpperCase();
+      for (const field of FIELD_NAMES) {
+        const out = normalizeValue(field, "Ab" + hit + "Cd");
+        expect(out, field + " " + label).toBe("Ab Cd");
+      }
+    }
+  });
+
+  it("keeps them out of a message too, which only keeps its line breaks and tabs", () => {
+    const hits = [0x85, 0x202e, 0x2066].map(char).join("");
+    expect(normalizeValue("message", "one\n" + hits + "two\tthree")).toBe("one\n   two\tthree");
+  });
+
+  it("leaves a value that is nothing else empty, so the field gets its error", () => {
+    const only = [...C1, ...BIDI].map(char).join("");
+    for (const field of FIELDS_WITH_TEXT) {
+      expect(normalizeValue(field, only)).toBe("");
+      expect(validateField(field, only)).toBe("empty");
+    }
+    expect(validateField("email", only)).toBe("empty");
+    expect(validateField("message", only)).toBe("too-short");
+  });
+
+  it("makes an address that held one invalid, so it is not sent as it was typed", () => {
+    for (const codePoint of [0x85, 0x9f, 0x202e, 0x2066]) {
+      expect(validateField("email", "ada" + char(codePoint) + "@example.dk")).toBe("invalid");
+      expect(validateField("email", "ada@exam" + char(codePoint) + "ple.dk")).toBe("invalid");
+    }
+  });
+
+  it("does not let one reach the request body", () => {
+    const hits = [0x85, 0x202e, 0x2066, 0x2069].map(char).join("");
+    const body = new URLSearchParams(
+      encodeBody(
+        {
+          name: "Ada" + hits,
+          email: "ada@example.dk",
+          company: hits + "Co",
+          message: "x".repeat(20) + hits,
+        },
+        "",
+        "t",
+      ),
+    );
+    for (const field of FIELD_NAMES) {
+      const value = body.get(field) ?? "";
+      expect(
+        Array.from(value).some((c) => BIDI.includes(c.codePointAt(0) ?? 0)),
+        field,
+      ).toBe(false);
+      expect(
+        Array.from(value).some((c) => C1.includes(c.codePointAt(0) ?? 0)),
+        field,
+      ).toBe(false);
+    }
+  });
+
+  it("keeps the characters the function accepts, such as direction marks, joiners and letters", () => {
+    const keep = [
+      0x00a0, // no-break space
+      0x200c, // zero width non-joiner
+      0x200d, // zero width joiner
+      0x200e, // left-to-right mark
+      0x200f, // right-to-left mark
+      0xfeff, // byte order mark
+      0x00e6, // ae
+      0x05d0, // Hebrew alef
+      0x0627, // Arabic alef
+      0x6f22, // a Chinese character
+      0x1f600, // an emoji
+    ];
+    for (const codePoint of keep) {
+      const hit = char(codePoint);
+      for (const field of FIELD_NAMES) {
+        expect(
+          Array.from(normalizeValue(field, "Ab" + hit + "Cd")),
+          "U+" + codePoint.toString(16),
+        ).toContain(hit);
+      }
+    }
+  });
+
+  it("never sends the function a character it refuses, for every character in the likely ranges", () => {
+    // A sweep over code points: whatever the browser sends, the function must not refuse it for a character.
+    const sweep = [
+      ...range(0x0000, 0x02ff),
+      ...range(0x2000, 0x206f),
+      ...range(0xfe00, 0xfe0f),
+      ...range(0xfff0, 0xffff),
+      0x1f600,
+      0xe0001,
+    ];
+    const mismatches: string[] = [];
+    for (const codePoint of sweep) {
+      const hit = char(codePoint);
+      const values: FieldValues = {
+        name: "Ab" + hit + "Cd",
+        email: "ada@example.dk",
+        company: "Ab" + hit + "Cd",
+        message: "x".repeat(20) + hit + "yz",
+      };
+      const cleaned = Object.fromEntries(
+        FIELD_NAMES.map((field) => [field, normalizeValue(field, values[field])]),
+      ) as Record<FieldName, string>;
+      const answer = validateInquiry(
+        new Map<FormField, string>(FIELD_NAMES.map((field) => [field, cleaned[field]])),
+      );
+      if (answer.ok) continue;
+      for (const field of answer.fields) {
+        // The function refused a value that the browser's own check let through: the two rules differ.
+        if (validateField(field, cleaned[field]) === null) {
+          mismatches.push(field + " U+" + codePoint.toString(16).toUpperCase());
+        }
+      }
+    }
+    expect(mismatches).toEqual([]);
+  });
+});
+
+describe("the size of the request (F6)", () => {
+  const cjk = char(0x6f22); // three bytes in UTF-8, nine characters once percent encoded
+  const withMessage = (message: string): FieldValues => ({ ...good, message });
+
+  it("has the function's limit", () => {
+    expect(MAX_BODY_BYTES).toBe(16_384);
+    expect(MAX_BODY_BYTES).toBe(SERVER_MAX_BODY_BYTES);
+  });
+
+  it("counts bytes, not characters", () => {
+    expect(encodedByteLength("abc")).toBe(3);
+    expect(encodedByteLength(cjk)).toBe(3);
+    expect(encodedByteLength(char(0x1f600))).toBe(4);
+    expect(encodedByteLength("")).toBe(0);
+  });
+
+  it("encodes each byte of a character outside ASCII as three characters", () => {
+    expect(encodeBody(withMessage(cjk.repeat(20)), "", "t")).toContain("%E6%BC%A2".repeat(20));
+  });
+
+  it("fits a message at its longest in ASCII, with line breaks too", () => {
+    expect(fitsBodyLimit(withMessage("x".repeat(2000)))).toBe(true);
+    expect(fitsBodyLimit(withMessage("x\n".repeat(1000)))).toBe(true);
+  });
+
+  it("fits 2,000 characters of a script that takes two bytes, such as Danish, Greek or Cyrillic", () => {
+    expect(fitsBodyLimit(withMessage(char(0x00f8).repeat(2000)))).toBe(true);
+    expect(fitsBodyLimit(withMessage(char(0x0436).repeat(2000)))).toBe(true);
+  });
+
+  it("fits as many emoji as the field takes, which is 1,000, because each is two UTF-16 units", () => {
+    expect(fitsBodyLimit(withMessage(char(0x1f600).repeat(1000)))).toBe(true);
+  });
+
+  it("does not fit a long message in a script that takes three bytes, such as Chinese or Japanese", () => {
+    expect(fitsBodyLimit(withMessage(cjk.repeat(2000)))).toBe(false);
+    expect(fitsBodyLimit(withMessage(cjk.repeat(1000)))).toBe(true);
+  });
+
+  it("stops exactly where the body passes 16,384 bytes, counting a token of 2,048 characters", () => {
+    const size = (count: number): number =>
+      encodedByteLength(encodeBody(withMessage(cjk.repeat(count)), "", "x".repeat(2048)));
+    let count = 1000;
+    while (size(count + 1) <= MAX_BODY_BYTES) count += 1;
+    expect(size(count)).toBeLessThanOrEqual(MAX_BODY_BYTES);
+    expect(size(count + 1)).toBeGreaterThan(MAX_BODY_BYTES);
+    expect(fitsBodyLimit(withMessage(cjk.repeat(count)))).toBe(true);
+    expect(fitsBodyLimit(withMessage(cjk.repeat(count + 1)))).toBe(false);
+  });
+
+  it("counts the token before there is one, so the check can come first", () => {
+    const withShortToken = (count: number): number =>
+      encodedByteLength(encodeBody(withMessage(cjk.repeat(count)), "", "t"));
+    let count = 1000;
+    while (withShortToken(count + 1) <= MAX_BODY_BYTES) count += 1;
+    // This message fits with a one character token and would not fit with a token of 2,048.
+    expect(withShortToken(count)).toBeLessThanOrEqual(MAX_BODY_BYTES);
+    expect(fitsBodyLimit(withMessage(cjk.repeat(count)))).toBe(false);
+  });
+
+  it("gives the message the error, in the form and not on its own", () => {
+    const long = withMessage(cjk.repeat(2000));
+    expect(validateFieldIn("message", long)).toBe("too-long");
+    expect(validateAll(long)).toEqual({ message: "too-long" });
+    // On its own the message is fine. Only the whole request is too big.
+    expect(validateField("message", long.message)).toBeNull();
+  });
+
+  it("gives another field its own error and never the size error", () => {
+    const long = { ...withMessage(cjk.repeat(2000)), name: "" };
+    expect(validateFieldIn("name", long)).toBe("empty");
+    expect(validateFieldIn("company", long)).toBeNull();
+    expect(validateAll(long)).toEqual({ name: "empty", message: "too-long" });
+  });
+
+  it("lets a message that is too short keep that error", () => {
+    expect(validateAll(withMessage("short"))).toEqual({ message: "too-short" });
+  });
+
+  it("passes a good form", () => {
+    expect(validateAll(good)).toEqual({});
+  });
+
+  it("names the text to show for it", () => {
+    expect(messageKey("message", "too-long")).toBe("message.too-long");
+    expect(messageKey("message", "too-short")).toBe("message.too-short");
   });
 });
 
@@ -187,7 +417,7 @@ describe("validateField: message", () => {
   });
 
   it("does not count a combining sequence twice", () => {
-    expect(validateField("message", "é".repeat(19))).toBe("too-short");
+    expect(validateField("message", "e\u0301".repeat(19))).toBe("too-short");
   });
 });
 

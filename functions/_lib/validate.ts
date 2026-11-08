@@ -30,21 +30,40 @@ const LOCAL_PART = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_
 const DOMAIN_LABEL = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
 
 /**
- * CR, LF and every other control character would let a value break out of its line or header.
- * Also refused: DEL and the Unicode line and paragraph separators. A message may keep LF and tab.
+ * The characters no field may contain (CF-07), as UTF-16 code units. All of them are in the basic
+ * plane, so a code unit is the whole character.
+ *  - CR, LF and every other control character: they would let a value break out of its line or header.
+ *    That is U+0000 to U+001F, DEL and the C1 controls, so U+007F to U+009F. The C1 range holds NEL
+ *    (U+0085), which some programs treat as a line break.
+ *  - The Unicode line and paragraph separators, U+2028 and U+2029.
+ *  - The bidi overrides and isolates, U+202A to U+202E and U+2066 to U+2069. They can reorder or fake
+ *    a line when Daniel reads the mail. The plain direction marks U+200E and U+200F stay allowed,
+ *    because names in Hebrew or Arabic use them.
+ * A message may keep LF and tab.
  */
-function hasForbiddenControl(value: string, allowTabAndLineFeed: boolean): boolean {
+function isForbidden(code: number): boolean {
+  return (
+    code <= 0x1f ||
+    (code >= 0x7f && code <= 0x9f) ||
+    code === 0x2028 ||
+    code === 0x2029 ||
+    (code >= 0x202a && code <= 0x202e) ||
+    (code >= 0x2066 && code <= 0x2069)
+  );
+}
+
+function hasForbiddenCharacter(value: string, allowTabAndLineFeed: boolean): boolean {
   for (let index = 0; index < value.length; index += 1) {
     const code = value.charCodeAt(index);
     if (allowTabAndLineFeed && (code === 0x09 || code === 0x0a)) continue;
-    if (code <= 0x1f || code === 0x7f || code === 0x2028 || code === 0x2029) return true;
+    if (isForbidden(code)) return true;
   }
   return false;
 }
 
 function isText(value: string, min: number, max: number, multiline: boolean): boolean {
   const length = Array.from(value).length;
-  return length >= min && length <= max && !hasForbiddenControl(value, multiline);
+  return length >= min && length <= max && !hasForbiddenCharacter(value, multiline);
 }
 
 /**
@@ -79,7 +98,11 @@ export function validateInquiry(fields: FormFields): Validation {
   // Listed in the order of the form, which is the order the contract promises.
   const failed: FieldName[] = [];
   if (!isText(inquiry.name, 1, NAME_MAX, false)) failed.push("name");
-  if (!isValidEmail(inquiry.email)) failed.push("email");
+  // The address shape is ASCII only and already refuses these characters. The explicit check keeps
+  // the rule true if the shape is ever loosened.
+  if (!isValidEmail(inquiry.email) || hasForbiddenCharacter(inquiry.email, false)) {
+    failed.push("email");
+  }
   if (!isText(inquiry.company, 0, COMPANY_MAX, false)) failed.push("company");
   if (!isText(inquiry.message, MESSAGE_MIN, MESSAGE_MAX, true)) failed.push("message");
 

@@ -6,6 +6,9 @@
 
 # Cloudflare's published always-pass TEST secret. The function refuses it on every host except
 # localhost, 127.0.0.1 and [::1], so it cannot switch the person check off on a deployed site.
+# [TO CONFIRM, not tried] Turnstile may report a fixed hostname and no action for test secrets.
+# If it does, a local run ends in 403 turnstile, because the function accepts only an allowed
+# hostname and the action contact. Never loosen that check to make a local run pass.
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 
 # Fake. Mail will not send with it. To try real delivery locally, put a sending-only key here.

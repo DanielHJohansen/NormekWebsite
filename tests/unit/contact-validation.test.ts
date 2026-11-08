@@ -41,20 +41,66 @@ function expectAccepted(result: Result): void {
 /** The mail of the most recent accepted submission. */
 const lastMail = () => h.mails().at(-1);
 
-/** CR, LF, the rest of U+0000 to U+001F, DEL and the two Unicode line separators. */
-const CONTROLS: [string, string][] = [
-  ["NUL", "\u0000"],
-  ["SOH", "\u0001"],
-  ["TAB", "\u0009"],
-  ["LF", "\u000a"],
-  ["VT", "\u000b"],
-  ["FF", "\u000c"],
-  ["CR", "\u000d"],
-  ["ESC", "\u001b"],
-  ["US", "\u001f"],
-  ["DEL", "\u007f"],
-  ["line separator", " "],
-  ["paragraph separator", " "],
+/**
+ * Written as code points. Several of these characters are invisible in source, and a tool or an
+ * editor may rewrite an escape sequence into the character itself.
+ */
+const cp = (code: number): string => String.fromCodePoint(code);
+const NBSP = cp(0xa0);
+const IDEOGRAPHIC_SPACE = cp(0x3000);
+const COMBINING_ACUTE = cp(0x301);
+const NEL = cp(0x85);
+const APC = cp(0x9f);
+const RLO = cp(0x202e);
+const LRI = cp(0x2066);
+const PDI = cp(0x2069);
+
+/**
+ * Every character CF-07 refuses: the control characters including CR and LF, DEL, the C1 controls,
+ * the two Unicode line separators, and the bidi overrides and isolates.
+ */
+const FORBIDDEN: [string, string][] = [
+  ["NUL", cp(0x00)],
+  ["SOH", cp(0x01)],
+  ["TAB", cp(0x09)],
+  ["LF", cp(0x0a)],
+  ["VT", cp(0x0b)],
+  ["FF", cp(0x0c)],
+  ["CR", cp(0x0d)],
+  ["ESC", cp(0x1b)],
+  ["US", cp(0x1f)],
+  ["DEL", cp(0x7f)],
+  ["PAD, the first C1 control", cp(0x80)],
+  ["NEL, the C1 next line", cp(0x85)],
+  ["APC, the last C1 control", cp(0x9f)],
+  ["line separator", cp(0x2028)],
+  ["paragraph separator", cp(0x2029)],
+  ["left-to-right embedding", cp(0x202a)],
+  ["right-to-left embedding", cp(0x202b)],
+  ["pop directional formatting", cp(0x202c)],
+  ["left-to-right override", cp(0x202d)],
+  ["right-to-left override", cp(0x202e)],
+  ["left-to-right isolate", cp(0x2066)],
+  ["right-to-left isolate", cp(0x2067)],
+  ["first strong isolate", cp(0x2068)],
+  ["pop directional isolate", cp(0x2069)],
+];
+
+/**
+ * The characters right next to the refused ranges, and the plain direction marks. They stay
+ * allowed, so an off-by-one in a range shows up here.
+ */
+const ALLOWED_NEIGHBOURS: [string, string][] = [
+  ["a tilde, just below DEL", cp(0x7e)],
+  ["a no-break space, just above the C1 range", cp(0xa0)],
+  ["an inverted exclamation mark", cp(0xa1)],
+  ["a hyphenation point, just below the line separator", cp(0x2027)],
+  ["the left-to-right mark", cp(0x200e)],
+  ["the right-to-left mark", cp(0x200f)],
+  ["a narrow no-break space, just above the overrides", cp(0x202f)],
+  ["a word joiner", cp(0x2060)],
+  ["U+2065, just below the isolates", cp(0x2065)],
+  ["U+206A, just above the isolates", cp(0x206a)],
 ];
 
 describe("CF-07 name", () => {
@@ -62,7 +108,7 @@ describe("CF-07 name", () => {
     ["is missing", undefined],
     ["is empty", ""],
     ["is only spaces", "     "],
-    ["is only a no-break space and an ideographic space", " 　"],
+    ["is only a no-break space and an ideographic space", `${NBSP}${IDEOGRAPHIC_SPACE}`],
     ["has 101 characters", "n".repeat(101)],
   ])("rejects a name that %s", async (_label, name) => {
     expectRejected(await submit({ name }), ["name"]);
@@ -77,7 +123,7 @@ describe("CF-07 name", () => {
     expect(lastMail()?.text).toContain(`Name: ${name}\n`);
   });
 
-  it.each(CONTROLS)("rejects %s inside a name", async (_label, control) => {
+  it.each(FORBIDDEN)("rejects %s inside a name", async (_label, control) => {
     expectRejected(await submit({ name: `Ada${control}Example` }), ["name"]);
   });
 
@@ -91,14 +137,14 @@ describe("CF-07 name", () => {
   });
 
   it("normalizes to NFC before it counts and before it sends", async () => {
-    const decomposed = "é".repeat(100);
+    const decomposed = `e${COMBINING_ACUTE}`.repeat(100);
     expect(decomposed.length).toBe(200);
     expectAccepted(await submit({ name: decomposed }));
     expect(lastMail()?.text).toContain(`Name: ${"é".repeat(100)}\n`);
   });
 
   it("rejects 101 characters even when they are written in the decomposed form", async () => {
-    expectRejected(await submit({ name: "é".repeat(101) }), ["name"]);
+    expectRejected(await submit({ name: `e${COMBINING_ACUTE}`.repeat(101) }), ["name"]);
   });
 
   it("counts a character outside the basic plane once", async () => {
@@ -122,7 +168,7 @@ describe("CF-07 email", () => {
     "ada @example.com",
     "ada@exa mple.com",
     "ada@example.com extra",
-    "ada@example.c om",
+    `ada@example.c${NBSP}om`,
     "ada@example..com",
     "ada@.example.com",
     "ada@example.com.",
@@ -155,7 +201,7 @@ describe("CF-07 email", () => {
     expectRejected(await submit({ email }), ["email"]);
   });
 
-  it.each(CONTROLS)("rejects %s inside an address", async (_label, control) => {
+  it.each(FORBIDDEN)("rejects %s inside an address", async (_label, control) => {
     expectRejected(await submit({ email: `ada${control}@example.com` }), ["email"]);
   });
 
@@ -214,7 +260,7 @@ describe("CF-07 company", () => {
     expectRejected(await submit({ company: "c".repeat(121) }), ["company"]);
   });
 
-  it.each(CONTROLS)("rejects %s inside a company", async (_label, control) => {
+  it.each(FORBIDDEN)("rejects %s inside a company", async (_label, control) => {
     expectRejected(await submit({ company: `Example${control}AB` }), ["company"]);
   });
 });
@@ -276,7 +322,7 @@ describe("CF-07 message", () => {
     ]);
   });
 
-  it.each(CONTROLS.filter(([label]) => label !== "TAB" && label !== "LF"))(
+  it.each(FORBIDDEN.filter(([label]) => label !== "TAB" && label !== "LF"))(
     "rejects %s inside a message",
     async (_label, control) => {
       expectRejected(await submit({ message: `First part of text.${control}Second part.` }), [
@@ -284,6 +330,58 @@ describe("CF-07 message", () => {
       ]);
     },
   );
+});
+
+describe("CF-07 C1 controls and bidi overrides", () => {
+  it.each(ALLOWED_NEIGHBOURS)("still accepts %s", async (_label, character) => {
+    expectAccepted(
+      await submit({
+        name: `Ada${character}Example`,
+        company: `Example${character}AB`,
+        message: `We need an enclosure ${character} for a sensor board, long enough to pass.`,
+      }),
+    );
+    const text = lastMail()?.text ?? "";
+    expect(text).toContain(`Name: Ada${character}Example\n`);
+    expect(text).toContain(`Company: Example${character}AB\n`);
+    expect(text).toContain(`enclosure ${character} for a sensor board`);
+  });
+
+  it.each([
+    ["a C1 control (NEL)", NEL],
+    ["the last C1 control (APC)", APC],
+    ["a right-to-left override", RLO],
+    ["a left-to-right isolate", LRI],
+    ["a pop directional isolate", PDI],
+  ])(
+    "refuses %s at the start or the end of a value, where trimming cannot remove it",
+    async (_label, character) => {
+      for (const field of ["name", "company", "message"] as const) {
+        const text = field === "message" ? "A request that is long enough to pass." : "Ada";
+        expectRejected(await submit({ [field]: `${character}${text}` }), [field]);
+        expectRejected(await submit({ [field]: `${text}${character}` }), [field]);
+      }
+    },
+  );
+
+  it("names every field that holds one, in the order of the form", async () => {
+    expectRejected(
+      await submit({
+        name: `Ada${NEL}`,
+        email: `ada${RLO}@example.com`,
+        company: `Example${LRI}AB`,
+        message: `A request that is long enough${PDI} to pass.`,
+      }),
+      ["name", "email", "company", "message"],
+    );
+  });
+
+  it("does not repeat the character in the answer", async () => {
+    const response = await h.send({ fields: { name: `Ada${RLO}` } });
+    const text = await response.text();
+    expect(text).not.toContain(RLO);
+    expect(text).toBe('{"ok":false,"error":"validation","fields":["name"]}');
+  });
 });
 
 describe("CF-07 the 400 body", () => {

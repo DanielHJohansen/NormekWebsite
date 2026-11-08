@@ -227,6 +227,12 @@ describe("CF-04 size", () => {
     const endless = new ReadableStream<Uint8Array<ArrayBuffer>>({
       pull(controller) {
         pulls += 1;
+        // A function that did not stop at the limit would read for ever and fill the memory.
+        // Cut the stream off far past the limit instead, so that such a bug fails this test quickly.
+        if (pulls > 1000) {
+          controller.error(new Error("read far past the limit"));
+          return;
+        }
         controller.enqueue(new Uint8Array(1024).fill(97));
       },
       cancel() {
@@ -317,6 +323,15 @@ describe("CF-05 fields", () => {
     const response = await h.send({ body: new Uint8Array([0x6e, 0x61, 0x6d, 0x65, 0x3d, 0xff]) });
     expect(response.status).toBe(400);
     expect(await readJson(response)).toEqual({ ok: false, error: "bad_request" });
+  });
+
+  it("reads a percent-encoded byte that is not UTF-8 as U+FFFD, and only refuses raw bytes", async () => {
+    // The contract says "raw body bytes". An invalid byte that arrives percent-encoded is decoded
+    // leniently by the form parser, so it reaches the mail as the replacement character.
+    const body = encode(fields()).replace("Ada+Example", "Ada%FFExample");
+    const response = await h.send({ body });
+    expect(response.status).toBe(200);
+    expect(h.mails()[0]?.text).toContain(`Name: Ada${String.fromCodePoint(0xfffd)}Example\n`);
   });
 
   it("answers 400 for an empty body, naming the missing fields", async () => {

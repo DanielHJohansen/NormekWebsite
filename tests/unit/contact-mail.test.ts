@@ -15,8 +15,10 @@ import {
   neverAnswers,
   ORIGIN,
   readJson,
+  redirectWith,
   RESEND_KEY,
   RESEND_URL,
+  SITEVERIFY_URL,
   until,
   useContactHarness,
   type SentMail,
@@ -244,6 +246,18 @@ describe("CF-12 mail failure", () => {
     },
   );
 
+  it.each([301, 302, 307, 308])(
+    "answers 502 when Resend answers with a redirect (HTTP %i) that carries a passing body",
+    async (status) => {
+      h.setResend(() => redirectWith({ id: "fake-mail-id" }, status));
+      const response = await h.send();
+      expect(response.status).toBe(502);
+      expect(await readJson(response)).toEqual({ ok: false, error: "mail_failed" });
+      // One attempt, and the location it names is not followed.
+      expect(h.calls.map((call) => call.url)).toEqual([SITEVERIFY_URL, RESEND_URL]);
+    },
+  );
+
   it.each([200, 201, 202])("counts HTTP %i as sent", async (status) => {
     h.setResend(() => json({ id: "fake-mail-id" }, status));
     const response = await h.send();
@@ -292,6 +306,35 @@ describe("CF-12 mail failure", () => {
     await until(() => h.resendCalls().length === 1);
     await vi.advanceTimersByTimeAsync(5000);
     expect((await pending).status).toBe(502);
+    expect(h.resendCalls()).toHaveLength(1);
+  });
+
+  it("answers 502 after 5 seconds when the provider's answer body cannot be dropped", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    // The answer is a 200, but cancelling its body never finishes.
+    h.setResend(
+      () =>
+        new Response(
+          new ReadableStream<Uint8Array>({ cancel: () => new Promise<void>(() => undefined) }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    let settled = false;
+    const pending = h.send().then((response) => {
+      settled = true;
+      return response;
+    });
+
+    await until(() => h.resendCalls().length === 1);
+    await vi.advanceTimersByTimeAsync(4999);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+
+    const response = await pending;
+    expect(response.status).toBe(502);
+    expect(await readJson(response)).toEqual({ ok: false, error: "mail_failed" });
     expect(h.resendCalls()).toHaveLength(1);
   });
 

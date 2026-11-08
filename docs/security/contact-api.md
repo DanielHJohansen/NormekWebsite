@@ -19,14 +19,14 @@ Applied after trimming and Unicode normalization form C (NFC). Length counts Uni
 
 | Field | Rule |
 |---|---|
-| `name` | 1 to 100 characters. No control characters |
+| `name` | 1 to 100 characters. No forbidden characters (see below) |
 | `email` | At most 254 characters. Exactly one `@`, no spaces, a dot in the domain. Local part from letters, digits and ``.!#$%&'*+/=?^_`{\|}~-`` with no leading, trailing or doubled dot. Domain labels from ASCII letters, digits and hyphens. This is what `type="email"` accepts, minus the cases above |
-| `company` | 0 to 120 characters, so it may be empty. No control characters |
-| `message` | 20 to 5,000 characters. Line breaks and tabs are allowed, CRLF counts as one line break. No other control characters |
+| `company` | 0 to 120 characters, so it may be empty. No forbidden characters |
+| `message` | 20 to 5,000 characters. Line breaks and tabs are allowed, CRLF counts as one line break. No other forbidden characters |
 | `website` | Must be empty |
 | `cf-turnstile-response` | 1 to 2,048 characters |
 
-Control characters are U+0000 to U+001F, U+007F, U+2028 and U+2029. In `message` only LF and tab are exempt.
+Forbidden characters are U+0000 to U+001F, U+007F to U+009F, U+2028, U+2029, U+202A to U+202E and U+2066 to U+2069. The first four groups are control characters and line separators, including the C1 controls such as NEL (U+0085). The last two are the bidirectional (bidi) text overrides and isolates, which can reorder or fake a line when the mail is read. The plain direction marks U+200E and U+200F are allowed. In `message` only LF and tab are exempt. A value that holds a forbidden character gets 400 `validation` for that field. None of them can occur in an address anyway, because the address is ASCII only.
 
 ## 3. Responses
 
@@ -36,7 +36,7 @@ Every response is JSON with the headers in section 4. Branch on `error`, never o
 |---|---|---|---|
 | 200 | `{"ok":true}` | Mail handed to the provider. A filled honeypot gets the same status, headers and body | CF-06 |
 | 400 | `{"ok":false,"error":"validation","fields":["email"]}` | `fields` lists the failing fields of `name`, `email`, `company`, `message`, in that order, never their values | CF-07 |
-| 400 | `{"ok":false,"error":"bad_request"}` | Unknown or repeated field, or a body that is not valid UTF-8. A client bug | CF-05 |
+| 400 | `{"ok":false,"error":"bad_request"}` | Unknown or repeated field, or raw body bytes that are not valid UTF-8 (a percent-encoded byte that is not valid UTF-8 is read as U+FFFD, not refused). A client bug | CF-05 |
 | 403 | `{"ok":false,"error":"turnstile"}` | The person check failed: token missing, too long, rejected, expired, already used, wrong hostname or wrong action | CF-08 |
 | 403 | `{"ok":false,"error":"origin_not_allowed"}` | `Origin` is missing or not listed in `ALLOWED_ORIGINS`. Typical cause: the page was opened on a commit-hash preview address | CF-02 |
 | 405 | `{"ok":false,"error":"method_not_allowed"}` | Not a POST. Carries `Allow: POST` | CF-01 |

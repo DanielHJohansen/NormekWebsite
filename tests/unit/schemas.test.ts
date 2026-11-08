@@ -166,7 +166,12 @@ describe("the form copy", () => {
     name: { label: "Name", empty: "Enter your name." },
     email: { label: "Email", empty: "Enter your email.", noAt: "Add an @.", invalid: "Check it." },
     company: { label: "Company", empty: "Enter your company." },
-    message: { label: "Message", help: "Help.", tooShort: "Write a little more." },
+    message: {
+      label: "Message",
+      help: "Help.",
+      tooShort: "Write a little more.",
+      tooLong: "Shorten it.",
+    },
     honeypot: "Leave this empty",
     summaryTitle: "Fix these fields",
     submit: "Send",
@@ -184,6 +189,10 @@ describe("the form copy", () => {
   it("fails when a string the script needs is missing", () => {
     expect(formCopySchema.safeParse({ ...copy, sending: undefined }).success).toBe(false);
     expect(formCopySchema.safeParse({ ...copy, email: { label: "Email" } }).success).toBe(false);
+    expect(
+      formCopySchema.safeParse({ ...copy, message: { ...copy.message, tooLong: undefined } })
+        .success,
+    ).toBe(false);
   });
 });
 
