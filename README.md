@@ -2,12 +2,13 @@
 
 Working repo for the Normek website, brand and go-to-market. Normek develops AI-native product development solutions, starting with enclosure design for electronics companies. The name is provisional (see `docs/open-questions.md`).
 
-**Status (2026-11-08):** the v0 preview site is built (Astro 7 static, a Pages Function for the contact form, tests and CI). The design lives in a Claude Design canvas. Nothing is deployed yet: Daniel's one-time setup comes first (`docs/ops/cloudflare-and-resend-setup.md`). Nothing is public: the name is not cleared and placeholders marked `[TO CONFIRM]` are still on the page.
+**Status (2026-11-08):** the v0 preview site is built (Astro 7 static, a Pages Function for the contact form, tests and CI). The design lives in a Claude Design canvas. Nothing is deployed yet: Daniel's one-time setup comes first (`docs/ops/cloudflare-and-resend-setup.md`). A stop-gap exists for the web hosting at Simply, so the site can show on normek.dk before the Cloudflare project is live (`docs/ops/simply-interim-upload.md`). It waits for Daniel's upload. The name is not cleared and placeholders marked `[TO CONFIRM]` are still on the page.
 
 ## Start here
 
 1. `docs/open-questions.md`: the decisions we need from Daniel, each with a recommended default, and the decisions already taken.
 2. `docs/ops/cloudflare-and-resend-setup.md`: Daniel's setup, about 45 minutes, starting with two-factor and a private repo.
+   `docs/ops/simply-interim-upload.md`: the 10 minute stop-gap that puts the site on normek.dk through the Simply hosting.
 3. `docs/design/claude-design.md`: the design canvas, its boards and the order of authority for design.
 4. `docs/copy/v0-home-copy.md`: every word on the home page, with the fact check and buyer review beside it.
 5. `docs/plan/work-breakdown.md` and `docs/adr/`: the build plan and the decisions behind the stack.
@@ -26,6 +27,7 @@ Working repo for the Normek website, brand and go-to-market. Normek develops AI-
 | `npm run test:a11y` | Playwright with axe on every page |
 | `npm run check:dist` | Checks the built site: noindex, no inline code, links, placeholders (add `--launch` for the launch gate) |
 | `npm run check:writing` | The em dash and semicolon rule for Markdown |
+| `npm run package:simply` | After a build: write `dist-simply/` for the Simply hosting (headers as `.htaccess`, interim text). Refuses an indexable build |
 | `node scripts/build-brand-assets.mjs` | Regenerates the favicons, icons and social image from the logo SVGs |
 
 ## How we work without Lovable

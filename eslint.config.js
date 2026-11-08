@@ -6,7 +6,16 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   // Not part of the site code. brand/logo/source is its own package and stays untouched.
-  globalIgnores(["dist/", ".astro/", "node_modules/", "brand/", "docs/", "qa/", ".claude/"]),
+  globalIgnores([
+    "dist/",
+    "dist-simply/",
+    ".astro/",
+    "node_modules/",
+    "brand/",
+    "docs/",
+    "qa/",
+    ".claude/",
+  ]),
 
   js.configs.recommended,
   tseslint.configs.recommended,

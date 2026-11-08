@@ -1,5 +1,6 @@
 # Output and caches
 dist/
+dist-simply/
 .astro/
 node_modules/
 qa/

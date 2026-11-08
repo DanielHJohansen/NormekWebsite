@@ -8,6 +8,7 @@ Status on 8 November 2026. Nothing here is done unless ticked. The private previ
 - [ ] **D** Two-factor at Simply, your mailbox and GitHub, before any new account (setup guide Part 0).
 - [ ] **D** Follow the rest of `docs/ops/cloudflare-and-resend-setup.md`: Cloudflare Pages project, Turnstile widget, Resend, the keys in the Pages settings only, the data processing agreements.
 - [ ] **D** Decide the public mailbox address (`docs/open-questions.md` item 35).
+- [ ] **D** Optional, to see the site on normek.dk before the Cloudflare project exists: upload the Simply package (`docs/ops/simply-interim-upload.md`). It is public to anyone with the address, so it counts as sharing the preview.
 - [ ] **A** After setup: allow the two preview hostnames in the session environment, then run one real send. Check that the email arrives, `/thanks/` shows, replaying the token gives 403, and `curl -sI` shows the headers from the threat model.
 - [ ] **A** One submit with the real Turnstile widget, with zero CSP errors in the console.
 - [ ] **D** A 10 minute screen reader pass: empty submit, a failed person check, the offers lists, the hero image, the thank-you heading (QA report).

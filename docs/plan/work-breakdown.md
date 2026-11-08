@@ -21,6 +21,7 @@ The code, the design, the copy and the reviews are done. What is left needs Dani
 | 9 | Allow the preview hostnames in the session environment | **Waiting for Daniel** (after task 1) |
 | 10 | Preview gate | Done for code: QA gate (no P0 or P1) and security gate (no Critical or High). Live checks wait for tasks 1 and 9 |
 | 11 | Rendering and indexing check | Not done. Needs the deployed preview |
+| 12 | Stop-gap for the Simply hosting (site on normek.dk) | Package and guide done (`docs/ops/simply-interim-upload.md`, `npm run package:simply`). Tested behind a local Apache. **Waiting for Daniel's upload.** Delete it when task 1 is live |
 
 The launch gate is in `docs/launch-checklist.md`.
 

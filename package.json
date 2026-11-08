@@ -20,7 +20,8 @@
     "check:dist": "node scripts/check-dist.mjs",
     "check:writing": "node scripts/check-writing-rules.mjs",
     "test:a11y": "playwright test",
-    "screenshots": "node scripts/screenshot-dist.mjs"
+    "screenshots": "node scripts/screenshot-dist.mjs",
+    "package:simply": "node scripts/build-simply-package.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.5",

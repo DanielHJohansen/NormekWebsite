@@ -11,7 +11,7 @@ const args = process.argv.slice(2);
 const targets = args.length
   ? args
   : ["CLAUDE.md", "README.md", "docs", ".claude", "brand", "src/content"];
-const skipDirs = new Set(["node_modules", ".git", "dist", ".astro", "qa"]);
+const skipDirs = new Set(["node_modules", ".git", "dist", "dist-simply", ".astro", "qa"]);
 const markdown = new Set([".md", ".mdx"]);
 const yaml = new Set([".yaml", ".yml"]);
 

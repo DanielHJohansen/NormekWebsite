@@ -1,6 +1,9 @@
 # dependencies and build output
 node_modules/
 dist/
+# the interim upload package for Simply.com (scripts/build-simply-package.mjs)
+dist-simply/
+dist-simply.zip
 .astro/
 .wrangler/
 
