@@ -47,7 +47,7 @@ Status on 2026-11-08: Daniel does not want to feature tools for now, so this no 
 
 | # | Decision | Why it matters | Recommended default |
 |---|---|---|---|
-| 5 | First offers | The site must sell something specific | Enclosure Feasibility Review (one week), Prototype Sprint (about 1 week, depends on the project, per Daniel on 2026-11-08, a target until a build log confirms it), Production Package (quoted). The consult's prices (DKK 5,000 to 10,000 and DKK 30,000 to 60,000) are hypotheses to test in interviews |
+| 5 | First offers | The site must sell something specific | Enclosure Feasibility Review (15 to 30 hours by the fact check, so 1 to 3 weeks at 10 to 15 hours a week, a target until a build log confirms it), Prototype Sprint (about 1 week, depends on the project, per Daniel on 2026-11-08, a target until a build log confirms it), Production Package (quoted). The consult's prices (DKK 5,000 to 10,000 and DKK 30,000 to 60,000) are hypotheses to test in interviews |
 | 6 | Delivery and liability | Delivering finished parts may make you responsible as the manufacturer | Design plus supplier management first. Add parts resale with a stated handling margin only after insurance and terms exist |
 | 7 | Capacity | Over-promising kills trust | At most two active projects, and a site line saying how many projects you take per quarter |
 | 8 | Price visibility | It filters leads and few rivals do it | Show "from" prices after the first three interviews |

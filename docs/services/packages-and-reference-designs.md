@@ -8,7 +8,7 @@ Daniel leads every package and signs off every deliverable. Prices stay [TO CONF
 
 ### 1.1 Enclosure Feasibility Review
 
-Duration: 1 week after complete inputs [TO CONFIRM].
+Duration: 15 to 30 hours of work (the mechanical fact check of 8 November 2026), so 1 to 3 weeks at 10 to 15 hours a week, after complete inputs [TO CONFIRM]. A target until a build log exists. Do not say "one week" to a customer.
 
 - **Customer provides:** STEP model and outline file of the assembled board, with component heights. Positions of connectors, buttons, LEDs, sensors and antenna. Power dissipation (typical and peak, watts) and temperature range. Environment (indoor or outdoor, dust, water, chemicals, UV, vibration), target IP rating, mounting, markets, units per year at launch and in year three, target enclosure cost.
 - **Normek delivers:** a PDF report: catalog box or custom, process route by volume, material shortlist, sealing and venting approach, hand estimate of passive cooling (not simulation), antenna placement notes, risks with the cheapest fix. A list of board changes that are cheap now and costly later (holes, connector edges, keep-outs, component heights). A CAD envelope study (STEP). A budgetary cost range (order of magnitude).
