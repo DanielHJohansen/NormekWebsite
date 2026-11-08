@@ -62,9 +62,11 @@ Daniel already owns **normek.dk** (registered and hosted at simply.com), so the 
 - No secrets in the repo, ever: no tokens, API keys, passwords or private keys. Use environment variables and the hosting platform's secret store. If one appears, stop, tell Daniel and rotate it.
 - Assume this repo could become public. Keep customer or third-party confidential material (CAD, drawings, NDAs, quotes) out of it.
 
-## Proposed stack (pending Daniel's approval of ADR 0001)
+## Stack (ADR 0001, accepted with amendments on 2026-11-08)
 
-Astro with static output, Tailwind and MDX content collections in TypeScript, hosted on Cloudflare Pages with one small Pages Function for the contact form (Turnstile and server-side validation), cookieless analytics, no database and no CMS in v1. Reasoning and alternatives are in `docs/adr/0001-stack-and-hosting.md`. DNS for normek.dk stays at simply.com for now (the zone is DNSSEC signed, Simply's mail records are in place and no mailboxes exist yet), and the ADR explains how the site connects to it. Read or change DNS only through Simply's official connector as described in `docs/ops/simply-connector.md`, and never create or store a Simply API key. Do not scaffold code until the ADR is accepted.
+Astro 6 with static output, Tailwind CSS 4 and Markdown or YAML content collections in strict TypeScript, hosted on Cloudflare Pages through Cloudflare's Git integration. One Pages Function handles the contact form (Turnstile, server-side validation, mail sent through Resend behind a one-file adapter). There is no database, no CMS and no analytics during the private preview, and every deployment is `noindex` until launch. Reasoning, alternatives and amendments are in `docs/adr/0001-stack-and-hosting.md`, and the build plan is `docs/plan/work-breakdown.md`. Follow the plan, and do not deviate from the ADR without a new ADR.
+
+DNS for normek.dk stays at simply.com for now (the zone is DNSSEC signed, Simply's mail records are in place and no mailboxes exist yet), and the ADR explains how the site connects to it. Read or change DNS only through Simply's official connector as described in `docs/ops/simply-connector.md`, and never create or store a Simply API key.
 
 ## The expert team (`.claude/agents/`)
 

@@ -1,6 +1,6 @@
 # ADR 0001: Stack and hosting for the Normek website
 
-- Status: **Proposed**, waiting for Daniel's approval
+- Status: **Accepted with amendments** on 2026-11-08. Daniel told the team to start development, and the manager accepted the proposal on his behalf after the web-architect validated it (see Amendments). Daniel can reverse it, and a reversal needs a new ADR.
 - Date: 2026-11-08
 - Deciders: Daniel (owner), with `web-architect` advising
 - Revisit when: the site needs a CMS for non-developers, user accounts, file uploads or a second language
@@ -100,3 +100,64 @@ If Daniel gets Lovable credits for the hackathon, treat Lovable as a sketchpad f
 - Cost: no drag-and-drop visual editor. Interactive widgets need a small React island.
 - Risk: Cloudflare's product naming is moving, so confirm at scaffold time.
 - Not decided here: the package manager (default npm), test tooling and CI details. `web-architect` records them when scaffolding starts.
+
+## Amendments (web-architect, 2026-11-08)
+
+The decision stands: Option B. These amendments fill the gaps the original left open and change four details. Facts were checked by web search on 2026-11-08. The Cloudflare and Astro documentation sites were not reachable from the session, so items marked "verify at scaffold" rest on search summaries, not on the primary page.
+
+### A1. Cloudflare Pages, not Workers with static assets
+
+Cloudflare now steers new projects to Workers with static assets and puts new features there. Pages is still supported. For us one fact decides it: a Workers custom domain needs the zone on Cloudflare, and a hostname with an existing CNAME cannot be attached. Pages accepts a CNAME from any DNS provider. Since DNS stays at Simply, **use Pages**. A static site plus one function moves to Workers in about an hour if the DNS ever moves, so the lock-in is small.
+
+Wrong if: Cloudflare announces an end date for Pages, or DNS moves to Cloudflare (then reconsider Workers).
+
+### A2. Deploy through Cloudflare's Git integration
+
+Cloudflare builds from GitHub through its GitHub app, limited to this one repository. No Cloudflare API token is stored in GitHub. GitHub Actions runs the checks only. Preview builds are limited to one branch named `preview`, so the preview hostname stays fixed (`preview.<project>.pages.dev`) and can be put on the session's allowed list once. Assistants screenshot their own work locally with Playwright against `astro preview`. The `main` branch builds the production deployment on `<project>.pages.dev` with no custom domain until the name is cleared.
+
+### A3. Versions and no adapter
+
+- Astro 6 is the current major (released March 2026). It needs Node 22.12 or newer. Pin the exact Node version in `.nvmrc` and in the Pages `NODE_VERSION` setting. Default Node 22 LTS (22.23.4 is installed in cloud sessions). Move to Node 24 once Astro's `engines` field and the Pages build image both list it. Verify at scaffold with `npm view astro version engines`.
+- Pure static output with **no Cloudflare adapter**. The contact function lives in `functions/api/contact.ts` as a Pages Function. The Astro 6 Cloudflare adapter had breaking changes, and we do not need server rendering.
+- Tailwind CSS v4, with design tokens declared once in CSS (`@theme`), which also makes them CSS variables.
+
+### A4. Markdown first, MDX later
+
+Content collections use Markdown and YAML with Zod schemas. Add `@astrojs/mdx` only when a page needs a component inside prose. No React in v0 or v1.
+
+### A5. Contact form delivery: Resend through a one-file adapter
+
+| Option | DNS at Simply | Cost | Privacy | Verdict |
+|---|---|---|---|---|
+| **Resend** (HTTP API) | 3 records on a subdomain, apex untouched | Free: 3,000 a month, 100 a day | US company, Ireland sending region, account data in the US | **Recommended** |
+| Postmark | 2 records on a subdomain | Free: 100 a month, then paid | US | Fallback |
+| Scaleway Transactional Email | SPF, DKIM and MX on the sending domain | Free: 300 a month, then about 0.25 euros per 1,000 | EU company and data | Switch if Daniel wants EU-only processors |
+| Form backend (Formspree and similar) | None | Free tiers capped | Third party stores every inquiry | Rejected |
+| SMTP to smtp.simply.com from the function | None | Free | Needs the mailbox password as a secret, so a leak exposes all mail | Rejected |
+| Cloudflare Email Routing send binding | Needs the zone and MX on Cloudflare | Free | Cloudflare | Not possible with DNS at Simply |
+
+Design:
+
+- The function checks origin, content type and size (16 KB), a honeypot, field lengths and email format, then verifies Turnstile on the server (fail closed). Then it sends one plain-text email to daniel@normek.dk with the visitor as Reply-To. No auto-reply to the visitor, so the form cannot be used to send mail to strangers.
+- Private preview: no DNS change. Resend's test sender delivers only to the account owner's address [TO CONFIRM at sign-up].
+- At launch: verify the subdomain `notify.normek.dk`. Records: a DKIM TXT at `resend._domainkey.notify`, plus an MX and an SPF TXT at `send.notify`. The apex SPF, MX, DKIM and DMARC records stay untouched, and DKIM on the subdomain aligns with DMARC for normek.dk. Values come from the Resend console, and `security-engineer` reviews them before Daniel approves.
+- Failure: on a provider error or a 5 second timeout the function returns an error. The page keeps the visitor's text and shows the direct email address. Logs hold status codes only, never names, addresses or message text. The free daily cap of 100 is also a cost ceiling.
+- Form copy asks visitors not to send confidential details before an NDA. The privacy page lists Cloudflare, Resend and Simply as processors (`legal-compliance-advisor` confirms the data processing agreements and Resend's retention).
+- The provider sits behind one `sendMail()` adapter, so switching to Scaleway or Postmark is one file and a DNS change.
+
+### A6. Turnstile and analytics
+
+- Turnstile is free with up to 20 widgets and 10 hostnames per widget, and hostnames need not be on Cloudflare. A hostname covers its subdomains, so `<project>.pages.dev` also covers the preview alias. Add `www.normek.dk` at launch. Load the Turnstile script only when the contact form comes into view.
+- No analytics during the private preview. At launch, Cloudflare Web Analytics (free and cookieless) needs ADR 0002, because its beacon is a third-party script. Its retention and sampling figures conflict between sources, so verify on Cloudflare's limits page then.
+
+### A7. Indexing and drafts
+
+Every deployment sends `noindex` and a disallow-all `robots.txt` until a `PUBLIC_INDEXABLE` flag is set at launch. Draft pages never reach production output (details in `docs/plan/work-breakdown.md`).
+
+### A8. Tooling decided
+
+npm with `npm ci`, ESLint and Prettier, `astro check`, Vitest, Playwright with axe-core, Lighthouse CI, lychee for links and gitleaks for secrets (both run as binaries, not npm packages). Dependabot for npm and GitHub Actions, with actions pinned by commit hash.
+
+### What would make these amendments wrong
+
+Check first: whether Pages still accepts an external CNAME for `www` (test it on a spare subdomain before launch), and Resend's message retention. If retention conflicts with the data promise, switch the adapter to Scaleway.
