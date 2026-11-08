@@ -10,6 +10,18 @@ Review status: `security-engineer` reviewed the first version. Findings S2, S3, 
 - A bot check for the contact form (Turnstile) and a mail service for the form (Resend).
 - Permission for assistants to open the two preview addresses and take screenshots.
 
+## Quick start: a visible preview in about 25 minutes
+
+Use this when you only want to see the site online today. The contact form will not send anything until Parts 4 to 6 are done. It shows "Your request was not sent" instead. normek.dk keeps its Simply splash page until the launch steps in the appendix.
+
+1. Part 0.1 and 0.5: decide about the code repository (private is recommended) and turn on two-factor at GitHub. About 7 minutes.
+2. Part 1: the Cloudflare account with two-factor. About 6 minutes.
+3. Part 2, with two changes for today. The repository has one branch, `ccr-50e96282-kggo5a`, and no `main`. Choose that branch as the **Production branch**. Skip Part 3 and leave preview builds on **None**. About 10 minutes.
+4. Open the address Cloudflare shows, normally `https://normek-web.pages.dev`. You should see the site. It is `noindex`, but anyone who has the address can open it.
+5. Tell an assistant the address. It then asks you to approve one network setting (Part 7) so it can open the site and take screenshots.
+
+Left for later on purpose: the form keys (Parts 4 to 6), DNS, and the `main` and `preview` branches. An assistant creates those branches when you say so.
+
 ## What it does not do
 
 - It changes no DNS, no email and nothing else at Simply except the safety settings in Part 0. normek.dk stays exactly as it is.
@@ -207,7 +219,7 @@ Part 2 and Part 3 are one sitting. From the moment the project exists until Part
 3. Select `NormekWebsite` and click **Begin setup**.
 4. Fill in the form with the values from "The settings in one place":
    - Project name: `normek-web`. If Cloudflare says the name is taken, stop. Tell an assistant before choosing another one, because the name appears in Parts 4, 6 and 7 and in the addresses.
-   - Production branch: `main`.
+   - Production branch: `main`. Today the repository has no `main`. Until an assistant creates it, choose `ccr-50e96282-kggo5a`, the only branch (see the quick start).
    - Framework preset: **Astro**. Cloudflare fills in the build command and output directory. Check that they read `npm run build` and `dist`.
    - Root directory: leave empty.
 5. Open **Environment variables (advanced)** and add one variable: name `NODE_VERSION`, value `22.23.4`. First open `.nvmrc` in the repo on GitHub and check that it still says the same number. If `.nvmrc` does not exist, skip this variable for now and add it in Part 6.
