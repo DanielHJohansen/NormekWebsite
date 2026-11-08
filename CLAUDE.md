@@ -64,7 +64,7 @@ Daniel already owns **normek.dk** (registered and hosted at simply.com), so the 
 
 ## Proposed stack (pending Daniel's approval of ADR 0001)
 
-Astro with static output, Tailwind and MDX content collections in TypeScript, hosted on Cloudflare Pages with one small Pages Function for the contact form (Turnstile and server-side validation), cookieless analytics, no database and no CMS in v1. Reasoning and alternatives are in `docs/adr/0001-stack-and-hosting.md`. DNS for normek.dk is at simply.com today, and the ADR lists the ways to connect it. Do not scaffold code until the ADR is accepted.
+Astro with static output, Tailwind and MDX content collections in TypeScript, hosted on Cloudflare Pages with one small Pages Function for the contact form (Turnstile and server-side validation), cookieless analytics, no database and no CMS in v1. Reasoning and alternatives are in `docs/adr/0001-stack-and-hosting.md`. DNS for normek.dk stays at simply.com for now (the zone is DNSSEC signed and email runs there), and the ADR explains how the site connects to it. Do not scaffold code until the ADR is accepted.
 
 ## The expert team (`.claude/agents/`)
 

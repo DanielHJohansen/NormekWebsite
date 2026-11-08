@@ -68,7 +68,7 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 | 15 | v1 pages | Home, Enclosure design, How we work, Data and IP, Work, About, Contact, plus legal pages |
 | 16 | Founder and testimonials | Show you prominently, since trust at this size is personal. The three testimonials on your personal site praise your personal work, so each person must agree to reuse and the label must say so |
 | 17 | Logo | Pick a route from `brand/logo/preview.png`. Recommendation: 01 Trace |
-| 18 | Domain and email | normek.dk is already at Simply.com. Keep the registration there and decide where DNS lives (ADR 0001). Tell me which Simply products are active (domain only, DNS, web hosting, mailboxes) and whether anything is live on the domain. Add `.com` or `.eu` only after the name is cleared. Set up a `hello@` and a `daniel@` address, with SPF, DKIM and DMARC records |
+| 18 | Domain and email | normek.dk is at Simply.com with DNSSEC on and email apparently on Simply's servers (screenshot, 2026-11-08). Recommended: keep DNS at Simply, point `www` to Cloudflare at go-live and forward the bare domain to `www` (ADR 0001). Nothing changes in DNS until the name is cleared. Add `.com` or `.eu` only after that |
 
 ## 4. Resources and goals
 
@@ -82,7 +82,7 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 
 - [ ] Name checks (item 1).
 - [ ] Accounts with two-factor authentication: Simply.com (registrar and DNS), Cloudflare, a business mailbox, Google Search Console.
-- [ ] Tell me which Simply.com products are active and whether anything is live on normek.dk.
+- [ ] Send the remaining rows of the Simply DNS zone (landscape or the desktop view shows the value column), say what is live on normek.dk, and list the mailboxes in use.
 - [ ] Business-tier AI accounts and vendor terms confirmed in writing.
 - [ ] Professional liability insurance quote.
 - [ ] One lawyer review: mutual NDA, services agreement, IP assignment and AI clause.
