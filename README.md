@@ -2,15 +2,30 @@
 
 Working repo for the Normek website, brand and go-to-market. Normek develops AI-native product development solutions, starting with enclosure design for electronics companies. The name is provisional (see `docs/open-questions.md`).
 
-**Status (2026-11-08):** pre-build. Strategy, brand concepts and the expert team are in place. There is no site code yet.
+**Status (2026-11-08):** the v0 preview site is built (Astro 7 static, a Pages Function for the contact form, tests and CI). The design lives in a Claude Design canvas. Nothing is deployed yet: Daniel's one-time setup comes first (`docs/ops/cloudflare-and-resend-setup.md`). Nothing is public: the name is not cleared and placeholders marked `[TO CONFIRM]` are still on the page.
 
 ## Start here
 
-1. `docs/open-questions.md`: the decisions we need from Daniel, each with a recommended default.
-2. `docs/strategy/2026-11-08-ai-disclosure-and-go-to-market.md`: the marketing consult on whether to advertise AI use, plus the go-to-market plan.
-3. `docs/adr/0001-stack-and-hosting.md`: the proposed stack and how it replaces Lovable.
-4. `brand/logo/preview.png`: three logo routes.
-5. `docs/content-reuse-inventory.md`: what to carry over from the Lovable site.
+1. `docs/open-questions.md`: the decisions we need from Daniel, each with a recommended default, and the decisions already taken.
+2. `docs/ops/cloudflare-and-resend-setup.md`: Daniel's setup, about 45 minutes, starting with two-factor and a private repo.
+3. `docs/design/claude-design.md`: the design canvas, its boards and the order of authority for design.
+4. `docs/copy/v0-home-copy.md`: every word on the home page, with the fact check and buyer review beside it.
+5. `docs/plan/work-breakdown.md` and `docs/adr/`: the build plan and the decisions behind the stack.
+6. `docs/security/`: the threat model, the contact API contract and the security reviews.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `npm ci` | Install exact versions (install scripts are off) |
+| `npm run dev` | Local dev server |
+| `npm run build` | Static build into `dist/` |
+| `npm run check` | Astro and TypeScript checks, also for `functions/` |
+| `npm test` | Unit tests |
+| `npm run test:a11y` | Playwright with axe on every page |
+| `npm run check:dist` | Checks the built site: noindex, no inline code, links, placeholders (add `--launch` for the launch gate) |
+| `npm run check:writing` | The em dash and semicolon rule for Markdown |
+| `node scripts/build-brand-assets.mjs` | Regenerates the favicons, icons and social image from the logo SVGs |
 
 ## How we work without Lovable
 
@@ -32,6 +47,12 @@ In Claude Code the agents run as named subagents. In Cowork, say "load `.claude/
 |---|---|
 | `CLAUDE.md` | Rules and context every assistant reads first |
 | `.claude/agents/` | The 16 specialist personas |
-| `docs/` | Open questions, decisions (ADRs), strategy, content inventory, claims ledger |
-| `brand/logo/` | Logo routes as SVG, the concept sheet, and the generator in `source/` |
-| `scripts/check-writing-rules.mjs` | Checks Markdown for the em dash and the semicolon, which Daniel does not use |
+| `src/` | The Astro site: pages, components, content collections (`src/content/`), styles and tokens |
+| `functions/` | The contact form's Pages Function (`/api/contact`) |
+| `public/` | Fonts, favicons, icons, the social image and `_headers` |
+| `tests/` | Unit tests (Vitest) and end to end tests (Playwright with axe) |
+| `scripts/` | Checks, preview server, screenshots and the brand asset build |
+| `.github/` | CI workflow and Dependabot |
+| `docs/` | Decisions, copy, design, legal, media, ops, plan, security, SEO, strategy, UX, claims ledger |
+| `docs/design/canvas/` | Snapshot of the Claude Design canvas sources |
+| `brand/` | The web brand guide and the logo routes with their generator |
