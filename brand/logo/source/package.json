@@ -1,0 +1,15 @@
+{
+  "name": "normek-logo-source",
+  "private": true,
+  "type": "module",
+  "description": "Generates the Normek logo SVG files and the concept sheet. Not part of the website build.",
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "node preview.mjs"
+  },
+  "dependencies": {
+    "@fontsource/barlow-semi-condensed": "^5.0.0",
+    "@fontsource/sora": "^5.0.0",
+    "opentype.js": "^1.3.4"
+  }
+}
