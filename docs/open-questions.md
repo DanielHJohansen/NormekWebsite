@@ -99,3 +99,35 @@ Status on 2026-11-08: Daniel does not want to feature tools for now, so this no 
 2. **Weeks 1 to 4**: 15 to 20 interviews, start reference design 1 with a build log, first outreach.
 3. **As soon as the name is cleared**: a one-page v0 site with the problem, how you work, the data and IP promise, your profile and the contact form. That is about a day or two of work, and it supports outreach without a long build.
 4. **After two proof items exist**: grow it into the seven-page v1.
+
+## 7. Decided while building the v0 preview (8 November 2026)
+
+The manager (the main assistant) took these so the build is not blocked. Challenge any of them and the team changes course.
+
+| # | Decision | Where it lives |
+|---|---|---|
+| D1 | The home page text and anchors come from `docs/copy/v0-home-copy.md`: Problem, Offers, Process, Scope, Data, About, Contact | Copy, canvas |
+| D2 | Hero headline test A goes first. The five person phone test decides between A, B and C. Simulated reviews are not evidence | Copy section 1 |
+| D3 | The v0 form has four required fields, a honeypot and Turnstile, loaded when the visitor first uses the form. No optional details, no call tick box, no upload, no confirmation email. The hidden `situation` and `source` fields wait for the analytics decision (ADR 0002) | Copy section 3, security CF rules |
+| D4 | Keep three font families (83.4 KB, inside the 100 KB font budget). If a budget fails, drop the mono and set specifications in Plex Sans | `docs/design/tokens.md` |
+| D5 | Accept the eight added colour token names: surface, border-strong, link, accent-hover, on-accent, success, warning, error | `docs/design/tokens.md` |
+| D6 | No AI or tools wording on the site, in meta tags, Open Graph, JSON-LD or `llms.txt`. A build test enforces it | SEO plan |
+| D7 | GitHub Actions are pinned to full commit SHAs, read from the upstream tags with `git ls-remote` | `.github/workflows/ci.yml` |
+| D8 | The Claude Design canvas has three pages: Home (desktop and phone), Other pages (confirmation, 404, privacy) and System (logo, colour, type, layout, components) | `docs/design/claude-design.md` |
+
+## 8. Questions that came back from the specialists
+
+Each has a default, so "go with the defaults" works.
+
+| # | Question | Default |
+|---|---|---|
+| 22 | What reply time can you keep, and how many projects can you run at once? (claims C-011 and C-012) | 1 working day, at most 2 projects |
+| 23 | Does the Feasibility Review also cover a failed existing enclosure? | Yes, the review then starts from the failed part |
+| 24 | May the site publish the "Not for now" list (medical, automotive, defense and dual-use, explosive atmospheres, simulation, certification)? Are mains-powered products in or out? | Publish the list. Mains-powered stays [TO CONFIRM] until you decide |
+| 25 | Who pays for prototype parts and shipping, and do customers pay manufacturers directly for tooling? | The customer pays prototype material at cost and pays manufacturers directly. A lawyer confirms the wording |
+| 26 | Is Mimir's Well your own work? | Treat it as not cleared until you say so |
+| 27 | Which inquiry retention period will you really keep? | 12 months after the last message |
+| 28 | Analytics at launch: Cloudflare Web Analytics (free, no new processor) or Plausible (about 9 euros a month, adds events)? | Cloudflare Web Analytics, ADR 0002 (proposed) |
+| 29 | Bare domain at go-live: set an unframed 301 forward from normek.dk to the www address at Simply. A framed forward breaks the page | Do it at go-live, with the Simply connector |
+| 30 | Your LinkedIn address, and a portrait or workshop photo for the About section | Provide both. Without them the section shows a labelled gap |
+| 31 | Accept the Cloudflare, Resend and Simply data processing agreements before any tester submits the form | Do it during the setup in `docs/ops/cloudflare-and-resend-setup.md` |
