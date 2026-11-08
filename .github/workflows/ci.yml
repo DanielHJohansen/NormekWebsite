@@ -116,7 +116,8 @@ jobs:
       - name: Scan the built site for secrets
         run: ${{ runner.temp }}/bin/gitleaks dir dist --redact --no-banner --verbose
 
-      # Step 7, the blocking half. Offline: only links inside dist/ are followed.
+      # Step 7, the blocking half. Offline: only links inside dist/ are followed. The form action /api/contact
+      # is a Pages Function, not a file in dist/, so it is excluded.
       # Needs a lychee version that has --index-files (0.19 or newer). Tested with lychee 0.24.2.
       - name: Links inside the site (offline)
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
@@ -127,6 +128,7 @@ jobs:
             --include-fragments
             --index-files index.html
             --root-dir ${{ github.workspace }}/dist
+            --exclude '/api/contact$'
             './dist/**/*.html'
           fail: true
 

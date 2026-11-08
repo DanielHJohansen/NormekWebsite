@@ -1,5 +1,5 @@
 {
-  "$comment": "Lighthouse CI budgets from docs/plan/work-breakdown.md section 6. Run by .github/workflows/ci.yml against a build made with PUBLIC_INDEXABLE=true (otherwise the SEO audit fails on noindex). Sizes are gzip transfer sizes from LHCI's own compressing static server, in KiB (1 KiB = 1024 bytes). Each assertion uses the median of 3 runs. Mobile emulation with simulated slow 4G is the Lighthouse default. Pages are discovered from dist/ (home is /index.html here). Every page other than home has a JavaScript budget of 0, so a new page that needs script must be added to the home entry or get its own entry on purpose. The SEO score on /404.html is a warning only, because a 404 page may carry noindex. Not measurable here, so checked elsewhere: response headers (security-engineer's preview gate), hero image alone (the image assertion counts all images on the page), and font family count (design review).",
+  "$comment": "Lighthouse CI budgets from docs/plan/work-breakdown.md section 6. Run by .github/workflows/ci.yml against a build made with PUBLIC_INDEXABLE=true (otherwise the SEO audit fails on noindex). Sizes are gzip transfer sizes from LHCI's own compressing static server, in KiB (1 KiB = 1024 bytes). Each assertion uses the median of 3 runs. Mobile emulation with simulated slow 4G is the Lighthouse default. Pages are discovered from dist/ (home is /index.html here). Every page other than home has a JavaScript budget of 0, so a new page that needs script must be added to the home entry or get its own entry on purpose. The SEO score on /404.html and /thanks/ is a warning only, because both pages carry noindex on purpose and Lighthouse fails its crawlable check for any noindex page. Not measurable here, so checked elsewhere: response headers (security-engineer's preview gate), hero image alone (the image assertion counts all images on the page), and font family count (design review).",
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
@@ -31,14 +31,14 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://localhost:\\d+/(?!404\\.html$)",
+          "matchingUrlPattern": "^http://localhost:\\d+/(?!(404\\.html|thanks/index\\.html)$)",
           "aggregationMethod": "median",
           "assertions": {
             "categories:seo": ["error", { "minScore": 0.95 }]
           }
         },
         {
-          "matchingUrlPattern": "^http://localhost:\\d+/404\\.html$",
+          "matchingUrlPattern": "^http://localhost:\\d+/(404\\.html|thanks/index\\.html)$",
           "aggregationMethod": "median",
           "assertions": {
             "categories:seo": ["warn", { "minScore": 0.95 }]
