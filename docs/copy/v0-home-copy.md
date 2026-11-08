@@ -26,7 +26,7 @@ All pairs sit under the eyebrow "Enclosure design for electronics teams" and end
 Name: Normek. Navigation: Enclosure design (#offers), How I work (#process), Data and files (#data), About (#about). Button: Request a review.
 
 ### Hero (#top)
-Eyebrow, headline, subhead and the one-person line: pair A, or the winner. Button: Request a feasibility review. Next to it: If a standard box fits, I recommend it. Under it: Or email daniel@normek.dk. Caption: Illustration, not to scale: a circuit board in a two-part housing, shown as a section. Not a customer project.
+Eyebrow, headline, subhead and the one-person line: pair A, or the winner. Button: Request a feasibility review. Next to it: If a standard box fits, I recommend it. Under it: Or email daniel@normek.dk. Caption: Illustration, not to scale: a circuit board in a two-part housing, shown as a section. Not a customer project. Legend under the drawing: From the top: lid with a seal in a groove in its lip, circuit board, base with two standoffs.
 
 ### Problem (#problem)
 **Three moments a standard box stops fitting**
@@ -164,6 +164,7 @@ Four fields only (plan). Optional details, the call tick box and a hidden `situa
 - **Success,** on the page or at /thanks: "Request received. This is your confirmation. I reply from daniel@normek.dk within [1 working day, TO CONFIRM]." /thanks repeats the three next steps. No confirmation email is sent.
 - **Send failed,** text kept: "Your request was not sent. Your text is still here. Try again or email daniel@normek.dk."
 - **Person check failed:** "The check could not confirm you are a person. Try again or email daniel@normek.dk."
+- **Message too long** (the encoded request would be over 16 KB, for example 2,000 characters of text that needs several bytes each): "Your message is too long. Shorten it and send again." Shown on the message field before anything is sent.
 
 ## 4. 404 page and footer
 **404.** Title tag: Page not found: Normek. Heading: This page does not exist. Text: The address may be mistyped, or the page has moved. Links: Back to the home page, then the button and email as in the hero.
@@ -206,6 +207,7 @@ Four fields only (plan). Optional details, the call tick box and a hidden `situa
 | About | Works alone, cover, city, CAD, printing | Buyer review |
 | Title, meta | None | Neither names stage 2 |
 | Part 6, ledger | Rows updated. C-017 to C-023 added | Fact check, new commitments |
+| Hero legend, form | A legend names the drawing parts in words. A message-too-long error for multi-byte text | Review finding: labels inside a scaled drawing are unreadable on a phone. Security review F6 |
 
 ## 8. Options
 **One-person line.** 1, used: "I work alone. I am Daniel Hessellund Johansen, a mechanical engineer." 2: "One engineer, not a team: Daniel Hessellund Johansen, mechanical engineer."

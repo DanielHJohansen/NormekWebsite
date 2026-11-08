@@ -603,7 +603,7 @@ The icons are the canvas's: 20 px, 2 px stroke, in the status colour, `aria-hidd
 | 2 Focus | Ring on the focused control, border turns `fg` |
 | 3 Failed validation | Error summary at the top, field errors, `aria-invalid`, focus on the summary |
 | 4 Sending | Button reads "Sending...", `aria-busy` on the form, fields unchanged |
-| 5 Success | Success message replaces the form |
+| 5 Success | The page navigates to `/thanks/`, which shows the success message (decided by the manager so the thanks page is the conversion) |
 | 6 Failure | Failure message above the button, text kept |
 
 The canvas draws step 1 only. Draw the others from this table.
