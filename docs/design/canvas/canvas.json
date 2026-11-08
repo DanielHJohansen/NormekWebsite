@@ -1,0 +1,26 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-08T12:40:00Z" },
+  "title": "Normek website design",
+  "launch": { "view": "canvas" },
+  "pages": [{ "id": "home", "name": "Home" }, { "id": "pages", "name": "Other pages" }, { "id": "system", "name": "System" }],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 7200, "title": "Home, desktop (v0)", "expand": "fill" },
+    "Mobile.dc.html": { "x": 1520, "y": 0, "w": 390, "h": 2650, "title": "Home, phone 1 of 3 (v0)" },
+    "Mobile-2.dc.html": { "x": 1990, "y": 0, "w": 390, "h": 4900, "title": "Home, phone 2 of 3 (v0)" },
+    "Mobile-3.dc.html": { "x": 2460, "y": 0, "w": 390, "h": 4300, "title": "Home, phone 3 of 3 (v0)" },
+    "Foundations.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 4000, "title": "Logo and colour", "page": "system" },
+    "Type.dc.html": { "x": 1520, "y": 0, "w": 1440, "h": 3300, "title": "Type and layout", "page": "system" },
+    "Components.dc.html": { "x": 3040, "y": 0, "w": 1440, "h": 3900, "title": "Components and devices", "page": "system" },
+    "Thanks.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 1200, "title": "Confirmation, /thanks", "expand": "fill", "page": "pages" },
+    "NotFound.dc.html": { "x": 1520, "y": 0, "w": 1440, "h": 1000, "title": "Not found, 404", "expand": "fill", "page": "pages" },
+    "Privacy.dc.html": { "x": 3040, "y": 0, "w": 1440, "h": 3300, "title": "Privacy notice, /privacy", "expand": "fill", "page": "pages" }
+  },
+  "order": ["Main.dc.html", "Mobile.dc.html", "Mobile-2.dc.html", "Mobile-3.dc.html", "Foundations.dc.html", "Type.dc.html", "Components.dc.html", "Thanks.dc.html", "NotFound.dc.html", "Privacy.dc.html"],
+  "notes": {
+    "t1": { "x": 0, "y": -300, "text": "Normek website, v0 preview", "kind": "title1", "maxW": 2850 },
+    "t2": { "x": 0, "y": -300, "text": "Foundations and components", "kind": "title1", "maxW": 4400, "page": "system" },
+    "t3": { "x": 0, "y": -300, "text": "Other v0 pages: confirmation, not found and privacy", "kind": "title1", "maxW": 4400, "page": "pages" }
+  },
+  "designSystems": []
+}

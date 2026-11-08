@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Normek foundations, type and layout</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width:1440px; box-sizing:border-box; padding:64px; background:#F4F5F2; color:#0F1B2D; font-family:'IBM Plex Sans', system-ui, 'Segoe UI', Roboto, Arial, sans-serif; font-size:16px; line-height:1.6; display:flex; flex-direction:column; gap:80px">
+
+<header style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:24px; padding-bottom:32px; border-bottom:2px solid #0F1B2D">
+<div>
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Normek web foundations, part 2 of 3</p>
+<h1 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:56px; line-height:1.05">Type and layout</h1>
+</div>
+<p style="margin:0; max-width:480px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; color:#586374">All three families are under the SIL Open Font License 1.1 and self-hosted with each licence file. The subset is Latin and includes Æ, Ø and Å.</p>
+</header>
+
+<section aria-labelledby="families-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">03 / Type</p>
+<h2 id="families-h" style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Three families, each with one job</h2>
+<p style="margin:0 0 32px; max-width:46em; color:#586374">Plex Sans and Plex Mono were drawn as a pair and sit quietly beside the condensed headings. Together they weigh 83.4 KB as Latin woff2 files, inside the 100 KB font budget. If a budget ever fails, the fallback is to drop the mono and set specifications in Plex Sans.</p>
+
+<div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:24px">
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px; display:flex; flex-direction:column; gap:16px">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Display</p>
+<p style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:56px; line-height:1.05">Your circuit board works.</p>
+<p style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:28px; line-height:1.2">ÆØÅ æøå 0123456789</p>
+<h3 style="margin:8px 0 0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Barlow Semi Condensed 600</h3>
+<p style="margin:0; font-size:15px; color:#586374">Headings and large numerals. The same face as the lockup. 23.0 KB. Its digits are proportional, so set figures with tabular-nums.</p>
+</div>
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px; display:flex; flex-direction:column; gap:16px">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Text</p>
+<p style="margin:0; font-size:20px; line-height:1.5">Design, printed prototypes and the hand-off to manufacturers, for teams that have the electronics but no mechanical engineer.</p>
+<p style="margin:0; font-size:20px; font-weight:600">ÆØÅ æøå 0123456789</p>
+<h3 style="margin:8px 0 0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">IBM Plex Sans 400 and 600</h3>
+<p style="margin:0; font-size:15px; color:#586374">Body, navigation, buttons and forms, on one weight axis. 45.7 KB. Its digits are already tabular.</p>
+</div>
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px; display:flex; flex-direction:column; gap:16px">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Specification</p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:24px; line-height:1.5">IP67, 85 °C, 2 mm, M3 x 8</p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:20px">ÆØÅ æøå 0123456789</p>
+<h3 style="margin:8px 0 0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">IBM Plex Mono 400</h3>
+<p style="margin:0; font-size:15px; color:#586374">Measurements, part numbers, table figures and eyebrow labels. 14.7 KB. The subset has no less-than-or-equal, greater-than-or-equal or ohm sign, so write "up to" in words.</p>
+</div>
+</div>
+<p style="margin:24px 0 0; max-width:60em; font-size:15px; color:#586374">Weights are display 600, text 400 and 600, mono 400. No italics (font-synthesis: none). Use font-display: swap and preload the display and text files.</p>
+</section>
+
+<section aria-labelledby="scale-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">04 / Scale</p>
+<h2 id="scale-h" style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">A fluid scale from 390 to 1280 px</h2>
+<p style="margin:0 0 32px; max-width:46em; color:#586374">Sizes grow with the viewport and stop at the top of the range. Specimens below are set at the largest size.</p>
+
+<div style="border-top:2px solid #0F1B2D">
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-sm</p>
+<p style="margin:0; font-size:15px; color:#586374">14 to 15 px, line 1.5. Captions, labels.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-size:15px; line-height:1.5">Illustration: a board in a two-part housing, section view.</p>
+</div>
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-base</p>
+<p style="margin:0; font-size:15px; color:#586374">16 to 18 px, line 1.6. Body.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(1rem, 0.9452rem + 0.2247vw, 1.125rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-size:18px; line-height:1.6">I build and test physical prototypes early. A printed part on your real board shows problems a screen does not.</p>
+</div>
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-lg</p>
+<p style="margin:0; font-size:15px; color:#586374">18 to 21 px, line 1.5. Lead.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(1.125rem, 1.0428rem + 0.3371vw, 1.3125rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-size:21px; line-height:1.5; color:#586374">Design, printed prototypes and the hand-off to manufacturers.</p>
+</div>
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-xl</p>
+<p style="margin:0; font-size:15px; color:#586374">22 to 27 px, line 1.3. Heading 3.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:27px; line-height:1.3">Enclosure feasibility review</p>
+</div>
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-2xl</p>
+<p style="margin:0; font-size:15px; color:#586374">27 to 36 px, line 1.2. Heading 2.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">What I take on, and what I do not</p>
+</div>
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-3xl</p>
+<p style="margin:0; font-size:15px; color:#586374">33 to 48 px, line 1.1. Heading 1 on inner pages.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(2.0625rem, 1.6517rem + 1.6854vw, 3rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:48px; line-height:1.1">Privacy notice</p>
+</div>
+
+<div style="display:flex; gap:32px; align-items:center; padding:20px 0; border-bottom:1px solid #D3D6D8">
+<div style="width:380px; flex:none">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">text-4xl</p>
+<p style="margin:0; font-size:15px; color:#586374">40 to 64 px, line 1.05. Hero heading 1.</p>
+<p style="margin:4px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:12px; line-height:1.5; color:#586374; overflow-wrap:anywhere">clamp(2.5rem, 1.8427rem + 2.6966vw, 4rem)</p>
+</div>
+<p style="margin:0; flex:1; min-width:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:64px; line-height:1.05">Your circuit board works.</p>
+</div>
+
+</div>
+
+<div style="margin-top:32px; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:24px">
+<div>
+<h3 style="margin:0 0 8px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Lines</h3>
+<p style="margin:0; font-size:15px; color:#586374">Body lines run 65 characters at most. Headings use sentence case and text-wrap: balance.</p>
+</div>
+<div>
+<h3 style="margin:0 0 8px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Eyebrows</h3>
+<p style="margin:0; font-size:15px; color:#586374">Plex Mono, text-sm, uppercase, 0.06em tracking, in the muted colour.</p>
+</div>
+<div>
+<h3 style="margin:0 0 8px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Units and dates</h3>
+<p style="margin:0; font-size:15px; color:#586374">Units take a space (2 mm, 85 °C). Ranges read "2 to 4 weeks". Dates read 8 November 2026.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="spec-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">05 / Specimen</p>
+<h2 id="spec-h" style="margin:0 0 32px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">The scale in use</h2>
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:56px 64px">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:15px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">02 / Offers</p>
+<h2 style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Three stages. Use one or all three.</h2>
+<p style="margin:0 0 16px; max-width:34em; font-size:21px; line-height:1.5; color:#586374">If a standard box fits, I recommend it.</p>
+<p style="margin:0 0 24px; max-width:40em; font-size:18px; line-height:1.6">How long a stage takes depends on the project, so a written scope fixes duration and price before work starts. Files follow a non-disclosure agreement (NDA).</p>
+<p style="margin:0; display:flex; flex-wrap:wrap; align-items:center; gap:16px 32px"><a href="#" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Read the privacy notice</a><span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:15px; color:#586374">IP67, 85 °C, 2 mm</span></p>
+</div>
+</section>
+
+<section aria-labelledby="layout-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">06 / Layout</p>
+<h2 id="layout-h" style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">One container, three widths</h2>
+<p style="margin:0 0 32px; max-width:46em; color:#586374">Every page is checked at 390, 768 and 1280 px. Values below are the ones the home page uses.</p>
+<div style="border-top:2px solid #0F1B2D">
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Container</p><p style="margin:0; flex:1">Maximum width 1200 px, centred. Text blocks sit inside it at 34 to 46 em.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Gutter</p><p style="margin:0; flex:1">clamp(20px, 4vw, 48px) on both sides.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Section padding</p><p style="margin:0; flex:1">clamp(56px, 8vw, 96px) above and below. Light sections are divided by a 1 px paper-300 rule. An Ink band divides itself.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Cards</p><p style="margin:0; flex:1">Flex-wrap with a 24 px gap, each card at least 300 px wide. White surface, 1 px paper-300 border, 28 px padding, square corners.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Radius</p><p style="margin:0; flex:1">2 px on buttons and inputs. Nothing else is rounded.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Chamfer</p><p style="margin:0; flex:1">28 px cut at the top right and bottom left of image frames and one hero panel, at 45 degrees. Never on buttons or inputs.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Touch targets</p><p style="margin:0; flex:1">Primary button 52 px high, header button 44 px, inputs 48 px, checkbox 24 px inside a 44 px row.</p></div>
+<div style="display:flex; gap:32px; padding:16px 0; border-bottom:1px solid #D3D6D8"><p style="margin:0; width:260px; flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase">Header</p><p style="margin:0; flex:1">Lockup at 32 px symbol height above 768 px and 28 px below. On a phone the header keeps the lockup and one button, with no menu.</p></div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

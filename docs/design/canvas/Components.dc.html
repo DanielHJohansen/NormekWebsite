@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Normek foundations, components and devices</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width:1440px; box-sizing:border-box; padding:64px; background:#F4F5F2; color:#0F1B2D; font-family:'IBM Plex Sans', system-ui, 'Segoe UI', Roboto, Arial, sans-serif; font-size:16px; line-height:1.6; display:flex; flex-direction:column; gap:80px">
+
+<header style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:24px; padding-bottom:32px; border-bottom:2px solid #0F1B2D">
+<div>
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Normek web foundations, part 3 of 3</p>
+<h1 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:56px; line-height:1.05">Components and devices</h1>
+</div>
+<p style="margin:0; max-width:480px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; color:#586374">One primary Signal fill per view on the live site. Several appear here only to show states. Values marked proposed wait for the tokens hand-off.</p>
+</header>
+
+<section aria-labelledby="buttons-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">07 / Buttons</p>
+<h2 id="buttons-h" style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Buttons and links</h2>
+<p style="margin:0 0 32px; max-width:46em; color:#586374">The primary button is a Signal fill with an Ink label, 5.54:1. White on Signal fails, so it is never used. Buttons have a 2 px radius and are never chamfered.</p>
+
+<div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px">
+
+<div style="background:#F4F5F2; box-shadow:inset 0 0 0 1px #D3D6D8; padding:40px; display:flex; flex-direction:column; gap:36px">
+<h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">On Paper</h3>
+
+<div style="display:flex; flex-wrap:wrap; gap:24px 32px; align-items:flex-start">
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#FF5A1F; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">primary, default</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#FE835E; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">hover: accent-hover</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:6px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#FF5A1F; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer; outline:3px solid #B43601; outline-offset:3px">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">focus: 3 px ring, proposed</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" disabled style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#E8EAE9; color:#586374; font:inherit; font-weight:600; cursor:not-allowed">Sending...</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">while sending, proposed</span>
+</div>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:24px 32px; align-items:flex-start">
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:2px solid #0F1B2D; border-radius:2px; background:transparent; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">secondary, default</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:2px solid #0F1B2D; border-radius:2px; background:#0F1B2D; color:#F4F5F2; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">hover: Ink fill, proposed</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 20px; border:2px solid #0F1B2D; border-radius:2px; background:transparent; color:#0F1B2D; font:inherit; font-size:15px; font-weight:600; cursor:pointer">Request a review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">header button, 44 px</span>
+</div>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:24px 40px; align-items:flex-start">
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<a href="#" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Or email daniel@normek.dk</a>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">link, 5.53:1</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<a href="#" style="color:#B43601; font-weight:500; text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px">Or email daniel@normek.dk</a>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">hover: thicker rule, proposed</span>
+</div>
+</div>
+</div>
+
+<div style="background:#0F1B2D; color:#F4F5F2; padding:40px; display:flex; flex-direction:column; gap:36px">
+<h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">On Ink</h3>
+
+<div style="display:flex; flex-wrap:wrap; gap:24px 32px; align-items:flex-start">
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#FF5A1F; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">primary, default</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#FE835E; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">hover: accent-hover</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:6px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:0; border-radius:2px; background:#FF5A1F; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer; outline:3px solid #FE835E; outline-offset:3px">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">focus: 3 px ring, proposed</span>
+</div>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:24px 32px; align-items:flex-start">
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:2px solid #F4F5F2; border-radius:2px; background:transparent; color:#F4F5F2; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">secondary, default</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<button type="button" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; border:2px solid #F4F5F2; border-radius:2px; background:#F4F5F2; color:#0F1B2D; font:inherit; font-weight:600; cursor:pointer">Request a feasibility review</button>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">hover: Paper fill, proposed</span>
+</div>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:24px 40px; align-items:flex-start">
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<a href="#" style="color:#FE835E; font-weight:500; text-decoration:underline; text-underline-offset:3px">Read the privacy notice</a>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">link, 7.09:1</span>
+</div>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px">
+<a href="#" style="color:#FE835E; font-weight:500; text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px">Read the privacy notice</a>
+<span style="font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">hover: thicker rule, proposed</span>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<section aria-labelledby="fields-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">08 / Fields and messages</p>
+<h2 id="fields-h" style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Form states and status messages</h2>
+<p style="margin:0 0 32px; max-width:46em; color:#586374">Labels sit above fields at 16 px. Inputs are 48 px high with a 1 px Steel border. Status messages sit on the surface colour with a left rule and an icon, never colour alone. The texts are the final form copy.</p>
+
+<div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px">
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:40px; display:flex; flex-direction:column; gap:28px">
+<h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Fields</h3>
+
+<div>
+<label for="s-default" style="display:block; margin-bottom:6px; font-size:15px; font-weight:600">Name</label>
+<input id="s-default" type="text" style="display:block; width:100%; box-sizing:border-box; min-height:48px; padding:0 14px; border:1px solid #6B7686; border-radius:2px; background:#FFFFFF; color:#0F1B2D; font:inherit">
+<p style="margin:6px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">default</p>
+</div>
+
+<div style="padding:4px">
+<label for="s-focus" style="display:block; margin-bottom:6px; font-size:15px; font-weight:600">Company</label>
+<input id="s-focus" type="text" value="Acme Sensors" style="display:block; width:100%; box-sizing:border-box; min-height:48px; padding:0 14px; border:1px solid #0F1B2D; border-radius:2px; background:#FFFFFF; color:#0F1B2D; font:inherit; outline:3px solid #B43601; outline-offset:2px">
+<p style="margin:10px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">focus: Ink border and a 3 px ring, proposed</p>
+</div>
+
+<div>
+<label for="s-error" style="display:block; margin-bottom:6px; font-size:15px; font-weight:600">Work email</label>
+<input id="s-error" type="email" value="name.company.com" aria-invalid="true" aria-describedby="s-error-msg" style="display:block; width:100%; box-sizing:border-box; min-height:48px; padding:0 14px; border:2px solid #B13544; border-radius:2px; background:#FFFFFF; color:#0F1B2D; font:inherit">
+<p id="s-error-msg" style="margin:8px 0 0; display:flex; align-items:flex-start; gap:8px; font-size:15px; color:#B13544"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex:none; margin-top:2px"><circle cx="10" cy="10" r="8" fill="none" stroke="#B13544" stroke-width="2"/><path d="M7 7L13 13M13 7L7 13" fill="none" stroke="#B13544" stroke-width="2"/></svg><span>The email address needs an @ sign.</span></p>
+<p style="margin:6px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">error: 2 px border, icon and text</p>
+</div>
+
+<div>
+<label for="s-need" style="display:block; margin-bottom:6px; font-size:15px; font-weight:600">What do you need?</label>
+<p id="s-need-help" style="margin:0 0 8px; font-size:14px; color:#586374">Product, where it is used, board stage. No confidential details yet: files follow a non-disclosure agreement (NDA).</p>
+<textarea id="s-need" aria-describedby="s-need-help" rows="4" style="display:block; width:100%; box-sizing:border-box; min-height:120px; padding:12px 14px; border:1px solid #6B7686; border-radius:2px; background:#FFFFFF; color:#0F1B2D; font:inherit; resize:vertical"></textarea>
+<p style="margin:6px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">textarea with helper text</p>
+</div>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:24px">
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #B13544; padding:24px 28px">
+<p style="margin:0 0 10px; display:flex; align-items:center; gap:10px; font-weight:600"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex:none"><circle cx="10" cy="10" r="8" fill="none" stroke="#B13544" stroke-width="2"/><path d="M7 7L13 13M13 7L7 13" fill="none" stroke="#B13544" stroke-width="2"/></svg>Fix these fields to send your request:</p>
+<ul style="margin:0; padding-left:30px; display:flex; flex-direction:column; gap:6px">
+<li><a href="#s-default" style="color:#B43601; text-decoration:underline; text-underline-offset:3px">Enter your name so I know who to reply to.</a></li>
+<li><a href="#s-error" style="color:#B43601; text-decoration:underline; text-underline-offset:3px">The email address needs an @ sign.</a></li>
+</ul>
+<p style="margin:14px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">error summary, at the top of the form, takes focus</p>
+</div>
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #067239; padding:24px 28px">
+<p style="margin:0 0 10px; display:flex; align-items:flex-start; gap:10px"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex:none; margin-top:3px"><circle cx="10" cy="10" r="8" fill="none" stroke="#067239" stroke-width="2"/><path d="M6 10.5L9 13.5L14 7.5" fill="none" stroke="#067239" stroke-width="2"/></svg><span><strong style="font-weight:600; color:#067239">Request received.</strong> This is your confirmation. I reply from daniel@normek.dk within <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[1 working day, TO CONFIRM]</span>.</span></p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">success, on the page or at /thanks</p>
+</div>
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #805C05; padding:24px 28px">
+<p style="margin:0 0 10px; display:flex; align-items:flex-start; gap:10px"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex:none; margin-top:3px"><path d="M10 2.5L18 16.5H2Z" fill="none" stroke="#805C05" stroke-width="2" stroke-linejoin="round"/><path d="M10 8V11.5" fill="none" stroke="#805C05" stroke-width="2"/><circle cx="10" cy="14" r="1.1" fill="#805C05"/></svg><span>The check could not confirm you are a person. Try again or email <a href="#" style="color:#B43601; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a>.</span></p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">warning, person check failed</p>
+</div>
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #B13544; padding:24px 28px">
+<p style="margin:0 0 10px; display:flex; align-items:flex-start; gap:10px"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex:none; margin-top:3px"><circle cx="10" cy="10" r="8" fill="none" stroke="#B13544" stroke-width="2"/><path d="M7 7L13 13M13 7L7 13" fill="none" stroke="#B13544" stroke-width="2"/></svg><span>Your request was not sent. Your text is still here. Try again or email <a href="#" style="color:#B43601; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a>.</span></p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">error, send failed, the text is kept</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<section aria-labelledby="cards-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">09 / Cards and tags</p>
+<h2 id="cards-h" style="margin:0 0 32px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Cards, tags and the chamfer frame</h2>
+
+<div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:24px; align-items:start">
+
+<div style="background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; letter-spacing:0.06em; color:#586374">01</p>
+<h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:27px; line-height:1.3">The board is done and there is no box.</h3>
+<p style="margin:0; color:#586374">You have a working board and a ship date. The box has to match its connectors, antenna and mounting.</p>
+<a href="#" style="padding-top:8px; color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
+<p style="margin:8px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">card on Paper: white surface, 1 px paper-300 border, 28 px padding</p>
+</div>
+
+<div style="background:#0F1B2D; padding:24px; box-sizing:border-box">
+<div style="background:#1B2739; border:1px solid #293547; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
+<h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:27px; line-height:1.3; color:#F4F5F2">No file upload.</h3>
+<p style="margin:0; color:#969EA8">Describe the product in words and keep confidential details out.</p>
+<a href="#" style="padding-top:8px; color:#FE835E; font-weight:500; text-decoration:underline; text-underline-offset:3px">Read the privacy notice</a>
+</div>
+<p style="margin:16px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">card on Ink: ink-800 surface, ink-700 border</p>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:20px">
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; aspect-ratio:4 / 3; box-sizing:border-box; display:flex; align-items:flex-end; padding:20px; clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px))">
+<span style="display:inline-block; border:1px dashed #6B7686; padding:4px 10px; background:#FFFFFF; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">Photo: [TO CONFIRM]</span>
+</div>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">chamfer frame: 28 px cut, top right and bottom left, image frames and one hero panel only</p>
+</div>
+
+</div>
+
+<div style="margin-top:24px; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px">
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px">
+<p style="margin:0 0 12px">I reply by email within <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[1 working day, TO CONFIRM]</span>.</p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#586374">placeholder tag on a light ground: dashed Steel border, Plex Mono</p>
+</div>
+<div style="background:#0F1B2D; color:#F4F5F2; padding:32px">
+<p style="margin:0 0 12px">Legal name and form: <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span></p>
+<p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; color:#969EA8">placeholder tag on Ink: dashed steel-300 border. A visible tag blocks launch.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="devices-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">10 / Devices</p>
+<h2 id="devices-h" style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Trace, pad ring and section drawing</h2>
+<p style="margin:0 0 32px; max-width:46em; color:#586374">All devices come from the logo and sit at 45 degrees. The trace appears once per page, in the process list. The hatch is a drawing convention for cut material and never a background pattern.</p>
+
+<div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:24px; align-items:start">
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px">
+<h3 style="margin:0 0 20px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Trace</h3>
+<ol style="margin:0; padding:0; list-style:none">
+<li style="display:flex; gap:20px">
+<div aria-hidden="true" style="display:flex; flex-direction:column; align-items:center; width:24px; flex:none">
+<svg width="24" height="24" viewBox="0 0 24 24" style="display:block; flex:none"><circle cx="12" cy="12" r="8.4" fill="none" stroke="#0F1B2D" stroke-width="7.2"/></svg>
+<div style="flex:1; width:2px; min-height:12px; background:#0F1B2D"></div>
+<svg width="24" height="24" viewBox="0 0 24 24" style="display:block; flex:none"><path d="M12 0V4L20 12V16L12 24" fill="none" stroke="#0F1B2D" stroke-width="2"/></svg>
+<div style="flex:1; width:2px; min-height:12px; background:#0F1B2D"></div>
+</div>
+<p style="margin:0; padding-bottom:24px"><strong style="font-weight:600">Describe the product</strong> in the form, in words.</p>
+</li>
+<li style="display:flex; gap:20px">
+<div aria-hidden="true" style="display:flex; flex-direction:column; align-items:center; width:24px; flex:none">
+<svg width="24" height="24" viewBox="0 0 24 24" style="display:block; flex:none"><circle cx="12" cy="12" r="8.4" fill="none" stroke="#0F1B2D" stroke-width="7.2"/></svg>
+<div style="flex:1; width:2px; min-height:12px; background:#0F1B2D"></div>
+<svg width="24" height="24" viewBox="0 0 24 24" style="display:block; flex:none"><path d="M12 0V4L20 12V16L12 24" fill="none" stroke="#0F1B2D" stroke-width="2"/></svg>
+<div style="flex:1; width:2px; min-height:12px; background:#0F1B2D"></div>
+</div>
+<p style="margin:0; padding-bottom:24px"><strong style="font-weight:600">Get a written scope.</strong> Deliverables and price.</p>
+</li>
+<li style="display:flex; gap:20px">
+<div aria-hidden="true" style="display:flex; flex-direction:column; align-items:center; width:24px; flex:none">
+<svg width="24" height="24" viewBox="0 0 24 24" style="display:block; flex:none"><circle cx="12" cy="12" r="8.4" fill="none" stroke="#0F1B2D" stroke-width="7.2"/></svg>
+</div>
+<p style="margin:0"><strong style="font-weight:600">Hand off to manufacturers.</strong></p>
+</li>
+</ol>
+<p style="margin:20px 0 0; font-size:15px; color:#586374">A 2 px Ink line, 45 degree jogs and pad rings. Vertical on every width.</p>
+</div>
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px">
+<h3 style="margin:0 0 20px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Pad ring</h3>
+<svg viewBox="0 0 280 150" width="100%" style="display:block; height:auto" role="img" aria-label="A pad ring drawn four times larger than in use, with its outer diameter and its hole marked.">
+<circle cx="96" cy="75" r="33.6" fill="none" stroke="#0F1B2D" stroke-width="28.8"/>
+<line x1="48" y1="20" x2="144" y2="20" stroke="#6B7686" stroke-width="1"/>
+<line x1="48" y1="14" x2="48" y2="26" stroke="#6B7686" stroke-width="1"/>
+<line x1="144" y1="14" x2="144" y2="26" stroke="#6B7686" stroke-width="1"/>
+<text x="96" y="12" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#0F1B2D">outer 24</text>
+<line x1="76.8" y1="75" x2="115.2" y2="75" stroke="#FF5A1F" stroke-width="1.5"/>
+<path d="M115.2 75L170 108" stroke="#FF5A1F" stroke-width="1.5" fill="none"/>
+<circle cx="170" cy="108" r="3" fill="#FF5A1F"/>
+<text x="178" y="112" font-family="IBM Plex Mono, monospace" font-size="12" fill="#0F1B2D">hole 9.6</text>
+<text x="96" y="140" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#586374">shown at 4 times</text>
+</svg>
+<p style="margin:20px 0 0; font-size:15px; color:#586374">The hole is 40 percent of the outer diameter, as in the logo pads. In use the ring is 24 px, with the stroke in Ink.</p>
+</div>
+
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px">
+<h3 style="margin:0 0 20px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Section hatch</h3>
+<svg viewBox="0 0 280 150" width="100%" style="display:block; height:auto" role="img" aria-label="A strip of cut material drawn with Ink lines at 45 degrees and a 9 pixel pitch, with a Steel dimension line.">
+<defs>
+<pattern id="cut-sample" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="9" stroke="#0F1B2D" stroke-width="1.5"/>
+</pattern>
+</defs>
+<rect x="20" y="30" width="200" height="60" fill="url(#cut-sample)" stroke="#0F1B2D" stroke-width="2"/>
+<line x1="20" y1="112" x2="220" y2="112" stroke="#6B7686" stroke-width="1"/>
+<line x1="20" y1="106" x2="20" y2="118" stroke="#6B7686" stroke-width="1"/>
+<line x1="220" y1="106" x2="220" y2="118" stroke="#6B7686" stroke-width="1"/>
+<text x="120" y="134" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#586374">9 px pitch, 1.5 px lines</text>
+</svg>
+<p style="margin:20px 0 0; font-size:15px; color:#586374">Marks cut material in section drawings only. As wallpaper it fights the text, even at 12 percent.</p>
+</div>
+
+</div>
+
+<div style="margin-top:24px; display:flex; flex-wrap:wrap; gap:32px; align-items:center; background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:32px">
+<div style="flex:0 1 460px; min-width:0">
+<svg viewBox="0 0 560 440" width="100%" style="display:block; height:auto" role="img" aria-label="Exploded section drawing of an enclosure, used as the drawing style reference.">
+<defs>
+<pattern id="cut-ref" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="9" stroke="#0F1B2D" stroke-width="1.5"/>
+</pattern>
+</defs>
+<line x1="120" y1="112" x2="120" y2="262" stroke="#6B7686" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="400" y1="112" x2="400" y2="262" stroke="#6B7686" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M80 100V44H440V100H422V62H98V100Z" fill="url(#cut-ref)" stroke="#0F1B2D" stroke-width="2" stroke-linejoin="miter"/>
+<circle cx="89" cy="108" r="5" fill="none" stroke="#0F1B2D" stroke-width="2"/>
+<circle cx="431" cy="108" r="5" fill="none" stroke="#0F1B2D" stroke-width="2"/>
+<rect x="110" y="196" width="300" height="10" fill="#0F1B2D"/>
+<rect x="140" y="170" width="44" height="26" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
+<rect x="226" y="176" width="30" height="20" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
+<rect x="352" y="160" width="48" height="36" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
+<path d="M80 268H98V366H422V268H440V386H80Z" fill="url(#cut-ref)" stroke="#0F1B2D" stroke-width="2" stroke-linejoin="miter"/>
+<rect x="132" y="312" width="16" height="54" fill="url(#cut-ref)" stroke="#0F1B2D" stroke-width="2"/>
+<rect x="372" y="312" width="16" height="54" fill="url(#cut-ref)" stroke="#0F1B2D" stroke-width="2"/>
+<path d="M89 113L44 150" stroke="#FF5A1F" stroke-width="2" fill="none"/>
+<circle cx="44" cy="150" r="4" fill="#FF5A1F"/>
+<text x="14" y="174" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">seal</text>
+<line x1="440" y1="72" x2="488" y2="72" stroke="#6B7686" stroke-width="1"/>
+<text x="494" y="76" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">lid</text>
+<line x1="410" y1="201" x2="488" y2="201" stroke="#6B7686" stroke-width="1"/>
+<text x="494" y="205" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">board</text>
+<line x1="440" y1="330" x2="488" y2="330" stroke="#6B7686" stroke-width="1"/>
+<text x="494" y="334" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">base</text>
+</svg>
+</div>
+<div style="flex:1 1 420px; min-width:0">
+<h3 style="margin:0 0 12px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Drawing style</h3>
+<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<li>Ink lines 1.5 to 2 px, Steel dimension lines 1 px, one Signal callout.</li>
+<li>Labels in Plex Mono at 13 px, in Ink, with a leader line in Steel.</li>
+<li>Drawn parts: real work or a clearly labelled illustration. No stock images, gears or bulbs.</li>
+<li>One subject on a Paper or Ink ground, with a scale cue where a photo is used.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="rules-h">
+<p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:14px; line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">11 / Rules</p>
+<h2 id="rules-h" style="margin:0 0 32px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:36px; line-height:1.2">Do and do not</h2>
+<div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px">
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #067239; padding:28px 32px">
+<h3 style="margin:0 0 12px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Do</h3>
+<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<li>Let Ink and Paper carry the page.</li>
+<li>Take every colour from the tokens.</li>
+<li>Use the tile under 24 px and a solid panel under the logo on photos.</li>
+<li>Show real work and mark gaps [TO CONFIRM].</li>
+</ul>
+</div>
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #B13544; padding:28px 32px">
+<h3 style="margin:0 0 12px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:24px; line-height:1.3">Do not</h3>
+<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<li>Set Signal text on Paper or white, white text on Signal, or Steel for small text.</li>
+<li>Alter the logo.</li>
+<li>Use gradients, stock photos, generated imagery or hatch wallpaper.</li>
+<li>Hard-code the name outside src/config/site.ts.</li>
+</ul>
+</div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

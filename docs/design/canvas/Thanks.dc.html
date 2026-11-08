@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Normek confirmation page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width:100%; min-height:100vh; display:flex; flex-direction:column; background:#F4F5F2; color:#0F1B2D; font-family:'IBM Plex Sans', system-ui, 'Segoe UI', Roboto, Arial, sans-serif; font-size:clamp(1rem, 0.9452rem + 0.2247vw, 1.125rem); line-height:1.6; font-weight:400; box-sizing:border-box">
+<dc-import name="Main" slice="header" hint-size="100%,77px"></dc-import>
+<main style="flex:1">
+<section style="padding:clamp(56px, 8vw, 96px) 0">
+<div style="max-width:760px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); box-sizing:border-box">
+<h1 style="margin:0 0 24px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(2.0625rem, 1.6517rem + 1.6854vw, 3rem); line-height:1.1; text-wrap:balance">Request received.</h1>
+<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; border-left:4px solid #067239; padding:24px 28px; display:flex; align-items:flex-start; gap:12px">
+<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex:none; margin-top:4px"><circle cx="10" cy="10" r="8" fill="none" stroke="#067239" stroke-width="2"/><path d="M6 10.5L9 13.5L14 7.5" fill="none" stroke="#067239" stroke-width="2"/></svg>
+<p style="margin:0">This is your confirmation. I reply from daniel@normek.dk within <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[1 working day, TO CONFIRM]</span>.</p>
+</div>
+<h2 style="margin:56px 0 24px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem); line-height:1.2">Next steps</h2>
+<div style="display:flex; flex-direction:column; gap:24px">
+<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">01</span><p style="margin:0">I reply by email within <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[1 working day, TO CONFIRM]</span>.</p></div>
+<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">02</span><p style="margin:0">If useful, a 30 minute call to scope. A mutual NDA comes first for files.</p></div>
+<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">03</span><p style="margin:0">A written scope and price before any work starts <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</p></div>
+</div>
+<p style="margin:48px 0 0; padding-top:24px; border-top:1px solid #D3D6D8"><a href="#" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Back to the home page</a></p>
+</div>
+</section>
+</main>
+<dc-import name="Main" slice="footer" hint-size="100%,330px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
