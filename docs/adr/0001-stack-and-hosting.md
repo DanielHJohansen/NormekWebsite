@@ -170,7 +170,7 @@ npm with `npm ci`, ESLint and Prettier, `astro check`, Vitest, Playwright with a
 
 ### A10. Turnstile loads on first use of the form (manager, replaces the loading rule in A6)
 
-The Turnstile script is added when a visitor first focuses or clicks a form field, not when the form scrolls into view. A visitor who only reads the page never contacts Cloudflare's challenge host. The content security policy allows `challenges.cloudflare.com` for script, frame and connect. The privacy notice says the same, and the browser test for local storage runs after first use.
+The Turnstile script is added when a visitor first focuses or clicks a form field, not when the form scrolls into view. A visitor who only reads the page never contacts Cloudflare's challenge host. The content security policy allows `challenges.cloudflare.com` for script and frame only. `connect-src` stays `'self'`, and widening it needs a recorded violation (security review S11). The privacy notice says the same, and the browser test for local storage runs after first use.
 
 ### A11. Three font families (manager)
 
