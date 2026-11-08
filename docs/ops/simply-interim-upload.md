@@ -17,7 +17,7 @@ An assistant cannot upload it. The cloud session reaches Simply only over HTTPS,
 
 Still on the pages: 55 dashed `[TO CONFIRM]` tags across the four pages, 31 of them on the home page and the rest mostly in the footer that every page repeats. Nothing in the text points to an internal note.
 
-Tested on 2026-11-08: the package behind a local Apache 2.4 with `AllowOverride All`. All headers present, `/privacy` redirects to `/privacy/`, the 404 page, the font and SVG types, a year of caching on `/_astro/`, no console error, no CSP violation, one host contacted, the form answers "not sent". **Not tested: Simply's own server.** The `.htaccess` directives sit inside `IfModule` blocks, so a missing module does not break the site. A wrong directive would, which is why step 6 and the rollback exist.
+Tested on 2026-11-08: the package behind a local Apache 2.4 with `AllowOverride All`. All headers present, `/privacy` redirects to `/privacy/`, the 404 page, the font and SVG types, a year of caching on `/_astro/`, no console error, no CSP violation, one host contacted, the form answers "not sent". **Not tested: Simply's own server.** The `.htaccess` directives sit inside `IfModule` blocks, so a missing module does not break the site. A wrong directive would, which is why step 7 and the rollback exist.
 
 ## Decide first
 
