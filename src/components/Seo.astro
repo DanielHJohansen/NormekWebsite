@@ -1,0 +1,35 @@
+---
+/**
+ * The one component for everything search engines and browsers read from <head>.
+ * Fed from page data, so no page writes these tags by hand.
+ *
+ * Until launch every page says noindex. PUBLIC_INDEXABLE=true removes it (robots.txt follows).
+ * TODO(seo-analytics-specialist): Open Graph, Twitter card and JSON-LD come when the preview image
+ * exists (brand guide section 6) and the name is cleared. JSON-LD is an inline script element, which
+ * the CSP and check-dist forbid. Agree on an exception with security-engineer first.
+ */
+import faviconUrl from "../assets/brand/favicon.svg?url";
+import { SITE } from "../config/site";
+import { FLAGS } from "../lib/flags";
+
+interface Props {
+  title?: string | undefined;
+  description?: string | undefined;
+  /** Pass false on pages that must not name a canonical URL, like the 404 page. */
+  canonical?: boolean;
+}
+
+const { title, description = SITE.description, canonical = true } = Astro.props;
+const fullTitle = title ? `${title} | ${SITE.name}` : SITE.name;
+const canonicalUrl =
+  FLAGS.indexable && canonical && Astro.site
+    ? new URL(Astro.url.pathname, Astro.site).href
+    : undefined;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{!FLAGS.indexable && <meta name="robots" content="noindex, nofollow" />}
+{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+<meta name="theme-color" content={SITE.themeColor} />
+<link rel="icon" href={faviconUrl} type="image/svg+xml" />

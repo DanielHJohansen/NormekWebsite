@@ -1,0 +1,39 @@
+---
+/**
+ * Every page in the `pages` collection: /privacy/, and the v1 pages once they are published.
+ * getStaticPaths goes through isPublished(), so a draft has no route in a production build.
+ */
+import { render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPages } from "../lib/content";
+import { isDraft } from "../lib/drafts";
+import { RESERVED_SLUGS, splitId } from "../lib/routes";
+
+export async function getStaticPaths() {
+  const pages = await getPages();
+  return pages.map((entry) => {
+    const { slug } = splitId(entry.id);
+    if (RESERVED_SLUGS.includes(slug)) {
+      throw new Error(`Page "${entry.id}" uses the reserved slug "${slug}". Rename the file.`);
+    }
+    return { params: { slug }, props: { entry } };
+  });
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  lang={entry.data.lang}
+  draft={isDraft(entry)}
+>
+  <article class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
+    <h1 class="text-3xl">{entry.data.title}</h1>
+    <div class="prose mt-8">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

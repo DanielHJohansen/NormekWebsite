@@ -1,0 +1,155 @@
+/*
+ * Global styles. Tokens live in tokens.css. Everything here reads them through var(--...) and
+ * Tailwind utilities, so there are no raw colour values in this file.
+ */
+
+/*
+ * Scan only the templates. Class names live in .astro files, so this keeps stray words in comments,
+ * Markdown and docs/ from turning into utilities. Add a path here if classes ever live elsewhere.
+ */
+@import "tailwindcss" source(none);
+@source "../**/*.astro";
+
+@import "./tokens.css";
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    /* The brand uses no italics and no faux weights (brand guide section 3). */
+    font-synthesis: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-semibold);
+    text-wrap: balance;
+  }
+
+  /* One visible focus style everywhere. Sections on Ink swap --color-focus (see .theme-ink). */
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--color-signal-100);
+    color: var(--color-ink);
+  }
+}
+
+/*
+ * Ink sections. The brand guide's dark column applies to any Ink band, so a band only needs this class.
+ * It redefines the semantic tokens, and every utility that reads them follows.
+ */
+@layer components {
+  .theme-ink {
+    --color-bg: var(--color-ink);
+    --color-surface: var(--color-ink-800);
+    --color-border: var(--color-ink-700);
+    --color-fg: var(--color-paper);
+    --color-muted: var(--color-steel-300);
+    --color-link: var(--color-signal-400);
+    --color-focus: var(--color-signal-400);
+    --color-success: #30b264;
+    --color-warning: #c9940d;
+    --color-error: #f6747c;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  /* Long-form text from Markdown. Hand written so no typography plugin is needed. */
+  .prose {
+    max-width: var(--container-prose);
+  }
+  .prose > * + * {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .prose h2 {
+    margin-top: calc(var(--spacing) * 10);
+    font-size: var(--text-2xl);
+    line-height: var(--text-2xl--line-height);
+  }
+  .prose h3 {
+    margin-top: calc(var(--spacing) * 8);
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+  .prose ul,
+  .prose ol {
+    padding-left: calc(var(--spacing) * 6);
+  }
+  .prose ul {
+    list-style: disc;
+  }
+  .prose ol {
+    list-style: decimal;
+  }
+  .prose li + li {
+    margin-top: calc(var(--spacing) * 2);
+  }
+  .prose a,
+  .link {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .prose a:hover,
+  .link:hover {
+    text-decoration-thickness: 2px;
+  }
+  .prose strong {
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+/* Route 01 device: a 45 degree cut on the top right and bottom left corners (brand guide section 5). */
+@utility chamfer {
+  --chamfer: 1.5rem;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer))
+  );
+}
+
+/* The skip link is hidden until it receives keyboard focus. */
+@utility skip-link {
+  position: absolute;
+  left: calc(var(--spacing) * 4);
+  top: calc(var(--spacing) * 2);
+  z-index: 50;
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  font-weight: var(--font-weight-semibold);
+  transform: translateY(-200%);
+  &:focus {
+    transform: translateY(0);
+    outline-color: var(--color-signal-400);
+  }
+}

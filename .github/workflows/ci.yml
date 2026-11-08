@@ -1,0 +1,252 @@
+name: CI
+
+# Implements docs/plan/work-breakdown.md section 7. It runs on every push and pull request.
+# The weekly schedule runs only the external link check. It never blocks a push or a pull request.
+#
+# Jobs run side by side and map to the plan like this:
+#   Checks      steps 1 to 8 and 11 (install, writing rules, lint, types, unit tests, build,
+#               check:dist, offline links, accessibility, screenshots)
+#   Lighthouse  step 9 (needs its own build with PUBLIC_INDEXABLE=true)
+#   Secret scan step 10 (full git history)
+#   External links (weekly)  the non-blocking half of step 7
+#
+# PINNING STATUS: every action is pinned to a full commit SHA. The SHAs were read from the upstream
+# tags with git ls-remote on 2026-11-08 (actions/checkout v4.2.2, actions/setup-node v4.4.0,
+# actions/upload-artifact v4.6.2, lycheeverse/lychee-action v2.9.0). The trailing comment keeps the
+# version. Dependabot (see dependabot.yml) keeps the SHA and the comment current. Never replace a SHA
+# with a tag, and never type a SHA from memory: read it from the upstream tag.
+#
+# INSTALL SCRIPTS: npm install scripts are switched off in CI (npm ci --ignore-scripts), which
+# the security threat model asks for (risk R8). Checked on 2026-11-08 against the scaffold:
+# lint, types, build, check:dist and screenshots all work without them. If a future package
+# truly needs a script, run that one explicitly in the install step.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  schedule:
+    # Mondays at 05:17 UTC. Scheduled runs only start from the default branch (main).
+    - cron: "17 5 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  # A newer run on the same branch replaces an older one, so minutes are not wasted.
+  # Runs on main are never cancelled.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  ASTRO_TELEMETRY_DISABLED: "1"
+  DO_NOT_TRACK: "1"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  checks:
+    name: Checks
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      # Step 1. Node version comes from .nvmrc, the same file the Cloudflare build is told to match.
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies (install scripts off)
+        run: npm ci --ignore-scripts
+
+      # Section 6 budget "0 high or critical advisories in production dependencies".
+      - name: Advisories in production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      # Step 2.
+      - name: Writing rules (no em dash, no semicolon in prose)
+        run: npm run check:writing
+
+      # Step 3.
+      - name: Lint
+        run: npm run lint
+
+      - name: Formatting
+        run: npm run format:check
+
+      # Step 4. Runs astro check and tsc --noEmit for functions/.
+      - name: Types
+        run: npm run check
+
+      # Step 5.
+      - name: Unit tests
+        run: npm run test
+
+      # Step 6. This is the normal build. PUBLIC_INDEXABLE and SHOW_DRAFTS must stay unset here.
+      - name: Build
+        id: build
+        run: npm run build
+
+      - name: Check the build output
+        run: npm run check:dist
+
+      # Step 7, the blocking half. Offline: only links inside dist/ are followed.
+      # Needs a lychee version that has --index-files (0.19 or newer). Tested with lychee 0.24.2.
+      - name: Links inside the site (offline)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --offline
+            --no-progress
+            --include-fragments
+            --index-files index.html
+            --root-dir ${{ github.workspace }}/dist
+            './dist/**/*.html'
+          fail: true
+
+      # Step 8. Playwright with axe-core on every built page at 390 and 1280 px.
+      - name: Install the Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Accessibility
+        run: npm run test:a11y
+
+      # Step 11. Runs even if the accessibility step failed, so there is something to look at.
+      # The screenshots script is expected to write to qa/screens/ (the repo's convention).
+      - name: Screenshots at 390, 768 and 1280 px
+        id: screenshots
+        if: ${{ !cancelled() && steps.build.conclusion == 'success' }}
+        run: npm run screenshots
+
+      # Also runs when the screenshots script reports a problem such as horizontal scroll,
+      # because those are the images worth looking at.
+      - name: Upload screenshots
+        if: ${{ !cancelled() && (steps.screenshots.conclusion == 'success' || steps.screenshots.conclusion == 'failure') }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: screenshots
+          path: qa/screens/
+          if-no-files-found: error
+          retention-days: 14
+
+  lighthouse:
+    name: Lighthouse
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies (install scripts off)
+        run: npm ci --ignore-scripts
+
+      # Step 9. The SEO audit fails on noindex, so this build is indexable. It is only measured
+      # and thrown away. Do not run check:dist on it, because launch mode rejects [TO CONFIRM].
+      - name: Build for Lighthouse (indexable)
+        env:
+          PUBLIC_INDEXABLE: "true"
+        run: npm run build
+
+      # Budgets are in lighthouserc.json. Mobile emulation, 3 runs, median of the runs.
+      # The version is fixed here. It is not tracked by Dependabot, so check it now and then.
+      # Better: the frontend-developer adds @lhci/cli to devDependencies, so the lockfile pins it.
+      # Then this line becomes "npx lhci autorun --config=./lighthouserc.json".
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.15.1 autorun --config=./lighthouserc.json
+
+      - name: Upload Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  secrets:
+    name: Secret scan
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # Step 10. The full history is needed, because a secret that was later deleted is still leaked.
+      - name: Check out the full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # gitleaks is built from source at a fixed version. Go verifies every module it downloads
+      # against the public checksum database (sum.golang.org), so no release file or extra action
+      # has to be trusted. v8.30.1 still declares its module path under the old zricethezav name.
+      # Update the version by hand now and then. Dependabot cannot see this line.
+      - name: Install gitleaks
+        env:
+          GOBIN: ${{ runner.temp }}/bin
+        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+
+      - name: Scan the full git history
+        run: ${{ runner.temp }}/bin/gitleaks git --redact --no-banner --verbose .
+
+  external-links:
+    name: External links (weekly)
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies (install scripts off)
+        run: npm ci --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      # Step 7, the weekly half. This job only runs on the schedule, so it can never block a push
+      # or a pull request. A red run here means a link is dead and GitHub emails the repository
+      # owner. Codes 403, 429 and 999 are accepted because many sites refuse bots with them.
+      # The site's own hostnames are skipped. Before launch the live pages do not exist yet, so
+      # canonical and sitemap addresses would show up as dead. Internal links are covered offline.
+      - name: All links including external ones
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --no-progress
+            --include-fragments
+            --index-files index.html
+            --root-dir ${{ github.workspace }}/dist
+            --max-retries 3
+            --retry-wait-time 5
+            --timeout 30
+            --accept '100..=103,200..=299,403,429,999'
+            --exclude '^https://([a-z0-9-]+\.)?normek\.dk(/|$)'
+            --exclude '^https://([a-z0-9-]+\.)?normek-web\.pages\.dev(/|$)'
+            './dist/**/*.html'
+          fail: true

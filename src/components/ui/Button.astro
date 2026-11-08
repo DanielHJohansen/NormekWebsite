@@ -1,0 +1,29 @@
+---
+/**
+ * The primary action: Signal fill with Ink text (5.54:1). White on Signal fails contrast.
+ * One primary Signal fill per view (brand guide section 2). The target is at least 44 px high.
+ */
+interface Props {
+  href: string;
+  size?: "md" | "sm";
+  class?: string;
+}
+
+const { href, size = "md", class: className } = Astro.props;
+
+const sizes = {
+  md: "px-6 text-base",
+  sm: "px-4 text-sm",
+} as const;
+---
+
+<a
+  {href}
+  class:list={[
+    "inline-flex min-h-11 items-center justify-center rounded-sm bg-accent py-2 text-center font-semibold text-on-accent transition-colors hover:bg-accent-hover",
+    sizes[size],
+    className,
+  ]}
+>
+  <slot />
+</a>

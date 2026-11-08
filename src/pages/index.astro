@@ -1,0 +1,14 @@
+---
+import Section from "../components/sections/Section.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE } from "../config/site";
+import { getHomeSections } from "../lib/content";
+
+const sections = await getHomeSections();
+---
+
+<BaseLayout title={SITE.homeTitle}>
+  {sections.map((entry) => (
+    <Section {entry} />
+  ))}
+</BaseLayout>

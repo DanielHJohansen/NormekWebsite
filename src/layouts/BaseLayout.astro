@@ -1,0 +1,50 @@
+---
+import "../styles/global.css";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Seo from "../components/Seo.astro";
+import { SITE } from "../config/site";
+import { getHomeSections, getPages } from "../lib/content";
+import { pageNav, sectionNav } from "../lib/nav";
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+  /** True when this page is a draft. That is only possible with SHOW_DRAFTS=true. */
+  draft?: boolean;
+  canonical?: boolean;
+}
+
+const {
+  title,
+  description,
+  lang = SITE.defaultLocale,
+  draft = false,
+  canonical = true,
+} = Astro.props;
+
+// Navigation is built from content that is part of this build, so it never links to a draft in production.
+const [sections, pages] = await Promise.all([getHomeSections(lang), getPages(lang)]);
+const headerNav = sectionNav(sections, lang);
+const footerNav = pageNav(SITE.footerPages, pages, lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo title={title} description={description} canonical={canonical} />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a href="#main" class="skip-link">
+      Skip to main content
+    </a>
+    <Header nav={headerNav} {lang} {draft} />
+    <main id="main" tabindex="-1" class="flex-1 focus:outline-none">
+      <slot />
+    </main>
+    <Footer links={footerNav} />
+  </body>
+</html>

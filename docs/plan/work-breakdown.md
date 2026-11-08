@@ -139,6 +139,6 @@ At launch, later: the `www` CNAME and bare-domain forward (ADR 0001), the three 
 |---|---|
 | Preview URLs are public, only unlisted | `noindex`, no confidential content, nothing on the site that is not already true |
 | Resend sandbox rules or retention differ from what search found | check at sign-up, adapter swap to Scaleway or Postmark |
-| Astro 6 or Node version mismatch on the Pages build image | pin `NODE_VERSION`, verify at scaffold |
+| Astro 7 or Node version mismatch on the Pages build image | set `NODE_VERSION` to 22.23.4, verify at the first Pages build |
 | Turnstile accessibility or blocked script | direct email address always shown beside the form |
 | Copy outruns proof | claims ledger check in gate 10, `[TO CONFIRM]` blocks launch mode |

@@ -1,0 +1,37 @@
+version: 2
+
+# Weekly update pull requests for npm packages and for the GitHub Actions used in
+# .github/workflows. Nothing is merged automatically. Daniel or an assistant reviews each one.
+# Minor and patch updates arrive as one pull request, major updates one by one.
+# The cooldown means a release must be 7 days old before Dependabot proposes it, which gives the
+# community time to spot a hijacked package. Security fixes ignore the cooldown.
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Copenhagen"
+    cooldown:
+      default-days: 7
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Copenhagen"
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"

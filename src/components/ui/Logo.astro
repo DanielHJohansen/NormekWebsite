@@ -1,0 +1,30 @@
+---
+/**
+ * The route 01 Trace logo as a cached image file. The name comes from src/config/site.ts.
+ * The files in src/assets/brand/ were copied once from brand/logo/1-trace/.
+ * Use the reversed files on Ink only. Never recolour, stretch or animate the logo.
+ */
+import lockupUrl from "../../assets/brand/lockup.svg?url";
+import lockupReversedUrl from "../../assets/brand/lockup-reversed.svg?url";
+import symbolUrl from "../../assets/brand/symbol.svg?url";
+import symbolReversedUrl from "../../assets/brand/symbol-reversed.svg?url";
+import { SITE } from "../../config/site";
+
+interface Props {
+  variant?: "lockup" | "symbol";
+  reversed?: boolean;
+  class?: string;
+}
+
+const { variant = "lockup", reversed = false, class: className } = Astro.props;
+
+const files = {
+  lockup: { normal: lockupUrl, reversed: lockupReversedUrl, width: 304, height: 82 },
+  symbol: { normal: symbolUrl, reversed: symbolReversedUrl, width: 82, height: 82 },
+} as const;
+
+const file = files[variant];
+const src = reversed ? file.reversed : file.normal;
+---
+
+<img {src} width={file.width} height={file.height} alt={SITE.name} class={className} />

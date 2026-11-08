@@ -1,0 +1,45 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import Button from "../ui/Button.astro";
+import DraftBadge from "../ui/DraftBadge.astro";
+import { isDraft } from "../../lib/drafts";
+
+interface Props {
+  entry: CollectionEntry<"home">;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const draft = isDraft(entry);
+const { Content } = await render(entry);
+const hasBody = Boolean(entry.body?.trim());
+---
+
+<section
+  id={data.id}
+  aria-labelledby={`${data.id}-heading`}
+  data-draft={draft ? "true" : undefined}
+>
+  <div class="mx-auto max-w-page px-4 py-8 md:px-6 md:py-12 lg:px-8 lg:py-16">
+    <div class="theme-ink chamfer px-6 py-12 md:px-12 md:py-20 lg:px-16 lg:py-24">
+      {draft && <DraftBadge />}
+      {data.eyebrow && (
+        <p class="mb-4 font-mono text-sm uppercase tracking-eyebrow text-muted">{data.eyebrow}</p>
+      )}
+      <h1 id={`${data.id}-heading`} class="max-w-hero text-4xl">
+        {data.heading}
+      </h1>
+      {data.lead && <p class="mt-6 max-w-prose text-lg">{data.lead}</p>}
+      {hasBody && (
+        <div class="prose mt-6">
+          <Content />
+        </div>
+      )}
+      {data.cta && (
+        <div class="mt-8">
+          <Button href={data.cta.href}>{data.cta.label}</Button>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

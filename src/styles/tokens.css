@@ -1,0 +1,127 @@
+/*
+ * Design tokens. This is the one place where values live.
+ *
+ * Source: brand/brand-guide.md v0.1 (sections 2 and 3) and docs/plan/work-breakdown.md section 8.
+ * The names are fixed. Components use tokens only, never raw hex values.
+ * Tailwind v4 turns every @theme variable into a CSS variable, so plain CSS can use var(--color-ink) too.
+ *
+ * Contrast rules (measured in the brand guide, WCAG 2.x):
+ *   - Buttons are Signal with Ink text (5.54:1). White on Signal fails (3.11:1).
+ *   - Signal never carries text on Paper or white (2.84:1 and 3.11:1). Text links use `link`.
+ *   - Steel is for large text and decoration only (4.20:1 on Paper). Small secondary text uses `muted`.
+ *   - Sections on Ink use the `.theme-ink` class in global.css, which swaps the semantic tokens.
+ */
+
+/* Remove Tailwind's default scales, so only the tokens below exist as utilities. */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --font-weight-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --breakpoint-*: initial;
+  --container-*: initial;
+}
+
+/* `static` emits every variable, also those only used from plain CSS. */
+@theme static {
+  /* ---------- Colour: palette ---------- */
+  --color-ink: #0f1b2d;
+  --color-ink-800: #1b2739;
+  --color-ink-700: #293547;
+
+  --color-steel: #6b7686;
+  --color-steel-300: #969ea8;
+  --color-steel-600: #586374;
+  --color-steel-700: #414d5f;
+
+  --color-paper: #f4f5f2;
+  --color-paper-200: #e8eae9;
+  --color-paper-300: #d3d6d8;
+  --color-white: #ffffff;
+
+  --color-signal: #ff5a1f;
+  --color-signal-50: #fff0eb;
+  --color-signal-100: #ffded4;
+  --color-signal-400: #fe835e;
+  --color-signal-700: #b43601;
+  --color-signal-800: #8a2700;
+
+  /* ---------- Colour: semantic aliases (light, the default) ---------- */
+  --color-bg: var(--color-paper);
+  --color-surface: var(--color-white);
+  --color-border: var(--color-paper-300); /* decorative hairline, 1.33:1 */
+  --color-border-strong: var(--color-steel); /* control borders, 4.20:1 on Paper */
+  --color-fg: var(--color-ink); /* 15.79:1 on Paper */
+  --color-muted: var(--color-steel-600); /* 5.55:1 on Paper */
+  --color-link: var(--color-signal-700); /* 5.53:1 on Paper */
+  --color-accent: var(--color-signal); /* fills and shapes only */
+  --color-accent-hover: var(--color-signal-400);
+  --color-on-accent: var(--color-ink); /* always Ink, 5.54:1 on Signal */
+  --color-focus: var(--color-signal-700); /* focus ring, 5.53:1 on Paper */
+  --color-success: #067239;
+  --color-warning: #805c05;
+  --color-error: #b13544;
+
+  /* ---------- Typography ---------- */
+  /*
+   * TODO(brand-guide): fonts are not chosen yet, so these are system stacks.
+   * brand/brand-guide.md section 3 proposes Barlow Semi Condensed 600 (display), IBM Plex Sans (text)
+   * and IBM Plex Mono (specification), self-hosted as woff2 in public/fonts/.
+   * The plan allows two families, so web-architect decides first. Then add @font-face rules
+   * with font-display: swap, preload only the display and text files, and set metric-matched fallbacks.
+   */
+  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
+
+  /* Eyebrow labels: Mono, sm, uppercase, 0.06em tracking (brand guide section 3). */
+  --tracking-eyebrow: 0.06em;
+
+  /* Fluid scale for 390 to 1280 px viewports (brand guide section 3). */
+  --text-sm: clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem);
+  --text-sm--line-height: 1.5;
+  --text-base: clamp(1rem, 0.9452rem + 0.2247vw, 1.125rem);
+  --text-base--line-height: 1.6;
+  --text-lg: clamp(1.125rem, 1.0428rem + 0.3371vw, 1.3125rem);
+  --text-lg--line-height: 1.5;
+  --text-xl: clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem);
+  --text-xl--line-height: 1.3;
+  --text-2xl: clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem);
+  --text-2xl--line-height: 1.2;
+  --text-3xl: clamp(2.0625rem, 1.6517rem + 1.6854vw, 3rem);
+  --text-3xl--line-height: 1.1;
+  --text-4xl: clamp(2.5rem, 1.8427rem + 2.6966vw, 4rem);
+  --text-4xl--line-height: 1.05;
+
+  /* ---------- Space: 4 px base ---------- */
+  /* Utilities multiply this: p-1 is 4 px, p-4 is 16 px, p-6 is 24 px, p-12 is 48 px. */
+  --spacing: 0.25rem;
+
+  /* ---------- Layout widths ---------- */
+  --container-page: 72rem;
+  --container-prose: 65ch; /* body lines: 65 characters at most */
+  --container-hero: 18ch; /* measure of the hero headline */
+  --container-heading: 24ch; /* measure of section headings */
+
+  /* ---------- Radii ---------- */
+  /* Placeholders until ui-designer sets them. The route 01 chamfer is a clip-path, see global.css. */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* ---------- Shadows ---------- */
+  /* Placeholders. The brand leans on Ink and Paper, so shadows stay rare and soft. */
+  --shadow-sm: 0 1px 2px 0 rgb(15 27 45 / 0.08);
+  --shadow-md: 0 4px 12px 0 rgb(15 27 45 / 0.1);
+  --shadow-lg: 0 12px 32px 0 rgb(15 27 45 / 0.14);
+
+  /* ---------- Breakpoints: the three design widths ---------- */
+  --breakpoint-sm: 390px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1280px;
+}

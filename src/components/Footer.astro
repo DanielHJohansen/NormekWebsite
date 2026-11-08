@@ -1,0 +1,55 @@
+---
+import Logo from "./ui/Logo.astro";
+import { SITE } from "../config/site";
+import type { NavLink } from "../lib/nav";
+
+interface Props {
+  links: readonly NavLink[];
+}
+
+const { links } = Astro.props;
+const { company } = SITE;
+---
+
+<footer class="theme-ink">
+  <div class="mx-auto grid max-w-page gap-8 px-4 py-12 md:grid-cols-2 md:px-6 lg:px-8">
+    <div>
+      <Logo reversed class="h-8 w-auto" />
+    </div>
+    <div class="space-y-4 text-base">
+      <p class="font-semibold">{SITE.name}</p>
+      <dl class="space-y-1 text-muted">
+        <div class="flex gap-x-2">
+          <dt>Legal name</dt>
+          <dd>{company.legalName}</dd>
+        </div>
+        <div class="flex gap-x-2">
+          <dt>CVR</dt>
+          <dd>{company.cvr}</dd>
+        </div>
+        <div class="flex gap-x-2">
+          <dt>Address</dt>
+          <dd>{company.address}</dd>
+        </div>
+      </dl>
+      <p>
+        <a class="link" href={`mailto:${SITE.email}`}>
+          {SITE.email}
+        </a>
+      </p>
+      {links.length > 0 && (
+        <nav aria-label="Footer">
+          <ul class="flex flex-wrap gap-x-6 gap-y-2">
+            {links.map((link) => (
+              <li>
+                <a class="link inline-flex min-h-11 items-center" href={link.href}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+  </div>
+</footer>

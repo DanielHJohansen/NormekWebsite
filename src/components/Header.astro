@@ -1,0 +1,54 @@
+---
+import Button from "./ui/Button.astro";
+import Logo from "./ui/Logo.astro";
+import { SITE } from "../config/site";
+import { homePath } from "../lib/routes";
+import type { NavLink } from "../lib/nav";
+
+interface Props {
+  nav: readonly NavLink[];
+  lang: string;
+  /** Shown above the bar when the page is a draft in the private preview. */
+  draft?: boolean;
+}
+
+const { nav, lang, draft = false } = Astro.props;
+---
+
+<header class="border-b border-border">
+  {draft && (
+    <p
+      data-draft-banner
+      class="bg-signal-100 px-4 py-2 text-center font-mono text-sm text-signal-800"
+    >
+      Draft page. Not published. Shown only in the private preview.
+    </p>
+  )}
+  <div class="mx-auto flex max-w-page items-center justify-between gap-x-6 px-4 py-4 md:px-6 lg:px-8">
+    <a href={homePath(lang)} class="inline-flex shrink-0 items-center">
+      <Logo class="h-7 w-auto md:h-8" />
+    </a>
+
+    {
+      /* The links show from 1280 px. Phone and tablet get the logo and the button only (UX brief:
+         "Mobile: logo and button, no hamburger"). Four links did not fit beside them at 768 px. */
+      nav.length > 0 && (
+        <nav aria-label="Primary" class="hidden lg:block">
+          <ul class="flex items-center gap-x-8">
+            {nav.map((link) => (
+              <li>
+                <a href={link.href} class="inline-flex min-h-11 items-center hover:underline">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    <Button href={SITE.cta.href} size="sm" class="shrink-0">
+      {SITE.cta.shortLabel}
+    </Button>
+  </div>
+</header>

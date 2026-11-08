@@ -158,6 +158,24 @@ Every deployment sends `noindex` and a disallow-all `robots.txt` until a `PUBLIC
 
 npm with `npm ci`, ESLint and Prettier, `astro check`, Vitest, Playwright with axe-core, Lighthouse CI, lychee for links and gitleaks for secrets (both run as binaries, not npm packages). Dependabot for npm and GitHub Actions, with actions pinned by commit hash.
 
+### A9. Astro 7, not Astro 6 (manager, 8 November 2026)
+
+- `npm audit` on the newest Astro 6 release (6.4.8) reports a critical advisory (the `astro` package up to 7.3.1) and a high one in `sharp`, and the 6.x line has no fix. The plan allows no critical or high findings in production dependencies.
+- Astro 7.4.7 is clean: `npm audit --omit=dev` finds 0 vulnerabilities, and the whole scaffold builds and passes lint, types, tests, `check:dist` and the accessibility tests on it.
+- Astro 7 needs Node 22.23.4 or newer, which `package.json` (`engines`) and `.nvmrc` already say. Set the Pages `NODE_VERSION` variable to `22.23.4`.
+- Astro and Tailwind are pinned to exact versions (Astro 7.4.7, Tailwind 4.3.5). Dependabot proposes updates after a 7 day cooldown.
+- Everything else in A3 stands: static output, no adapter, the function in `functions/api/contact.ts`.
+- Under a coding agent Astro 7 detaches `astro preview` into the background, so the tests start `scripts/preview-server.mjs` instead.
+- The dev tooling tree has one moderate advisory (`minimatch`, reached through ESLint and typescript-eslint). It never reaches the site. CI gates on production dependencies at the high level: `npm audit --omit=dev --audit-level=high`.
+
+### A10. Turnstile loads on first use of the form (manager, replaces the loading rule in A6)
+
+The Turnstile script is added when a visitor first focuses or clicks a form field, not when the form scrolls into view. A visitor who only reads the page never contacts Cloudflare's challenge host. The content security policy allows `challenges.cloudflare.com` for script, frame and connect. The privacy notice says the same, and the browser test for local storage runs after first use.
+
+### A11. Three font families (manager)
+
+Barlow Semi Condensed 600, IBM Plex Sans (variable) and IBM Plex Mono 400, as the brand guide sets out. They weigh 83.4 KB as Latin woff2, inside the 100 KB font budget, and are self-hosted in `public/fonts/` with each OFL licence file. If a budget ever fails, drop the mono and set specifications in Plex Sans.
+
 ### What would make these amendments wrong
 
 Check first: whether Pages still accepts an external CNAME for `www` (test it on a spare subdomain before launch), and Resend's message retention. If retention conflicts with the data promise, switch the adapter to Scaleway.

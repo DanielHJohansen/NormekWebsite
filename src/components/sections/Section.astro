@@ -1,0 +1,28 @@
+---
+/**
+ * Renders one home section with the component that matches its `kind`.
+ * `satisfies` makes the type checker fail when a kind is added to the schema (src/lib/schemas.ts)
+ * without a component here.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { SECTION_KINDS } from "../../lib/schemas";
+import ContactSection from "./ContactSection.astro";
+import HeroSection from "./HeroSection.astro";
+import TextSection from "./TextSection.astro";
+
+interface Props {
+  entry: CollectionEntry<"home">;
+}
+
+const { entry } = Astro.props;
+
+const components = {
+  hero: HeroSection,
+  text: TextSection,
+  contact: ContactSection,
+} satisfies Record<(typeof SECTION_KINDS)[number], unknown>;
+
+const Component = components[entry.data.kind];
+---
+
+<Component {entry} />

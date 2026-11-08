@@ -1,0 +1,65 @@
+---
+/**
+ * /work/ and /work/<slug>/. A v1 template, hidden until a case study is published.
+ * With no visible entry there is no /work/ index either, so production serves a normal 404.
+ * A published entry needs written clearance. The schema enforces that (src/lib/schemas.ts).
+ */
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getWork } from "../../lib/content";
+import { isDraft } from "../../lib/drafts";
+import { splitId, workPath } from "../../lib/routes";
+
+export async function getStaticPaths() {
+  const work = await getWork();
+  if (work.length === 0) return [];
+  return [
+    { params: { slug: undefined }, props: { kind: "index" as const, entry: undefined } },
+    ...work.map((entry) => ({
+      params: { slug: splitId(entry.id).slug },
+      props: { kind: "entry" as const, entry },
+    })),
+  ];
+}
+
+const { kind, entry } = Astro.props;
+const all = kind === "index" ? await getWork() : [];
+const Body = entry ? (await render(entry)).Content : undefined;
+---
+
+{kind === "index" && (
+  <BaseLayout
+    title="Work"
+    description="[TO CONFIRM] Index of case studies."
+    draft={all.every((item) => isDraft(item))}
+  >
+    <div class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
+      <h1 class="text-3xl">Work</h1>
+      <ul class="mt-8 grid gap-6 md:grid-cols-3">
+        {all.map((item) => (
+          <li class="border border-border bg-surface p-6">
+            {isDraft(item) && <p class="mb-2 font-mono text-sm text-signal-800">Draft</p>}
+            <h2 class="text-xl">
+              <a class="link" href={workPath("en", splitId(item.id).slug)}>
+                {item.data.title}
+              </a>
+            </h2>
+            <p class="mt-2">{item.data.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </BaseLayout>
+)}
+
+{kind === "entry" && entry && Body && (
+  <BaseLayout title={entry.data.title} description={entry.data.summary} draft={isDraft(entry)}>
+    <article class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
+      <h1 class="text-3xl">{entry.data.title}</h1>
+      <p class="mt-4 max-w-prose text-lg">{entry.data.summary}</p>
+      <div class="prose mt-8">
+        <Body />
+      </div>
+    </article>
+  </BaseLayout>
+)}

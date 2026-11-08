@@ -1,0 +1,46 @@
+{
+  "name": "normek-website",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "description": "Normek website. Astro static site, private preview until the name is cleared.",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "astro check && tsc --noEmit && tsc --noEmit -p functions/tsconfig.json",
+    "test": "vitest run",
+    "check:dist": "node scripts/check-dist.mjs",
+    "check:writing": "node scripts/check-writing-rules.mjs",
+    "test:a11y": "playwright test",
+    "screenshots": "node scripts/screenshot-dist.mjs"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.3.5",
+    "astro": "7.4.7",
+    "tailwindcss": "4.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.5",
+    "eslint": "10.14.0",
+    "eslint-plugin-astro": "3.2.1",
+    "globals": "17.14.0",
+    "playwright-core": "1.63.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.2",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0"
+  }
+}

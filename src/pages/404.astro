@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE } from "../config/site";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you asked for does not exist or has moved."
+  canonical={false}
+>
+  <div class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
+    <h1 class="text-3xl">Page not found</h1>
+    <p class="mt-4 max-w-prose text-lg">This page does not exist or has moved.</p>
+    <ul class="mt-6 space-y-2 text-lg">
+      <li>
+        <a class="link" href="/">
+          Go to the home page
+        </a>
+      </li>
+      <li>
+        Or write to{" "}
+        <a class="link" href={`mailto:${SITE.email}`}>
+          {SITE.email}
+        </a>
+      </li>
+    </ul>
+  </div>
+</BaseLayout>

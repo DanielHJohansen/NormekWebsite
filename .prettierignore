@@ -1,0 +1,20 @@
+# Output and caches
+dist/
+.astro/
+node_modules/
+qa/
+package-lock.json
+
+# Not site code. brand/logo/source is its own package.
+brand/
+docs/
+.claude/
+CLAUDE.md
+README.md
+
+# Content is edited by hand, also from a phone on GitHub. The writing rules script checks it instead.
+src/content/
+
+# Written before the toolchain existed
+scripts/check-writing-rules.mjs
+scripts/screenshot.mjs

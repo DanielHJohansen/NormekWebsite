@@ -1,0 +1,42 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import DraftBadge from "../ui/DraftBadge.astro";
+import { SITE } from "../../config/site";
+import { isDraft } from "../../lib/drafts";
+
+interface Props {
+  entry: CollectionEntry<"home">;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const draft = isDraft(entry);
+const { Content } = await render(entry);
+const hasBody = Boolean(entry.body?.trim());
+// The inquiry form arrives with the contact function (task 8). Until then the address is the way in.
+---
+
+<section
+  id={data.id}
+  aria-labelledby={`${data.id}-heading`}
+  data-draft={draft ? "true" : undefined}
+  class="border-t border-border"
+>
+  <div class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
+    {draft && <DraftBadge />}
+    <h2 id={`${data.id}-heading`} class="max-w-heading text-2xl">
+      {data.heading}
+    </h2>
+    {data.lead && <p class="mt-4 max-w-prose text-lg">{data.lead}</p>}
+    {hasBody && (
+      <div class="prose mt-6">
+        <Content />
+      </div>
+    )}
+    <p class="mt-6 text-lg">
+      <a class="link" href={`mailto:${SITE.email}`}>
+        {SITE.email}
+      </a>
+    </p>
+  </div>
+</section>
