@@ -12,6 +12,7 @@ Working repo for the Normek website, brand and go-to-market. Normek develops AI-
 4. `docs/copy/v0-home-copy.md`: every word on the home page, with the fact check and buyer review beside it.
 5. `docs/plan/work-breakdown.md` and `docs/adr/`: the build plan and the decisions behind the stack.
 6. `docs/security/`: the threat model, the contact API contract and the security reviews.
+7. `docs/launch-checklist.md`: everything that must be true before the preview is shared and before the site goes public.
 
 ## Commands
 

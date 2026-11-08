@@ -4,6 +4,26 @@ Owner: web-architect, 2026-11-08. Stack: ADR 0001 with Amendments.
 
 **Goal:** a complete private preview of the one-page v0 site, `/privacy/` and a 404 page, with hidden v1 templates, on Cloudflare Pages behind `noindex`. Nothing goes live until the name is cleared.
 
+## Status on 8 November 2026
+
+The code, the design, the copy and the reviews are done. What is left needs Daniel, the real Cloudflare and Resend accounts, or a cleared name.
+
+| # | Task | Status |
+|---|---|---|
+| 1 | Daniel's one-time setup | **Waiting for Daniel.** `docs/ops/cloudflare-and-resend-setup.md`, Part 0 first |
+| 2 | Sitemap and page briefs | Done (`docs/ux/page-briefs.md`, superseded for text and anchors by the copy file) |
+| 3 | Copy and privacy text | Done as drafts. Copy version 2.1 has a technical fact check and a simulated buyer review. The privacy notice needs a Danish lawyer |
+| 4 | Tokens and frames | Done. Claude Design canvas with three pages, `docs/design/tokens.md`, reviewed by `ui-designer` |
+| 5 | Contact function threat model | Done. Function reviewed, no Critical or High finding |
+| 6 | Scaffold, CI, drafts, `check-dist`, `_headers` | Done. CI is green on GitHub's runners |
+| 7 | Sections, privacy, thanks, 404, v1 draft templates | Done. Screenshots reviewed at 390, 768 and 1280 px |
+| 8 | Contact function and `sendMail()` adapter | Done with 568 contact tests. A real test message waits for task 1 |
+| 9 | Allow the preview hostnames in the session environment | **Waiting for Daniel** (after task 1) |
+| 10 | Preview gate | Done for code: QA gate (no P0 or P1) and security gate (no Critical or High). Live checks wait for tasks 1 and 9 |
+| 11 | Rendering and indexing check | Not done. Needs the deployed preview |
+
+The launch gate is in `docs/launch-checklist.md`.
+
 ## 1. v0 scope
 
 Home page sections, in order:
