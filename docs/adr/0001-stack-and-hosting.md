@@ -54,12 +54,12 @@ What we do reuse: the content (case studies, photos, and testimonials subject to
 
 ## The domain: normek.dk at Simply.com
 
-Daniel owns normek.dk, registered and hosted at simply.com. This is what the Simply DNS panel showed on 2026-11-08, from a phone screenshot that was cut off after the `www` row:
+Daniel owns normek.dk at simply.com, on a "Basic Suite" product (web hosting plus email). The zone was read through Simply's official connector on 2026-11-08, and the full snapshot is in `docs/ops/dns-snapshot-normek-dk-2026-11-08.md`. In short:
 
-- The domain uses Simply's nameservers and is administered through Simply.
-- **The zone is DNSSEC signed.**
-- There are A records for the bare domain, a wildcard (`*`) and `www`, which appear to point at Simply's own hosting addresses.
-- There is an MX record that appears to point at Simply's mail servers, and an SPF record. So email probably runs on this domain today and must not break.
+- The domain uses Simply's three nameservers, and **the zone is DNSSEC signed** (one DS key is published at the registry).
+- The bare domain, `www` and a wildcard (`*`) all point at one Simply web server.
+- Simply's standard mail records are in place: an MX record, an SPF record ending in `-all`, two DKIM keys and DMARC (both delegated to Simply by CNAME), plus mail client discovery records. **No mailboxes and no mail forwards exist yet.** No email depends on the zone today, and there is no business address yet.
+- There are no hosted subdomains and no CAA record.
 
 What follows from that:
 
@@ -69,15 +69,15 @@ What follows from that:
 
 Options, recommended first:
 
-1. **Keep DNS at Simply, point only `www` to Cloudflare, and forward the bare domain to `www` (recommended).** At go-live, replace the `www` A record with a CNAME to the Pages address, and use Simply's URL forwarding (or an `.htaccess` redirect if a hosting plan is active) to send normek.dk to `https://www.normek.dk`. DNSSEC and email stay untouched, and the change can be reversed in minutes. To test before go-live: whether the forwarding works over HTTPS without a certificate warning. The canonical address of the site becomes `www.normek.dk`. ([Simply URL forwarding FAQ](https://www.simply.com/en/support/faq/domain/304/))
-2. **Move DNS to Cloudflare, later and only if needed.** This puts the bare domain on Cloudflare and gives one place for DNS. The order matters. Record every existing DNS record, recreate them in Cloudflare and test mail, remove the DS record at Simply and wait for it to expire, switch the nameservers, confirm the site and email, then add Cloudflare's DS record at Simply. `devops-engineer` writes the exact steps and a rollback.
-3. **Host the built site on Simply's web hosting** by uploading files. We lose branch previews on a phone and would store hosting credentials in GitHub, so it is the least attractive.
+1. **Keep DNS at Simply, point only `www` to Cloudflare, and send the bare domain to `www` (recommended).** At go-live, replace the `www` A record with a CNAME to the Pages address. The bare domain already points at the Simply web server, so a one-file redirect there (an `.htaccess` rule, or the panel's forwarding) sends it to `https://www.normek.dk`. The connector has no forwarding tool. DNSSEC and Simply's mail records stay untouched, and every change can be reversed in minutes. To test before go-live: that the Simply hosting serves a valid certificate for the bare domain, so the redirect works over HTTPS. The canonical address of the site becomes `www.normek.dk`. ([Simply redirect FAQ](https://www.simply.com/en/support/faq/domain/25-url-redirect/))
+2. **Move DNS to Cloudflare, later and only if needed.** This puts the bare domain on Cloudflare and gives one place for DNS. With no mailboxes yet the risk is lower, but Simply's mail records (including the CNAMEs to Simply's DKIM and DMARC) must be recreated exactly. The order matters. Record every existing DNS record, recreate them in Cloudflare, remove the DS record at Simply and wait for it to expire, switch the nameservers, confirm the site, then add Cloudflare's DS record at Simply. `devops-engineer` writes the exact steps and a rollback.
+3. **Host the built site on Simply's web hosting**, which the Basic Suite already includes, by uploading files. We lose branch previews on a phone and would store hosting credentials in GitHub, so it is the least attractive.
 
 Nothing needs to change in DNS yet. A Cloudflare preview URL works without touching the domain, and the name is not cleared.
 
 Reading and changing the zone: use Simply's official AI connector (`https://mcp.simply.com/v2`, browser login), set up as described in `docs/ops/simply-connector.md`. Do not use an API key. Simply's v2 API keys have no documented scopes, and a key can place orders and change nameservers. ([Simply API docs](https://www.simply.com/en/docs/api/))
 
-To review with `security-engineer`: the wildcard A record makes every subdomain resolve, and we need to confirm that DKIM and DMARC records exist. Still open: the records below `www`, what is live on the domain today, and which mailboxes exist.
+For `security-engineer`, none urgent: remove the wildcard record at go-live, consider a CAA record, and extend SPF and DKIM if a form service ever sends mail as normek.dk. Turn on two-factor on the Simply account, because it controls the domain. Still open: what the web server shows today.
 
 ## How this replaces Lovable
 

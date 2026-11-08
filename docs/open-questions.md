@@ -68,7 +68,7 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 | 15 | v1 pages | Home, Enclosure design, How we work, Data and IP, Work, About, Contact, plus legal pages |
 | 16 | Founder and testimonials | Show you prominently, since trust at this size is personal. The three testimonials on your personal site praise your personal work, so each person must agree to reuse and the label must say so |
 | 17 | Logo | Pick a route from `brand/logo/preview.png`. Recommendation: 01 Trace |
-| 18 | Domain and email | normek.dk is at Simply.com with DNSSEC on and email apparently on Simply's servers (screenshot, 2026-11-08). Recommended: keep DNS at Simply, point `www` to Cloudflare at go-live and forward the bare domain to `www` (ADR 0001). Nothing changes in DNS until the name is cleared. Add `.com` or `.eu` only after that. Connect Simply's official connector so assistants can read the zone (`docs/ops/simply-connector.md`) |
+| 18 | Domain and email | normek.dk is at Simply.com (Basic Suite) with DNSSEC on. Simply's mail records are in place but no mailboxes exist yet (read through the connector on 2026-11-08, snapshot in `docs/ops/`). Recommended: keep DNS at Simply, point `www` to Cloudflare at go-live and redirect the bare domain to `www` (ADR 0001). Nothing changes in DNS until the name is cleared. Add `.com` or `.eu` only after that. Decide when to create the `hello@` and `daniel@` mailboxes |
 
 ## 4. Resources and goals
 
@@ -82,7 +82,9 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 
 - [ ] Name checks (item 1).
 - [ ] Accounts with two-factor authentication: Simply.com (registrar and DNS), Cloudflare, a business mailbox, Google Search Console.
-- [ ] Add the Simply.com connector (`docs/ops/simply-connector.md`, about 5 minutes) so assistants can read the zone and mailboxes themselves, and say what is live on normek.dk.
+- [x] Simply.com connector added (2026-11-08).
+- [ ] Turn on two-factor on the Simply.com account, which controls the domain and its DNS.
+- [ ] Open normek.dk and say what it shows today (a Simply placeholder, or something you uploaded).
 - [ ] Business-tier AI accounts and vendor terms confirmed in writing.
 - [ ] Professional liability insurance quote.
 - [ ] One lawyer review: mutual NDA, services agreement, IP assignment and AI clause.

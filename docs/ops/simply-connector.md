@@ -2,6 +2,8 @@
 
 Simply.com publishes an official AI connector (an MCP server) at `https://mcp.simply.com/v2`. It signs in through the browser with OAuth, so there is no API key to create or store. Access can be revoked at any time in the Simply control panel under Connected apps.
 
+Status: connected and read-tested on 2026-11-08, with no changes made.
+
 ## Why the connector and not an API key
 
 I read Simply's public API specification on 2026-11-08. An API key (created under Account, API keys) has no documented scopes. Whoever holds one can change DNS records, change nameservers, add or remove DNSSEC keys, create mail accounts and place orders, which are charged at once if a card is on file. The connector keeps the key out of our hands, can be revoked in one click, and sends purchases to an order link that Daniel completes on the website.
@@ -17,6 +19,7 @@ I read Simply's public API specification on 2026-11-08. An API key (created unde
 
 ## Rules of use for assistants
 
+- **Only normek.dk.** The connector can see every product on Daniel's Simply account. List products only to find the handle, and never read, list or change anything on another product.
 - **Read first.** Before any change, list the full zone and save a snapshot in `docs/ops/` (records only, no secrets).
 - **One change at a time.** State the exact record before and after, wait for Daniel's approval, apply it, then read it back.
 - **Protected records.** Do not touch MX, SPF, DKIM or DMARC records, nameservers or DNSSEC keys without a written plan reviewed by `security-engineer`.
@@ -29,5 +32,12 @@ I read Simply's public API specification on 2026-11-08. An API key (created unde
 1. Read the zone and save the snapshot.
 2. Lower the TTL on the `www` record.
 3. Add the domain in the hosting project first, then replace the `www` A record with a CNAME to the host's address.
-4. Forward the bare domain to `www`. Use URL forwarding in the Simply panel if the connector does not offer it, and test that the bare domain works over HTTPS.
-5. Read the records back, check the site and email, and keep the old record as the rollback.
+4. Send the bare domain to `www`. The connector has no forwarding tool, and the bare domain already points at the Simply web server, so put a one-file redirect there (Daniel uploads it) or use the panel's forwarding. Check that the hosting serves a valid certificate for the bare domain.
+5. Read the records back, check the site, and keep the old record as the rollback.
+
+Redirect rule for the bare domain (Apache, placed in the web root of the Simply hosting):
+
+```
+RewriteEngine On
+RewriteRule ^ https://www.normek.dk%{REQUEST_URI} [R=301,L]
+```
