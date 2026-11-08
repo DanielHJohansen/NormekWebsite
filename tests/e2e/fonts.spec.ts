@@ -8,6 +8,7 @@ import { expect, test } from "./fixtures";
 declare global {
   interface Window {
     __layoutShift: number;
+    __shifts: string[];
   }
 }
 
@@ -17,10 +18,33 @@ test.describe("late fonts", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       window.__layoutShift = 0;
+      window.__shifts = [];
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          const shift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
-          if (!shift.hadRecentInput) window.__layoutShift += shift.value;
+          const shift = entry as PerformanceEntry & {
+            value: number;
+            hadRecentInput: boolean;
+            sources?: {
+              node?: Node;
+              previousRect: DOMRectReadOnly;
+              currentRect: DOMRectReadOnly;
+            }[];
+          };
+          if (shift.hadRecentInput) continue;
+          window.__layoutShift += shift.value;
+          // Kept for the failure message: what moved, from where to where, and when.
+          for (const source of shift.sources ?? []) {
+            const node = source.node as Element | undefined;
+            const name = node?.nodeName ?? "?";
+            const id =
+              node && "id" in node && (node as Element).id ? "#" + (node as Element).id : "";
+            const text = (node?.textContent ?? "").trim().slice(0, 24);
+            const from = source.previousRect;
+            const to = source.currentRect;
+            window.__shifts.push(
+              `${Math.round(entry.startTime)}ms ${shift.value.toFixed(3)} ${name}${id} "${text}" y ${Math.round(from.y)}->${Math.round(to.y)} h ${Math.round(from.height)}->${Math.round(to.height)} w ${Math.round(from.width)}->${Math.round(to.width)}`,
+            );
+          }
         }
       }).observe({ type: "layout-shift", buffered: true });
     });
@@ -52,7 +76,8 @@ test.describe("late fonts", () => {
       });
       expect(loaded.join(" ")).toContain("IBM Plex Sans");
       const shift = await page.evaluate(() => window.__layoutShift);
-      expect(shift).toBeLessThan(0.05);
+      const shifts = await page.evaluate(() => window.__shifts);
+      expect(shift, shifts.join("\n")).toBeLessThan(0.05);
     });
   }
 
