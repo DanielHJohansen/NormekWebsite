@@ -1,6 +1,12 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
-import { homeSectionSchema, offerSchema, pageSchema, workSchema } from "./lib/schemas";
+import {
+  footerSchema,
+  homeSectionSchema,
+  offerSchema,
+  pageSchema,
+  workSchema,
+} from "./lib/schemas";
 
 /*
  * Every collection has one folder per locale (en/ now, da/ later).
@@ -27,4 +33,9 @@ const work = defineCollection({
   schema: workSchema,
 });
 
-export const collections = { home, offers, pages, work };
+const site = defineCollection({
+  loader: glob({ pattern: "**/*.yaml", base: "./src/content/site" }),
+  schema: footerSchema,
+});
+
+export const collections = { home, offers, pages, work, site };

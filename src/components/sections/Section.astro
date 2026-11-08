@@ -1,13 +1,20 @@
 ---
 /**
  * Renders one home section with the component that matches its `kind`.
- * `satisfies` makes the type checker fail when a kind is added to the schema (src/lib/schemas.ts)
- * without a component here.
+ * The switch narrows entry.data one kind at a time, and its last branch checks that none is missing:
+ * the type checker fails when a kind is added to the schema (src/lib/schemas.ts) without a component here.
  */
 import type { CollectionEntry } from "astro:content";
-import type { SECTION_KINDS } from "../../lib/schemas";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+import { isDraft } from "../../lib/drafts";
+import AboutSection from "./AboutSection.astro";
 import ContactSection from "./ContactSection.astro";
+import DataSection from "./DataSection.astro";
 import HeroSection from "./HeroSection.astro";
+import OffersSection from "./OffersSection.astro";
+import ProblemSection from "./ProblemSection.astro";
+import ProcessSection from "./ProcessSection.astro";
+import ScopeSection from "./ScopeSection.astro";
 import TextSection from "./TextSection.astro";
 
 interface Props {
@@ -16,13 +23,37 @@ interface Props {
 
 const { entry } = Astro.props;
 
-const components = {
-  hero: HeroSection,
-  text: TextSection,
-  contact: ContactSection,
-} satisfies Record<(typeof SECTION_KINDS)[number], unknown>;
+function unreachable(value: never): never {
+  throw new Error(`No component for the home section kind ${JSON.stringify(value)}`);
+}
 
-const Component = components[entry.data.kind];
+function pick(): { Component: AstroComponentFactory; props: Record<string, unknown> } {
+  const { data } = entry;
+  switch (data.kind) {
+    case "hero":
+      return { Component: HeroSection, props: { data } };
+    case "problem":
+      return { Component: ProblemSection, props: { data } };
+    case "offers":
+      return { Component: OffersSection, props: { data } };
+    case "process":
+      return { Component: ProcessSection, props: { data } };
+    case "scope":
+      return { Component: ScopeSection, props: { data } };
+    case "data":
+      return { Component: DataSection, props: { data } };
+    case "about":
+      return { Component: AboutSection, props: { data, entry } };
+    case "contact":
+      return { Component: ContactSection, props: { data } };
+    case "text":
+      return { Component: TextSection, props: { data, entry } };
+    default:
+      return unreachable(data);
+  }
+}
+
+const { Component, props } = pick();
 ---
 
-<Component {entry} />
+<Component {...props} draft={isDraft(entry)} />

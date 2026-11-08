@@ -1,0 +1,36 @@
+---
+import Inline from "../Inline.astro";
+import SectionShell from "../SectionShell.astro";
+import Button from "../ui/Button.astro";
+import { SITE } from "../../config/site";
+import type { SectionOf } from "../../lib/schemas";
+
+interface Props {
+  data: SectionOf<"scope">;
+  draft?: boolean;
+}
+
+const { data, draft = false } = Astro.props;
+---
+
+<SectionShell id={data.id} {draft}>
+  {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
+  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl"><Inline text={data.heading} /></h2>
+  <div class="flex flex-wrap gap-split-sm">
+    <div class="min-w-0 flex-1 basis-80">
+      <h3 class="mb-4 border-b-2 border-fg pb-3 text-xl"><Inline text={data.takeOnHeading} /></h3>
+      <p class="max-w-measure-sm"><Inline text={data.takeOn} /></p>
+    </div>
+    <div class="min-w-0 flex-1 basis-100">
+      <h3 class="mb-4 border-b-2 border-fg pb-3 text-xl">
+        <Inline text={data.notForNowHeading} />
+      </h3>
+      <ul class="flex list-disc flex-col gap-2.5 pl-5">
+        {data.notForNow.map((item) => <li><Inline text={item} /></li>)}
+      </ul>
+    </div>
+  </div>
+  <div class="mt-10">
+    <Button variant="secondary" href={SITE.cta.anchor}>{SITE.cta.label}</Button>
+  </div>
+</SectionShell>

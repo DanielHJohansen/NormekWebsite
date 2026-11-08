@@ -1,0 +1,24 @@
+---
+// A triangle with an exclamation mark. The colour comes from the text colour of the parent (warning).
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg
+  width="20"
+  height="20"
+  viewBox="0 0 20 20"
+  aria-hidden="true"
+  class:list={["size-5 flex-none", className]}
+>
+  <path
+    d="M10 2.5L18 16.5H2Z"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linejoin="round"></path>
+  <path d="M10 8V11.5" fill="none" stroke="currentColor" stroke-width="2"></path>
+  <circle cx="10" cy="14" r="1.1" fill="currentColor"></circle>
+</svg>

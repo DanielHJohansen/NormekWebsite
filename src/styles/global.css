@@ -11,6 +11,7 @@
 @source "../**/*.astro";
 
 @import "./tokens.css";
+@import "./fonts.css";
 
 @layer base {
   :root {
@@ -34,6 +35,7 @@
     font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
+    font-weight: var(--font-weight-normal);
     /* The brand uses no italics and no faux weights (brand guide section 3). */
     font-synthesis: none;
   }
@@ -57,6 +59,11 @@
     background-color: var(--color-signal-100);
     color: var(--color-ink);
   }
+
+  /* Anchors land below the top edge, so a focused heading is never glued to it. */
+  [id] {
+    scroll-margin-top: calc(var(--spacing) * 4);
+  }
 }
 
 /*
@@ -72,6 +79,7 @@
     --color-muted: var(--color-steel-300);
     --color-link: var(--color-signal-400);
     --color-focus: var(--color-signal-400);
+    --color-placeholder: var(--color-steel-300);
     --color-success: #30b264;
     --color-warning: #c9940d;
     --color-error: #f6747c;
@@ -79,44 +87,74 @@
     color: var(--color-fg);
   }
 
-  /* Long-form text from Markdown. Hand written so no typography plugin is needed. */
+  /* An underlined text link. Hover thickens the rule (canvas Components.dc.html, "Buttons and links"). */
+  .link {
+    color: var(--color-link);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  /*
+   * A missing fact. It shows as a dashed tag and keeps its brackets, so check:dist in launch mode still finds it
+   * and blocks the launch. Used by the Inline component and by the rehype plugin for Markdown.
+   */
+  .placeholder {
+    display: inline;
+    border: 1px dashed var(--color-placeholder);
+    padding: 0 calc(var(--spacing) * 1.5);
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    font-weight: var(--font-weight-normal);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  /*
+   * Long text from Markdown, for the privacy notice. Hand written, so no typography plugin is needed.
+   * Matches the article in the canvas board Privacy.dc.html.
+   */
   .prose {
-    max-width: var(--container-prose);
+    max-width: var(--container-measure-xl);
   }
   .prose > * + * {
     margin-top: calc(var(--spacing) * 4);
   }
-  .prose h2 {
-    margin-top: calc(var(--spacing) * 10);
-    font-size: var(--text-2xl);
-    line-height: var(--text-2xl--line-height);
-  }
-  .prose h3 {
-    margin-top: calc(var(--spacing) * 8);
+  .prose > h2 {
+    margin-top: calc(var(--spacing) * 12);
+    margin-bottom: calc(var(--spacing) * 3);
     font-size: var(--text-xl);
     line-height: var(--text-xl--line-height);
   }
+  .prose > h2:first-child {
+    margin-top: 0;
+  }
+  .prose > h2 + * {
+    margin-top: 0;
+  }
   .prose ul,
   .prose ol {
-    padding-left: calc(var(--spacing) * 6);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 2);
   }
   .prose ul {
     list-style: disc;
+    padding-left: calc(var(--spacing) * 5);
   }
   .prose ol {
     list-style: decimal;
+    padding-left: calc(var(--spacing) * 6);
   }
-  .prose li + li {
-    margin-top: calc(var(--spacing) * 2);
-  }
-  .prose a,
-  .link {
+  .prose a {
     color: var(--color-link);
     text-decoration: underline;
-    text-underline-offset: 0.2em;
+    text-underline-offset: 3px;
   }
-  .prose a:hover,
-  .link:hover {
+  .prose a:hover {
     text-decoration-thickness: 2px;
   }
   .prose strong {
@@ -124,9 +162,19 @@
   }
 }
 
+/* A small mono label above a heading: "01 / Problem". Brand guide section 3. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
 /* Route 01 device: a 45 degree cut on the top right and bottom left corners (brand guide section 5). */
 @utility chamfer {
-  --chamfer: 1.5rem;
+  --chamfer: 1.75rem;
   clip-path: polygon(
     0 0,
     calc(100% - var(--chamfer)) 0,

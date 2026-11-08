@@ -1,0 +1,37 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import Inline from "../Inline.astro";
+import SectionShell from "../SectionShell.astro";
+import type { SectionOf } from "../../lib/schemas";
+
+interface Props {
+  data: SectionOf<"about">;
+  entry: CollectionEntry<"home">;
+  draft?: boolean;
+}
+
+const { data, entry, draft = false } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<SectionShell id={data.id} {draft} rule={false} innerClass="flex flex-wrap items-start gap-split">
+  <div class="min-w-0 max-w-110 flex-1 basis-80">
+    <div class="chamfer flex aspect-4/5 items-end bg-surface p-5 inset-ring-1 inset-ring-border">
+      <span
+        class="inline-block border border-dashed border-placeholder bg-surface px-2.5 py-1 font-mono text-xs text-muted"
+      >
+        {data.photoLabel}
+      </span>
+    </div>
+  </div>
+  <div class="min-w-0 grow-2 basis-120">
+    {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
+    <h2 id={`${data.id}-heading`} class="mb-6 text-2xl"><Inline text={data.heading} /></h2>
+    <div class="prose max-w-measure-md">
+      <Content />
+    </div>
+    <ul class="mt-6 flex flex-wrap gap-x-7 gap-y-2">
+      {data.links.map((link) => <li><Inline text={link} /></li>)}
+    </ul>
+  </div>
+</SectionShell>

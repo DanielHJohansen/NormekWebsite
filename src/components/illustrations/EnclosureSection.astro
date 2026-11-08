@@ -1,0 +1,58 @@
+---
+/**
+ * The hero drawing: an exploded section of a two-part housing around a board.
+ * Placeholder drawn from the canvas (docs/design/canvas/Main.dc.html) until the visual-media-producer
+ * delivers src/assets/illustrations/enclosure-section.svg. Then swap this component for an <img>
+ * of that file and keep the figure and caption as they are.
+ *
+ * Brand drawing style: 2 px Ink outlines, 1 px Steel dimension lines, one Signal callout, cut faces
+ * hatched at 45 degrees with a 9 px pitch. Colours come from classes on the tokens, not from values.
+ * The labels are part of the drawing.
+ * Layers, top to bottom: assembly lines, lid and seal, board with three components, base with two posts,
+ * the Signal callout on the seal, part labels, dimension line.
+ */
+---
+
+<svg
+  viewBox="0 0 560 440"
+  class="block h-auto w-full"
+  role="img"
+  aria-label="Exploded section drawing of an enclosure. A lid with a seal at its lip, a circuit board with three components, and a base with two mounting posts, joined by dashed assembly lines."
+>
+  <defs>
+    <pattern
+      id="hatch-cut"
+      patternUnits="userSpaceOnUse"
+      width="9"
+      height="9"
+      patternTransform="rotate(45)"
+    >
+      <line x1="0" y1="0" x2="0" y2="9" class="stroke-fg" stroke-width="1.5"></line>
+    </pattern>
+  </defs>
+  <line x1="120" y1="112" x2="120" y2="262" class="stroke-steel" stroke-width="1" stroke-dasharray="4 4"></line>
+  <line x1="400" y1="112" x2="400" y2="262" class="stroke-steel" stroke-width="1" stroke-dasharray="4 4"></line>
+  <path d="M80 100V44H440V100H422V62H98V100Z" fill="url(#hatch-cut)" class="stroke-fg" stroke-width="2" stroke-linejoin="miter"></path>
+  <circle cx="89" cy="108" r="5" fill="none" class="stroke-fg" stroke-width="2"></circle>
+  <circle cx="431" cy="108" r="5" fill="none" class="stroke-fg" stroke-width="2"></circle>
+  <rect x="110" y="196" width="300" height="10" class="fill-fg"></rect>
+  <rect x="140" y="170" width="44" height="26" class="fill-surface stroke-fg" stroke-width="2"></rect>
+  <rect x="226" y="176" width="30" height="20" class="fill-surface stroke-fg" stroke-width="2"></rect>
+  <rect x="352" y="160" width="48" height="36" class="fill-surface stroke-fg" stroke-width="2"></rect>
+  <path d="M80 268H98V366H422V268H440V386H80Z" fill="url(#hatch-cut)" class="stroke-fg" stroke-width="2" stroke-linejoin="miter"></path>
+  <rect x="132" y="312" width="16" height="54" fill="url(#hatch-cut)" class="stroke-fg" stroke-width="2"></rect>
+  <rect x="372" y="312" width="16" height="54" fill="url(#hatch-cut)" class="stroke-fg" stroke-width="2"></rect>
+  <path d="M89 113L44 150" fill="none" class="stroke-accent" stroke-width="2"></path>
+  <circle cx="44" cy="150" r="4" class="fill-accent"></circle>
+  <text x="14" y="174" class="fill-fg font-mono" font-size="13">seal</text>
+  <line x1="440" y1="72" x2="488" y2="72" class="stroke-steel" stroke-width="1"></line>
+  <text x="494" y="76" class="fill-fg font-mono" font-size="13">lid</text>
+  <line x1="410" y1="201" x2="488" y2="201" class="stroke-steel" stroke-width="1"></line>
+  <text x="494" y="205" class="fill-fg font-mono" font-size="13">board</text>
+  <line x1="440" y1="330" x2="488" y2="330" class="stroke-steel" stroke-width="1"></line>
+  <text x="494" y="334" class="fill-fg font-mono" font-size="13">base</text>
+  <line x1="80" y1="414" x2="440" y2="414" class="stroke-steel" stroke-width="1"></line>
+  <line x1="80" y1="406" x2="80" y2="422" class="stroke-steel" stroke-width="1"></line>
+  <line x1="440" y1="406" x2="440" y2="422" class="stroke-steel" stroke-width="1"></line>
+  <text x="260" y="434" text-anchor="middle" class="fill-muted font-mono" font-size="13">outer size set by the board and the seal</text>
+</svg>

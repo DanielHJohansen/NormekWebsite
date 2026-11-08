@@ -1,0 +1,7 @@
+order: 20
+name: Prototype sprint
+summary: Check the design on your real board.
+youGet: "Native CAD ([format TO CONFIRM]) and STEP files with a bill of materials, one or two rounds of 3D printed prototypes, and a fit report with photos and measured dimensions. Printed prototypes check fit. They do not prove sealing, strength or heat in the production material. Two design reviews, one before printing. Extra rounds are quoted."
+iNeed: "A frozen board revision, one or two assembled boards, parts lists, and a reviewer who answers within [2 working days, TO CONFIRM]. Who pays for prototype parts and shipping: [TO CONFIRM]."
+price: null
+priceStatus: hypothesis

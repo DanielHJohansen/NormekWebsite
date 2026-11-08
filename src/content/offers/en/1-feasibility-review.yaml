@@ -1,0 +1,7 @@
+order: 10
+name: Enclosure feasibility review
+summary: Find out whether a standard box fits.
+youGet: "A PDF report with the verdict, manufacturing route for your volume, materials, sealing and venting, heat path notes (a hand estimate of temperature rise at your power figure, not a simulation) and antenna placement notes (keep-outs and housing material, not tuning or radio tests), and each risk with its cheapest fix. Also a computer-aided design (CAD) envelope study, an order-of-magnitude cost range, one 60 minute call and one written revision."
+iNeed: "A 3D model of the board (STEP: Standard for the Exchange of Product data), connector and antenna positions, power dissipation, environment, volumes."
+price: null
+priceStatus: hypothesis

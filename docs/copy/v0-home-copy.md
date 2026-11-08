@@ -1,6 +1,6 @@
 # Normek v0 home page copy
 
-Version 2, 8 November 2026, by `content-copywriter`. Voice per the brand guide: "I" where Daniel acts, "Normek" for the company, no team voice. `[TO CONFIRM]` marks a missing fact and blocks launch mode. Changes since version 1 are in part 7.
+Version 2.1, 8 November 2026, by `content-copywriter`. Voice per the brand guide: "I" where Daniel acts, "Normek" for the company, no team voice. `[TO CONFIRM]` marks a missing fact and blocks launch mode. Changes since version 1 are in part 7.
 
 ## 1. Hero headline tests
 
@@ -42,17 +42,60 @@ Each card links to #contact: Tell me about this
 If a standard box fits, I recommend it. How long a stage takes depends on the project, so a written scope fixes duration and price before work starts [TO CONFIRM]. Files follow a non-disclosure agreement (NDA).
 
 **1. Enclosure feasibility review.** Find out whether a standard box fits.
-- You get: a PDF report with the verdict, manufacturing route for your volume, a material shortlist, sealing and venting, and each risk with its cheapest fix. It includes heat path notes (a hand estimate of temperature rise at your power figure, not a simulation) and antenna placement notes (keep-outs and housing material, not tuning or radio tests) [TO CONFIRM]. Also a computer-aided design (CAD) envelope study and a rough unit cost range per volume step, not a quote. One 60 minute call, one written revision.
-- I need: a 3D model of the board (STEP: Standard for the Exchange of Product model data), connector and antenna positions, power dissipation, environment, volumes.
+
+You get:
+- A PDF report with the verdict, manufacturing route for your volume, a material shortlist, sealing and venting, and each risk with its cheapest fix.
+- It includes heat path notes (a hand estimate of temperature rise at your power figure, not a simulation) and antenna placement notes (keep-outs and housing material, not tuning or radio tests) [TO CONFIRM].
+- Also a computer-aided design (CAD) envelope study and a rough unit cost range per volume step, not a quote.
+- One 60 minute call, one written revision.
+
+I need:
+- A 3D model of the board (STEP: Standard for the Exchange of Product model data)
+- Connector and antenna positions
+- Power dissipation
+- Environment
+- Volumes
 
 **2. Design and prototype.** Check the design on your real board.
-- You get: native CAD ([format TO CONFIRM]) and STEP files with a bill of materials, one or two rounds of 3D printed prototypes, and a fit report with photos and measured dimensions. Two design reviews, one before printing. Extra rounds are quoted. Printed prototypes check fit. They do not prove sealing, strength or heat in the production material.
-- I need: a frozen board revision, one or two assembled boards, parts lists, and a reviewer who answers within [2 working days, TO CONFIRM]. Who pays for prototype parts and shipping: [TO CONFIRM].
+
+You get:
+- Native CAD ([format TO CONFIRM]) and STEP files with a bill of materials.
+- One or two rounds of 3D printed prototypes.
+- A fit report with photos and measured dimensions.
+- Two design reviews, one before printing.
+- Extra rounds are quoted.
+- Printed prototypes check fit. They do not prove sealing, strength or heat in the production material.
+
+I need:
+- A frozen board revision
+- One or two assembled boards
+- Parts lists
+- A reviewer who answers within [2 working days, TO CONFIRM]
+- Who pays for prototype parts and shipping: [TO CONFIRM]
 
 **3. Production package.** Take the design to manufacturers and compare quotes.
-- You get: drawings with material, finish and critical tolerances. A request for quote (RFQ) pack for [2 to 3, TO CONFIRM] manufacturers, comparing unit price, tooling, lead time and tooling ownership. I choose the manufacturers with you, and you approve the list before I send any files [TO CONFIRM]. The manufacturers' design for manufacturing (DFM) feedback, with my changes. Up to two revisions after DFM feedback. Later tooling changes are quoted [TO CONFIRM]. A review of the first samples: the manufacturer's inspection report against my drawing, and a fit check on your board. First batch support: I answer the manufacturer's questions and assess any part that misses the drawing [limit TO CONFIRM].
-- I need: an accepted prototype, a frozen board, volumes, a target unit price, and someone who can sign for tooling and orders.
-- Not included: tooling and part costs (manufacturers invoice you directly and you own the tooling [TO CONFIRM, lawyer]), certification, testing, warranty on parts others make.
+
+You get:
+- Drawings with material, finish and critical tolerances.
+- A request for quote (RFQ) pack for [2 to 3, TO CONFIRM] manufacturers, comparing unit price, tooling, lead time and tooling ownership.
+- I choose the manufacturers with you, and you approve the list before I send any files [TO CONFIRM].
+- The manufacturers' design for manufacturing (DFM) feedback, with my changes.
+- Up to two revisions after DFM feedback. Later tooling changes are quoted [TO CONFIRM].
+- A review of the first samples: the manufacturer's inspection report against my drawing, and a fit check on your board.
+- First batch support: I answer the manufacturer's questions and assess any part that misses the drawing [limit TO CONFIRM].
+
+I need:
+- An accepted prototype
+- A frozen board
+- Volumes
+- A target unit price
+- Someone who can sign for tooling and orders
+
+Not included:
+- Tooling and part costs (manufacturers invoice you directly and you own the tooling [TO CONFIRM, lawyer])
+- Certification
+- Testing
+- Warranty on parts others make
 
 ### How I work (#process)
 1. **Describe the product** in the form, in words. No files yet.
@@ -153,6 +196,7 @@ Four fields only (plan). Optional details, the call tick box and a hidden `situa
 |---|---|---|
 | Hero | One-person line replaces "Led by". Standard box line beside the button. New caption | Buyer review. Fact check |
 | Problem 2, 3 | Vent sentence rewritten. "Ten" dropped | Fact check: vents pass vapor, break-even varies |
+| Offers | You get, I need and Not included become bullet lists | Scannability, and the build maps them to YAML lists |
 | Stage 1 | Heat and antenna notes scoped. Shortlist, cost range, STEP name | Fact check: overclaim |
 | Stage 2 | Renamed. Fit-only sentence. CAD format | Buyer review: name implied speed. Fact check |
 | Stage 3 | Sample review, first batch support, revision limit defined. You approve manufacturers. Invoicing | Fact check. Buyer review |

@@ -1,0 +1,49 @@
+---
+import Inline from "../Inline.astro";
+import SectionShell from "../SectionShell.astro";
+import type { SectionOf } from "../../lib/schemas";
+
+interface Props {
+  data: SectionOf<"process">;
+  draft?: boolean;
+}
+
+const { data, draft = false } = Astro.props;
+const last = data.steps.length - 1;
+---
+
+<SectionShell id={data.id} {draft} innerClass="flex flex-wrap items-start gap-split">
+  <div class="min-w-0 flex-1 basis-75">
+    {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
+    <h2 id={`${data.id}-heading`} class="text-2xl"><Inline text={data.heading} /></h2>
+  </div>
+  <ol class="min-w-0 grow-2 basis-120">
+    {
+      data.steps.map((step, index) => (
+        <li class="flex gap-5">
+          <div aria-hidden="true" class="flex w-6 flex-none flex-col items-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" class="block flex-none">
+              <circle cx="12" cy="12" r="8.4" fill="none" class="stroke-fg" stroke-width="7.2" />
+            </svg>
+            {index < last && (
+              <>
+                <div class="min-h-3 w-0.5 flex-1 bg-fg" />
+                <svg width="24" height="24" viewBox="0 0 24 24" class="block flex-none">
+                  <path d="M12 0V4L20 12V16L12 24" fill="none" class="stroke-fg" stroke-width="2" />
+                </svg>
+                <div class="min-h-3 w-0.5 flex-1 bg-fg" />
+              </>
+            )}
+          </div>
+          <p class:list={["min-w-0", index < last && "pb-8"]}>
+            <span class="mb-1 block font-mono text-xs tracking-eyebrow text-muted">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <strong class="font-semibold"><Inline text={step.lead} /></strong>{" "}
+            <Inline text={step.text} />
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+</SectionShell>

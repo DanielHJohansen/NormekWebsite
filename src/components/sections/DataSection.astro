@@ -1,0 +1,30 @@
+---
+import Inline from "../Inline.astro";
+import SectionShell from "../SectionShell.astro";
+import type { SectionOf } from "../../lib/schemas";
+
+interface Props {
+  data: SectionOf<"data">;
+  draft?: boolean;
+}
+
+const { data, draft = false } = Astro.props;
+---
+
+<SectionShell id={data.id} {draft} ink>
+  {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
+  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl"><Inline text={data.heading} /></h2>
+  <ul class="flex flex-wrap gap-6">
+    {
+      data.cards.map((card) => (
+        <li class="min-w-0 flex-1 basis-75 border border-border bg-surface p-7">
+          <p class="text-muted">
+            <strong class="font-semibold text-fg"><Inline text={card.lead} /></strong>{" "}
+            <Inline text={card.text} />
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="mt-8"><Inline text={data.link} /></p>
+</SectionShell>

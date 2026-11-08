@@ -1,7 +1,8 @@
 /*
  * Design tokens. This is the one place where values live.
  *
- * Source: brand/brand-guide.md v0.1 (sections 2 and 3) and docs/plan/work-breakdown.md section 8.
+ * Source: brand/brand-guide.md v0.1 (sections 2 and 3), docs/plan/work-breakdown.md section 8 and the
+ * canvas snapshot in docs/design/canvas/ (Type.dc.html "Layout" and Components.dc.html).
  * The names are fixed. Components use tokens only, never raw hex values.
  * Tailwind v4 turns every @theme variable into a CSS variable, so plain CSS can use var(--color-ink) too.
  *
@@ -63,20 +64,20 @@
   --color-success: #067239;
   --color-warning: #805c05;
   --color-error: #b13544;
+  /* The dashed outline of a [TO CONFIRM] tag. It blocks launch while it is visible. */
+  --color-placeholder: var(--color-steel);
 
   /* ---------- Typography ---------- */
   /*
-   * TODO(brand-guide): fonts are not chosen yet, so these are system stacks.
-   * brand/brand-guide.md section 3 proposes Barlow Semi Condensed 600 (display), IBM Plex Sans (text)
-   * and IBM Plex Mono (specification), self-hosted as woff2 in public/fonts/.
-   * The plan allows two families, so web-architect decides first. Then add @font-face rules
-   * with font-display: swap, preload only the display and text files, and set metric-matched fallbacks.
+   * Three self-hosted families (ADR 0001 amendment A11, brand guide section 3). The @font-face rules are in
+   * fonts.css, the files in public/fonts/. If a font budget ever fails, drop the mono and set specifications in Plex Sans.
    */
-  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 
   --font-weight-normal: 400;
+  --font-weight-medium: 500;
   --font-weight-semibold: 600;
 
   /* Eyebrow labels: Mono, sm, uppercase, 0.06em tracking (brand guide section 3). */
@@ -98,24 +99,44 @@
   --text-4xl: clamp(2.5rem, 1.8427rem + 2.6966vw, 4rem);
   --text-4xl--line-height: 1.05;
 
+  /*
+   * Two fixed sizes the canvas uses beside the fluid scale: 14 px for labels, numbers and helper text,
+   * and 15 px for navigation, field labels, notes and the footer. Added in the code step, to be agreed with ui-designer.
+   */
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.5;
+  --text-ui: 0.9375rem;
+  --text-ui--line-height: 1.5;
+
   /* ---------- Space: 4 px base ---------- */
   /* Utilities multiply this: p-1 is 4 px, p-4 is 16 px, p-6 is 24 px, p-12 is 48 px. */
   --spacing: 0.25rem;
+  /* Page gutter and the padding above and below a section (canvas Type.dc.html, "Layout"). */
+  --spacing-gutter: clamp(1.25rem, 4vw, 3rem);
+  --spacing-section: clamp(3.5rem, 8vw, 6rem);
+  --spacing-hero-top: clamp(3rem, 7vw, 6rem);
+  --spacing-hero-bottom: clamp(3.5rem, 8vw, 7rem);
+  --spacing-footer: clamp(2.5rem, 6vw, 4rem);
+  /* The gap between the two halves of a split section, and the padding of a large panel or the form card. */
+  --spacing-split: clamp(2rem, 5vw, 4.5rem);
+  --spacing-split-sm: clamp(2rem, 4vw, 3.5rem);
+  --spacing-panel: clamp(1.25rem, 3vw, 2.25rem);
 
   /* ---------- Layout widths ---------- */
-  --container-page: 72rem;
-  --container-prose: 65ch; /* body lines: 65 characters at most */
-  --container-hero: 18ch; /* measure of the hero headline */
-  --container-heading: 24ch; /* measure of section headings */
+  --container-page: 75rem; /* 1200 px, centred */
+  --container-form: 47.5rem; /* the narrow pages: confirmation and not found, 760 px */
+  /* Text blocks sit inside the container at 34 to 46 em. */
+  --container-measure-sm: 34em;
+  --container-measure-md: 38em;
+  --container-measure-lg: 40em;
+  --container-measure-xl: 46em;
 
   /* ---------- Radii ---------- */
-  /* Placeholders until ui-designer sets them. The route 01 chamfer is a clip-path, see global.css. */
+  /* 2 px on buttons and inputs. Nothing else is rounded. The route 01 chamfer is a clip-path, see global.css. */
   --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
 
   /* ---------- Shadows ---------- */
-  /* Placeholders. The brand leans on Ink and Paper, so shadows stay rare and soft. */
+  /* Unused in v0: the canvas draws borders instead of shadows. Placeholders until ui-designer sets them. */
   --shadow-sm: 0 1px 2px 0 rgb(15 27 45 / 0.08);
   --shadow-md: 0 4px 12px 0 rgb(15 27 45 / 0.1);
   --shadow-lg: 0 12px 32px 0 rgb(15 27 45 / 0.14);

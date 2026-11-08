@@ -1,6 +1,7 @@
 /**
- * Site-wide facts. The name lives here only (brand guide section 1), so a rename is one edit plus
- * new logo files. Anything not known yet stays "[TO CONFIRM]". The launch check fails while one remains.
+ * Site-wide facts and the few strings that belong to the page frame. The name lives here only
+ * (brand guide section 1), so a rename is one edit plus new logo files. Anything not known yet stays
+ * "[TO CONFIRM]" in the content, and the launch check fails while one remains.
  */
 
 export const TO_CONFIRM = "[TO CONFIRM]";
@@ -12,28 +13,23 @@ export const SITE = {
   email: "daniel@normek.dk",
   defaultLocale: "en",
   locales: ["en"],
-  /** Title and description of the home page, and the fallback description. Real text comes from the copywriter. */
-  homeTitle: `${TO_CONFIRM} Home page title`,
-  description: `${TO_CONFIRM} Meta description for the home page.`,
+  /** Title and meta description of the home page, from section 5 of docs/copy/v0-home-copy.md. */
+  homeTitle: "Normek: enclosure design for electronics teams",
+  description:
+    "Enclosure design for electronics teams with no mechanical engineer. Feasibility review, prototypes and manufacturer hand-off by Daniel Hessellund Johansen.",
   /** Matches --color-paper in src/styles/tokens.css. Used for the browser UI colour only. */
   themeColor: "#F4F5F2",
   /**
    * The one primary action. It points at the contact section on the home page.
    * The header uses the short label so logo and button fit side by side at 390 px.
    */
-  cta: { label: "Request a feasibility review", shortLabel: "Request a review", href: "/#contact" },
-  /** Shown in the footer. Danish websites that offer services normally must show these (open question 2). */
-  company: {
-    legalName: TO_CONFIRM,
-    legalForm: TO_CONFIRM,
-    cvr: TO_CONFIRM,
-    address: TO_CONFIRM,
+  cta: {
+    label: "Request a feasibility review",
+    shortLabel: "Request a review",
+    href: "/#contact",
+    anchor: "#contact",
   },
-  /**
-   * Footer links that point at a page in the `pages` collection. A link whose page is a draft
-   * is dropped from the build, so a production footer never links to a missing page.
-   */
-  footerPages: [{ label: "Privacy", slug: "privacy" }],
+  skipLinkLabel: "Skip to main content",
 } as const;
 
 export type Site = typeof SITE;

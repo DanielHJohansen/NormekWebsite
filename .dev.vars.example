@@ -1,0 +1,18 @@
+# Copy to .dev.vars for local runs of the contact function (wrangler pages dev).
+# .dev.vars is gitignored. This example is committed, so it holds only fake or public test values.
+# Real secrets live in the Cloudflare Pages settings and nowhere else
+# (docs/ops/cloudflare-and-resend-setup.md). Names are the ones the function reads
+# (docs/security/contact-api.md section 6).
+
+# Cloudflare's published always-pass TEST secret. The function refuses it on every host except
+# localhost, 127.0.0.1 and [::1], so it cannot switch the person check off on a deployed site.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+
+# Fake. Mail will not send with it. To try real delivery locally, put a sending-only key here.
+RESEND_API_KEY=fake-resend-key-replace-me
+
+# Fake inbox. A real address here would receive local test messages.
+CONTACT_TO=inbox@example.com
+
+# Comma separated origins the form may be posted from. Scheme and host only, no trailing slash.
+ALLOWED_ORIGINS=http://localhost:8788

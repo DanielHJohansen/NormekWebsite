@@ -1,24 +1,15 @@
 /**
- * POST /api/contact. STUB: answers 501 for every request until task 8 builds the real function.
+ * POST /api/contact. The contact form's endpoint, a Cloudflare Pages Function.
  *
- * The 15 rules CF-01 to CF-15 in docs/security/threat-model-and-requirements.md section 3 are not
- * implemented here. This file only fixes the shape of the response and its headers.
+ * This file only connects Pages to the code in functions/_lib/. The contract with the form client
+ * is docs/security/contact-api.md, and the 15 rules CF-01 to CF-15 are in
+ * docs/security/threat-model-and-requirements.md section 3.
  *
- * Cloudflare does not apply public/_headers to Pages Function responses, so the function sets
- * its own headers (same document, section 2.4).
+ * Cloudflare does not apply public/_headers to Pages Function responses, so the function sets its
+ * own headers (functions/_lib/http.ts).
  */
+import type { Env } from "../_lib/env";
+import { handleContact } from "../_lib/handle";
 
-const RESPONSE_HEADERS: Record<string, string> = {
-  "Content-Type": "application/json; charset=utf-8",
-  "Cache-Control": "no-store",
-  "X-Content-Type-Options": "nosniff",
-  "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
-  "Referrer-Policy": "no-referrer",
-  "X-Robots-Tag": "noindex",
-};
-
-export const onRequest = (): Response =>
-  new Response(JSON.stringify({ ok: false, error: "not_implemented" }), {
-    status: 501,
-    headers: RESPONSE_HEADERS,
-  });
+export const onRequest = (context: { request: Request; env: Env }): Promise<Response> =>
+  handleContact(context.request, context.env);

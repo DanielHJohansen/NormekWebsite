@@ -1,29 +1,54 @@
 ---
 /**
- * The primary action: Signal fill with Ink text (5.54:1). White on Signal fails contrast.
- * One primary Signal fill per view (brand guide section 2). The target is at least 44 px high.
+ * The primary action is a Signal fill with an Ink label (5.54:1). White on Signal fails contrast.
+ * The secondary button is an Ink outline and fills on hover. On an Ink band the same classes follow
+ * the swapped tokens. Radius 2 px, never chamfered. One primary Signal fill per view (brand guide section 2).
+ * Heights: 52 px for the main buttons, 44 px in the header.
+ *
+ * It renders a link by default. Pass as="button" for a form button.
  */
 interface Props {
-  href: string;
+  as?: "a" | "button";
+  href?: string;
+  type?: "button" | "submit";
+  variant?: "primary" | "secondary";
   size?: "md" | "sm";
   class?: string;
+  id?: string;
+  disabled?: boolean;
 }
 
-const { href, size = "md", class: className } = Astro.props;
+const {
+  as: Tag = "a",
+  href,
+  type,
+  variant = "primary",
+  size = "md",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const variants = {
+  primary: "bg-accent text-on-accent hover:bg-accent-hover disabled:bg-paper-200 disabled:text-muted",
+  secondary: "border-2 border-fg text-fg hover:bg-fg hover:text-bg",
+} as const;
 
 const sizes = {
-  md: "px-6 text-base",
-  sm: "px-4 text-sm",
+  md: "min-h-13 px-7 text-base",
+  sm: "min-h-11 px-5 text-ui",
 } as const;
 ---
 
-<a
-  {href}
+<Tag
+  href={Tag === "a" ? href : undefined}
+  type={Tag === "button" ? (type ?? "button") : undefined}
   class:list={[
-    "inline-flex min-h-11 items-center justify-center rounded-sm bg-accent py-2 text-center font-semibold text-on-accent transition-colors hover:bg-accent-hover",
+    "inline-flex items-center justify-center rounded-sm text-center font-semibold transition-colors disabled:cursor-not-allowed",
+    variants[variant],
     sizes[size],
     className,
   ]}
+  {...rest}
 >
   <slot />
-</a>
+</Tag>

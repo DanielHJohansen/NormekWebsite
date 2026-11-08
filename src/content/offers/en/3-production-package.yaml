@@ -1,0 +1,8 @@
+order: 30
+name: Production package
+summary: Take the design to manufacturers and compare quotes.
+youGet: "Drawings with material, finish and critical tolerances. A request for quote (RFQ) pack for [2 to 3, TO CONFIRM] manufacturers, comparing unit price, tooling, lead time and tooling ownership. You approve the manufacturer list before I send any files. The manufacturers' design for manufacturing (DFM) feedback, with my changes. A review of the first samples: the manufacturer's inspection report against my drawing, and a fit check on your board. Up to two revisions after DFM feedback. Later tool changes are quoted."
+iNeed: An accepted prototype, a frozen board, volumes, a target unit price, and someone who can sign for tooling and orders.
+notIncluded: "Tooling and part costs (you pay manufacturers directly [TO CONFIRM]), certification, testing, warranty on parts others make."
+price: null
+priceStatus: hypothesis

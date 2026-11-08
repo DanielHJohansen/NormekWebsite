@@ -1,42 +1,35 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
-import DraftBadge from "../ui/DraftBadge.astro";
-import { SITE } from "../../config/site";
-import { isDraft } from "../../lib/drafts";
+import Inline from "../Inline.astro";
+import SectionShell from "../SectionShell.astro";
+import ContactForm from "./ContactForm.astro";
+import type { SectionOf } from "../../lib/schemas";
 
 interface Props {
-  entry: CollectionEntry<"home">;
+  data: SectionOf<"contact">;
+  draft?: boolean;
 }
 
-const { entry } = Astro.props;
-const { data } = entry;
-const draft = isDraft(entry);
-const { Content } = await render(entry);
-const hasBody = Boolean(entry.body?.trim());
-// The inquiry form arrives with the contact function (task 8). Until then the address is the way in.
+const { data, draft = false } = Astro.props;
 ---
 
-<section
-  id={data.id}
-  aria-labelledby={`${data.id}-heading`}
-  data-draft={draft ? "true" : undefined}
-  class="border-t border-border"
->
-  <div class="mx-auto max-w-page px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-24">
-    {draft && <DraftBadge />}
-    <h2 id={`${data.id}-heading`} class="max-w-heading text-2xl">
-      {data.heading}
-    </h2>
-    {data.lead && <p class="mt-4 max-w-prose text-lg">{data.lead}</p>}
-    {hasBody && (
-      <div class="prose mt-6">
-        <Content />
-      </div>
-    )}
-    <p class="mt-6 text-lg">
-      <a class="link" href={`mailto:${SITE.email}`}>
-        {SITE.email}
-      </a>
-    </p>
+<SectionShell id={data.id} {draft}>
+  {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
+  <h2 id={`${data.id}-heading`} class="mb-10 text-2xl"><Inline text={data.heading} /></h2>
+  <div class="flex flex-wrap items-start gap-split-sm">
+    <div class="min-w-0 grow-7 basis-120">
+      <ContactForm form={data.form} />
+    </div>
+    <div class="flex min-w-0 grow-5 basis-80 flex-col gap-6">
+      <h3 class="text-xl"><Inline text={data.nextStepsHeading} /></h3>
+      {
+        data.steps.map((step, index) => (
+          <div class="flex gap-4">
+            <span class="flex-none font-mono text-muted">{String(index + 1).padStart(2, "0")}</span>
+            <p><Inline text={step} /></p>
+          </div>
+        ))
+      }
+      <p class="border-t border-border pt-5"><Inline text={data.capacity} /></p>
+    </div>
   </div>
-</section>
+</SectionShell>

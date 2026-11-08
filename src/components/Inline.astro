@@ -1,0 +1,37 @@
+---
+/**
+ * Renders a string from the content with its inline markup: links, strong text, the site's address and
+ * [TO CONFIRM] placeholders (see src/lib/inline.ts). It builds elements, never HTML from a string.
+ */
+import { SITE } from "../config/site";
+import { parseInline } from "../lib/inline";
+
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+const tokens = parseInline(text);
+---
+
+{
+  tokens.map((token) => {
+    if (token.type === "placeholder") return <span class="placeholder">{token.text}</span>;
+    if (token.type === "strong") return <strong class="font-semibold">{token.text}</strong>;
+    if (token.type === "link")
+      return (
+        <a class="link" href={token.href}>
+          {token.text}
+        </a>
+      );
+    if (token.type === "email")
+      return token.link ? (
+        <a class="link" href={`mailto:${SITE.email}`}>
+          {SITE.email}
+        </a>
+      ) : (
+        SITE.email
+      );
+    return token.text;
+  })
+}

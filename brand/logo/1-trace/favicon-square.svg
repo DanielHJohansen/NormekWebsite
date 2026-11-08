@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="384" height="384" role="img">
+<title>Normek icon, square</title>
+<rect width="96" height="96" fill="#0F1B2D"/>
+<g transform="translate(16.8 16.8) scale(0.65)">
+<path d="M7 7L73.24 7L89 22.76L89 89L22.76 89L7 73.24ZM13 13L70.76 13L83 25.24L83 83L25.24 83L13 70.76Z" fill="#FFFFFF" fill-rule="evenodd"/>
+<path d="M25 28L32.24 28L65 60.76L65 32.34L71 32.34L71 68L63.76 68L31 35.24L31 63.66L25 63.66Z" fill="#FFFFFF"/>
+<path d="M61 28a7 7 0 1 0 14 0a7 7 0 1 0 -14 0ZM65.2 28a2.8 2.8 0 1 0 5.6 0a2.8 2.8 0 1 0 -5.6 0Z" fill="#FF5A1F" fill-rule="evenodd"/>
+<path d="M21 68a7 7 0 1 0 14 0a7 7 0 1 0 -14 0ZM25.2 68a2.8 2.8 0 1 0 5.6 0a2.8 2.8 0 1 0 -5.6 0Z" fill="#FF5A1F" fill-rule="evenodd"/>
+</g>
+</svg>

@@ -1,0 +1,50 @@
+---
+/**
+ * The frame every home section shares: a full width band, the 1200 px container and the section padding.
+ * A light section is divided by a hairline, an Ink band divides itself (canvas Type.dc.html, "Layout").
+ * A draft section, which exists only in the private preview, carries a marker and a badge.
+ */
+import DraftBadge from "./ui/DraftBadge.astro";
+
+interface Props {
+  id: string;
+  /** The id of the heading that names the section. Defaults to "<id>-heading". */
+  labelledby?: string;
+  draft?: boolean;
+  /** An Ink band. */
+  ink?: boolean;
+  /** The hairline above a light section. */
+  rule?: boolean;
+  pad?: "section" | "hero";
+  class?: string;
+  innerClass?: string;
+}
+
+const {
+  id,
+  labelledby = `${id}-heading`,
+  draft = false,
+  ink = false,
+  rule = true,
+  pad = "section",
+  class: className,
+  innerClass,
+} = Astro.props;
+---
+
+<section
+  {id}
+  aria-labelledby={labelledby}
+  data-draft={draft ? "true" : undefined}
+  class:list={[
+    ink && "theme-ink",
+    rule && !ink && "border-t border-border",
+    pad === "hero" ? "pt-hero-top pb-hero-bottom" : "py-section",
+    className,
+  ]}
+>
+  <div class:list={["mx-auto max-w-page px-gutter", innerClass]}>
+    {draft && <DraftBadge />}
+    <slot />
+  </div>
+</section>
