@@ -65,7 +65,7 @@ What follows from that:
 
 - Cloudflare Pages serves a bare domain only when the zone is on Cloudflare nameservers. A subdomain such as `www` can use a CNAME record at any DNS provider, pointing at the project's `pages.dev` address. Add the domain in the Pages project before creating the CNAME, otherwise visitors see an error. ([Cloudflare documentation](https://developers.cloudflare.com/pages/platform/custom-domains/))
 - Moving DNS away from a DNSSEC signed zone has one trap. If the old DS record is still published when the nameservers change, validating resolvers treat the domain as broken and it stops resolving. The DS record has to be removed first and given time to expire.
-- Simply's DNSSEC FAQ says its nameservers sign automatically and that, for domains on other nameservers, a DS record can be added in the control panel. It does not say how to disable DNSSEC, so check the domain's DNSSEC settings or ask Simply support. ([Simply FAQ](https://www.simply.com/en/support/faq/domain/863-dnssec/))
+- Simply's DNSSEC FAQ says its nameservers sign automatically and that, for domains on other nameservers, a DS record can be added in the control panel. Simply's API and official connector can also add and remove DNSSEC keys at the registry, so each step of a migration can be done with approvals. ([Simply FAQ](https://www.simply.com/en/support/faq/domain/863-dnssec/))
 
 Options, recommended first:
 
@@ -74,6 +74,8 @@ Options, recommended first:
 3. **Host the built site on Simply's web hosting** by uploading files. We lose branch previews on a phone and would store hosting credentials in GitHub, so it is the least attractive.
 
 Nothing needs to change in DNS yet. A Cloudflare preview URL works without touching the domain, and the name is not cleared.
+
+Reading and changing the zone: use Simply's official AI connector (`https://mcp.simply.com/v2`, browser login), set up as described in `docs/ops/simply-connector.md`. Do not use an API key. Simply's v2 API keys have no documented scopes, and a key can place orders and change nameservers. ([Simply API docs](https://www.simply.com/en/docs/api/))
 
 To review with `security-engineer`: the wildcard A record makes every subdomain resolve, and we need to confirm that DKIM and DMARC records exist. Still open: the records below `www`, what is live on the domain today, and which mailboxes exist.
 
