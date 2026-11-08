@@ -133,7 +133,7 @@
    * Running text is at most 28em wide (tokens.md 3.3).
    */
   .prose {
-    max-width: var(--container-prose);
+    max-width: var(--container-measure);
   }
   .prose > * + * {
     margin-top: calc(var(--spacing) * 4);

@@ -19,13 +19,13 @@ const { data, draft = false } = Astro.props;
   <div class="flex flex-wrap gap-x-columns-tight gap-y-columns-tight">
     <div class="min-w-0 flex-1 basis-80">
       <h3 class="mb-4 border-b-2 border-fg pb-3 text-xl"><Inline text={data.takeOnHeading} /></h3>
-      <p class="max-w-prose"><Inline text={data.takeOn} /></p>
+      <p class="max-w-measure"><Inline text={data.takeOn} /></p>
     </div>
     <div class="min-w-0 flex-1 basis-100">
       <h3 class="mb-4 border-b-2 border-fg pb-3 text-xl">
         <Inline text={data.notForNowHeading} />
       </h3>
-      <ul class="flex max-w-prose list-disc flex-col gap-3 pl-5">
+      <ul class="flex max-w-measure list-disc flex-col gap-3 pl-5">
         {data.notForNow.map((item) => <li><Inline text={item} /></li>)}
       </ul>
     </div>

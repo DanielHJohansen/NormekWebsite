@@ -43,7 +43,7 @@ const { footer } = Astro.props;
     <div
       class="mt-8 flex flex-wrap justify-between gap-x-8 gap-y-3 border-t border-border pt-6 text-sm text-muted"
     >
-      <p class="max-w-prose"><Inline text={footer.agreement} /></p>
+      <p class="max-w-measure"><Inline text={footer.agreement} /></p>
       <p><Inline text={footer.copyright} /></p>
     </div>
   </div>

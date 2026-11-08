@@ -22,7 +22,7 @@ const toc = headings.filter((heading) => heading.depth === 2);
     <h1 class="mb-4 text-3xl"><Inline text={data.heading} /></h1>
     <p class="mb-10 font-mono text-sm text-muted"><Inline text={data.lastUpdated} /></p>
 
-    <div class="mb-14 max-w-prose border border-l-4 border-border border-l-fg bg-surface px-8 py-7">
+    <div class="mb-14 max-w-measure border border-l-4 border-border border-l-fg bg-surface px-8 py-7">
       <h2 class="mb-3 text-xl"><Inline text={data.summaryTitle} /></h2>
       <ul class="flex list-disc flex-col gap-2 pl-5">
         {data.summary.map((item) => <li><Inline text={item} /></li>)}

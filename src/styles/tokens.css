@@ -100,12 +100,12 @@
   --spacing-panel: clamp(20px, 3vw, 36px); /* hero panel and form card padding */
   --spacing-columns: clamp(32px, 5vw, 72px); /* gap between hero, process and about columns */
   --spacing-columns-tight: clamp(32px, 4vw, 56px); /* gap between scope and contact columns */
-  --spacing-footer: clamp(40px, 6vw, 64px); /* footer padding above and below (tokens.md 5.18, named in code) */
+  --spacing-footer: clamp(40px, 6vw, 64px); /* footer padding above and below */
 
   /* ---------- Layout widths ---------- */
   --container-page: 75rem; /* 1200 px including the gutters, so content is 1104 px at the cap */
-  --container-prose: 28em; /* 65 characters of Plex Sans, measured on the page copy */
-  --container-narrow: 47.5rem; /* /thanks/ and the 404 page, 760 px (canvas Thanks.dc.html, named in code) */
+  --container-narrow: 47.5rem; /* the confirmation and not found pages, 760 px */
+  --container-measure: 28em; /* 65 characters of Plex Sans, measured on the page copy. Use max-w-measure. Tailwind's max-w-prose is a fixed 65ch and ignores the theme */
 
   /* ---------- Radius and shadow ---------- */
   --radius-sm: 2px; /* buttons and inputs. Cards and panels are square */

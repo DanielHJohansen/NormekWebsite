@@ -16,13 +16,13 @@ const { labels } = data;
 const offers = await getOffers();
 
 /** The spec rows hold bullet lists. */
-const listClass = "flex max-w-prose list-disc flex-col gap-2 pl-5";
+const listClass = "flex max-w-measure list-disc flex-col gap-2 pl-5";
 ---
 
 <SectionShell id={data.id} {draft}>
   {data.eyebrow && <p class="eyebrow mb-3"><Inline text={data.eyebrow} /></p>}
   <h2 id={`${data.id}-heading`} class="mb-4 text-2xl"><Inline text={data.heading} /></h2>
-  <p class="mb-10 max-w-prose text-muted"><Inline text={data.lead} /></p>
+  <p class="mb-10 max-w-measure text-muted"><Inline text={data.lead} /></p>
 
   <ol class="border-t-2 border-fg">
     {

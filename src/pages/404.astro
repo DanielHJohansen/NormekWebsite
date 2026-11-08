@@ -22,7 +22,7 @@ const { data } = entry;
     <div class="mx-auto max-w-narrow px-gutter">
       <p class="eyebrow mb-4">{data.eyebrow}</p>
       <h1 class="mb-6 text-3xl"><Inline text={data.heading} /></h1>
-      <p class="mb-8 max-w-prose text-lg text-muted"><Inline text={data.lead} /></p>
+      <p class="mb-8 max-w-measure text-lg text-muted"><Inline text={data.lead} /></p>
       <p class="mb-12"><a class="link link-standalone" href="/">{data.homeLink}</a></p>
       <div class="flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-border pt-8">
         <Button href={SITE.cta.href}>{SITE.cta.label}</Button>
