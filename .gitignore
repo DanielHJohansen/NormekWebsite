@@ -16,7 +16,7 @@ dist/
 *.key
 
 # local QA evidence and editor files
-qa/
+/qa/
 .DS_Store
 Thumbs.db
 .vscode/*
