@@ -5,7 +5,8 @@ name: CI
 #
 # Jobs run side by side and map to the plan like this:
 #   Checks      steps 1 to 8 and 11 (install, writing rules, lint, types, unit tests, build,
-#               check:dist, offline links, accessibility, screenshots)
+#               check:dist, secret scan of the built site, offline links, accessibility,
+#               screenshots)
 #   Lighthouse  step 9 (needs its own build with PUBLIC_INDEXABLE=true)
 #   Secret scan step 10 (full git history)
 #   External links (weekly)  the non-blocking half of step 7
@@ -19,7 +20,9 @@ name: CI
 # INSTALL SCRIPTS: npm install scripts are switched off in CI (npm ci --ignore-scripts), which
 # the security threat model asks for (risk R8). Checked on 2026-11-08 against the scaffold:
 # lint, types, build, check:dist and screenshots all work without them. If a future package
-# truly needs a script, run that one explicitly in the install step.
+# truly needs a script, run that one explicitly in the install step. Since review finding S4 the
+# project .npmrc switches scripts off for every install, which also covers Cloudflare's build and
+# the npx install in the Lighthouse job.
 
 on:
   push:
@@ -41,6 +44,9 @@ concurrency:
 env:
   ASTRO_TELEMETRY_DISABLED: "1"
   DO_NOT_TRACK: "1"
+  # gitleaks is installed in two jobs at this one fixed version. Change it here only.
+  # Dependabot cannot see this line, so check for a newer release now and then.
+  GITLEAKS_VERSION: v8.30.1
 
 defaults:
   run:
@@ -98,6 +104,17 @@ jobs:
 
       - name: Check the build output
         run: npm run check:dist
+
+      # Security review S13. The history scan in the Secret scan job never sees dist/, because it
+      # is not committed, so a secret inlined at build time would slip through. Scan the built
+      # site as well. Same pinned install as in the Secret scan job (see the comment there).
+      - name: Install gitleaks
+        env:
+          GOBIN: ${{ runner.temp }}/bin
+        run: go install github.com/zricethezav/gitleaks/v8@"$GITLEAKS_VERSION"
+
+      - name: Scan the built site for secrets
+        run: ${{ runner.temp }}/bin/gitleaks dir dist --redact --no-banner --verbose
 
       # Step 7, the blocking half. Offline: only links inside dist/ are followed.
       # Needs a lychee version that has --index-files (0.19 or newer). Tested with lychee 0.24.2.
@@ -194,14 +211,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # gitleaks is built from source at a fixed version. Go verifies every module it downloads
-      # against the public checksum database (sum.golang.org), so no release file or extra action
-      # has to be trusted. v8.30.1 still declares its module path under the old zricethezav name.
-      # Update the version by hand now and then. Dependabot cannot see this line.
+      # gitleaks is built from source at a fixed version (GITLEAKS_VERSION at the top of this file).
+      # Go verifies every module it downloads against the public checksum database
+      # (sum.golang.org), so no release file or extra action has to be trusted. v8.30.1 still
+      # declares its module path under the old zricethezav name.
       - name: Install gitleaks
         env:
           GOBIN: ${{ runner.temp }}/bin
-        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+        run: go install github.com/zricethezav/gitleaks/v8@"$GITLEAKS_VERSION"
 
       - name: Scan the full git history
         run: ${{ runner.temp }}/bin/gitleaks git --redact --no-banner --verbose .
