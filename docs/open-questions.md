@@ -18,10 +18,10 @@ What you do (about an hour):
 
 1. Search "normek" on datacvr.virk.dk and see whether NORMEK A/S is active.
 2. Search NORMEK and NORMEC in EUIPO TMview and the Danish Patent and Trademark Office database. Relevant classes: 6, 7, 9, 37, 40 and 42.
-3. Check normek.dk, normek.com and normek.eu.
+3. normek.dk is already yours at Simply.com, so that part is done. Check normek.com and normek.eu only if you want them.
 4. Decide: keep the name, or rename.
 
-Default: pause domain purchases, print and public announcements, and run outreach under your own name. If the name fails, ask `brand-identity-designer` for five candidates that keep the Nordic and mechanical idea, start with N (so logo route 01 survives) and are screened against the same registers. Logo route 02 survives any rename.
+Default: pause further domain purchases, print and public announcements, and run outreach under your own name. If the name fails, ask `brand-identity-designer` for five candidates that keep the Nordic and mechanical idea, start with N (so logo route 01 survives) and are screened against the same registers. Logo route 02 survives any rename.
 
 ### 2. Legal entity and company details (BLOCKER for launch)
 
@@ -68,7 +68,7 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 | 15 | v1 pages | Home, Enclosure design, How we work, Data and IP, Work, About, Contact, plus legal pages |
 | 16 | Founder and testimonials | Show you prominently, since trust at this size is personal. The three testimonials on your personal site praise your personal work, so each person must agree to reuse and the label must say so |
 | 17 | Logo | Pick a route from `brand/logo/preview.png`. Recommendation: 01 Trace |
-| 18 | Domain and email | After the name is cleared: `.com` plus `.dk` or `.eu`, a mailbox with `hello@` and `daniel@`, and SPF, DKIM and DMARC records |
+| 18 | Domain and email | normek.dk is already at Simply.com. Keep the registration there and decide where DNS lives (ADR 0001). Tell me which Simply products are active (domain only, DNS, web hosting, mailboxes) and whether anything is live on the domain. Add `.com` or `.eu` only after the name is cleared. Set up a `hello@` and a `daniel@` address, with SPF, DKIM and DMARC records |
 
 ## 4. Resources and goals
 
@@ -81,7 +81,8 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 ## 5. Real-world setup (only you can do these)
 
 - [ ] Name checks (item 1).
-- [ ] Accounts with two-factor authentication: Cloudflare, the domain registrar, a business mailbox, Google Search Console.
+- [ ] Accounts with two-factor authentication: Simply.com (registrar and DNS), Cloudflare, a business mailbox, Google Search Console.
+- [ ] Tell me which Simply.com products are active and whether anything is live on normek.dk.
 - [ ] Business-tier AI accounts and vendor terms confirmed in writing.
 - [ ] Professional liability insurance quote.
 - [ ] One lawyer review: mutual NDA, services agreement, IP assignment and AI clause.

@@ -52,6 +52,16 @@ What we do reuse: the content (case studies, photos, and testimonials subject to
 - Cloudflare's free tier allows commercial use. It includes preview deployments, serverless functions, Turnstile bot checks, cookieless web analytics and email forwarding for aliases. Cloudflare has been steering new projects toward Workers with static assets, so `web-architect` confirms whether to use Pages or Workers when scaffolding.
 - Vercel's free Hobby plan is limited to personal, non-commercial use, so it is not suitable for a company. GitHub Pages cannot set custom security headers. Netlify is a fine alternative if Cloudflare is not wanted.
 
+## The domain: normek.dk at Simply.com
+
+Daniel already owns normek.dk, registered and hosted at simply.com. There are three ways to connect it, recommended first. I have not checked what each Simply plan allows.
+
+1. **Keep the registration at Simply and move DNS to Cloudflare (recommended).** Change the nameservers at Simply to Cloudflare's. This gives the bare domain, branch previews and security headers on Cloudflare. Before switching, list every existing DNS record (website, MX for email, SPF, DKIM) and recreate it in Cloudflare, and check whether DNSSEC is on at Simply. If it is, remove it first, switch, then re-enable it with Cloudflare's values. A mistake here can break email or stop the domain resolving, so `devops-engineer` writes the steps and a rollback.
+2. **Keep DNS at Simply and point only `www` to Cloudflare** with a CNAME record. This has fewer moving parts, but the bare domain then needs a redirect to `www`.
+3. **Host the built site on Simply's web hosting** by uploading files. It works if a hosting plan is active, but we lose branch previews on a phone and would store hosting credentials in GitHub, so it is the least attractive.
+
+Open: which Simply products are active (domain only, DNS, web hosting, mailboxes), and whether anything is live on the domain today.
+
 ## How this replaces Lovable
 
 | In Lovable | Here |

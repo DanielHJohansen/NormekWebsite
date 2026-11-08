@@ -55,7 +55,7 @@ Desk research on 2026-11-08 used third-party sources and is not verified against
 - **Normek Oy**, a Finnish steel structure and facade company, bought by Donges Group in 2019 and merged into NORDEC. The brand may be dormant, but trademarks may remain.
 - **Normec Group** (Netherlands), a large testing, inspection and certification group. It is pronounced the same as Normek and operates close to the compliance world our customers live in.
 
-Before any spend: check CVR (datacvr.virk.dk), EUIPO TMview, the Danish Patent and Trademark Office and domain availability, then get a trademark professional's view. Keep the logo symbol separate from the wordmark so a name change is cheap.
+Daniel already owns **normek.dk** (registered and hosted at simply.com), so the `.dk` domain is covered. That does not clear the company register or trademarks. Before any further spend: check CVR (datacvr.virk.dk), EUIPO TMview and the Danish Patent and Trademark Office, then get a trademark professional's view. Do not buy more domains or print anything until the name is cleared. Keep the logo symbol separate from the wordmark so a name change is cheap.
 
 ## Confidentiality and secrets
 
@@ -64,7 +64,7 @@ Before any spend: check CVR (datacvr.virk.dk), EUIPO TMview, the Danish Patent a
 
 ## Proposed stack (pending Daniel's approval of ADR 0001)
 
-Astro with static output, Tailwind and MDX content collections in TypeScript, hosted on Cloudflare Pages with one small Pages Function for the contact form (Turnstile and server-side validation), cookieless analytics, no database and no CMS in v1. Reasoning and alternatives are in `docs/adr/0001-stack-and-hosting.md`. Do not scaffold code until it is accepted.
+Astro with static output, Tailwind and MDX content collections in TypeScript, hosted on Cloudflare Pages with one small Pages Function for the contact form (Turnstile and server-side validation), cookieless analytics, no database and no CMS in v1. Reasoning and alternatives are in `docs/adr/0001-stack-and-hosting.md`. DNS for normek.dk is at simply.com today, and the ADR lists the ways to connect it. Do not scaffold code until the ADR is accepted.
 
 ## The expert team (`.claude/agents/`)
 
