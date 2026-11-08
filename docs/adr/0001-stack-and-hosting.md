@@ -77,7 +77,7 @@ Nothing needs to change in DNS yet. A Cloudflare preview URL works without touch
 
 Reading and changing the zone: use Simply's official AI connector (`https://mcp.simply.com/v2`, browser login), set up as described in `docs/ops/simply-connector.md`. Do not use an API key. Simply's v2 API keys have no documented scopes, and a key can place orders and change nameservers. ([Simply API docs](https://www.simply.com/en/docs/api/))
 
-For `security-engineer`, none urgent: remove the wildcard record at go-live, consider a CAA record, and extend SPF and DKIM if a form service ever sends mail as normek.dk. Turn on two-factor on the Simply account, because it controls the domain. Today the web server shows a Simply placeholder over plain HTTP, because no certificate is active.
+For `security-engineer`, none urgent: remove the wildcard record at go-live, consider a CAA record, and extend SPF and DKIM if a form service ever sends mail as normek.dk. Turn on two-factor on the Simply account, because it controls the domain. Today the web server shows a Simply placeholder, now over HTTPS with a Let's Encrypt certificate activated on 2026-11-08.
 
 ## How this replaces Lovable
 

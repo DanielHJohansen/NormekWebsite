@@ -32,4 +32,4 @@ Read through Simply's official connector, with no changes made. Records only, no
 - The bare domain, `www` and the wildcard all point at the Simply web server for this product.
 - There is no CAA record, and no MTA-STS or TLS reporting record.
 - DMARC and DKIM are delegated to Simply by CNAME, so Simply controls the DMARC policy and the report address. The policy itself has not been read.
-- The web server shows a Simply placeholder over plain HTTP (no certificate is active).
+- The web server shows a Simply placeholder. HTTPS was activated later on 2026-11-08 (Let's Encrypt, no DNS change).
