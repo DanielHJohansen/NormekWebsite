@@ -25,10 +25,23 @@ interface Form {
   statusRegion: Locator;
   field: (name: string) => Locator;
   error: (name: string) => Locator;
+  /** The addresses the page asked the Turnstile host for. The fake answers them, so nothing leaves the machine. */
+  requested: string[];
 }
 
-/** Opens the home page with a working fake Turnstile and waits until the script has enabled the button. */
-async function open(page: Page, options: { siteKey?: boolean } = {}): Promise<Form> {
+interface OpenOptions {
+  /** False leaves the form without a site key, as in the preview before the Cloudflare setup. */
+  siteKey?: boolean;
+  /** "blocked" makes the Turnstile script fail to load. */
+  turnstile?: "works" | "blocked";
+}
+
+/**
+ * Opens the home page and waits until the script has enabled the button. Turnstile is always the fake one,
+ * so no test reaches Cloudflare, and a test that forgets about it cannot hang on a real request.
+ */
+async function open(page: Page, options: OpenOptions = {}): Promise<Form> {
+  const requested = await mockTurnstile(page, options.turnstile ?? "works");
   if (options.siteKey ?? true) await useSiteKey(page);
   await page.goto("/");
   const form = page.locator("#contact-form");
@@ -42,6 +55,7 @@ async function open(page: Page, options: { siteKey?: boolean } = {}): Promise<Fo
     statusRegion: page.locator("#contact-warning"),
     field: (name) => page.locator(`#contact-${name}`),
     error: (name) => page.locator(`#contact-${name}-error`),
+    requested,
   };
 }
 
@@ -124,7 +138,6 @@ test.describe("validation", () => {
 test.describe("a failed submit", () => {
   test("shows the error summary, moves focus to it and sends nothing", async ({ page }) => {
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
-    await mockTurnstile(page);
     const f = await open(page);
 
     await f.submit.click();
@@ -190,7 +203,6 @@ test.describe("sending", () => {
     page,
   }) => {
     const sent = await mockContact(page, "hang");
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
 
@@ -208,13 +220,13 @@ test.describe("sending", () => {
 
   test("a second click or Enter while sending sends nothing more", async ({ page }) => {
     const sent = await mockContact(page, "hang");
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
 
     await f.submit.click();
     await expect.poll(() => sent.length).toBe(1);
-    await f.submit.click();
+    // Playwright waits for an aria-disabled button to become enabled, so the second click is forced.
+    await f.submit.click({ force: true });
     await f.field("name").press("Enter");
     await page.waitForTimeout(300);
     expect(sent).toHaveLength(1);
@@ -222,7 +234,6 @@ test.describe("sending", () => {
 
   test("has no serious accessibility findings while sending", async ({ page }) => {
     const sent = await mockContact(page, "hang");
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
     await f.submit.click();
@@ -237,7 +248,6 @@ test.describe("success", () => {
     problems,
   }) => {
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page, { ...VALID, name: "  Ada Lovelace \t" });
 
@@ -279,7 +289,6 @@ test.describe("when the function says no", () => {
       status: 400,
       json: { ok: false, error: "validation", fields: ["email"] },
     });
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
 
@@ -303,7 +312,6 @@ test.describe("when the function says no", () => {
         ? { status: 403, json: { ok: false, error: "turnstile" } }
         : { status: 200, json: { ok: true } },
     );
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
 
@@ -334,6 +342,11 @@ test.describe("when the function says no", () => {
     ],
     ["a 403 origin refusal", { status: 403, json: { ok: false, error: "origin_not_allowed" } }],
     ["a 413 body too large", { status: 413, json: { ok: false, error: "payload_too_large" } }],
+    [
+      "a 415 media type refusal",
+      { status: 415, json: { ok: false, error: "unsupported_media_type" } },
+    ],
+    ["a 405 method refusal", { status: 405, json: { ok: false, error: "method_not_allowed" } }],
     ["a 400 bad request", { status: 400, json: { ok: false, error: "bad_request" } }],
     ["a body that is not JSON", { status: 200, text: "<html>Oops</html>" }],
     ["a 200 that is not a success", { status: 200, json: { ok: false, error: "internal" } }],
@@ -345,7 +358,6 @@ test.describe("when the function says no", () => {
       page,
     }) => {
       await mockContact(page, answer);
-      await mockTurnstile(page);
       const f = await open(page);
       await fillForm(page);
 
@@ -364,7 +376,6 @@ test.describe("when the function says no", () => {
 
   test("the send failed text names the email address as the way around", async ({ page }) => {
     await mockContact(page, { status: 500, json: { ok: false, error: "internal" } });
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
     await f.submit.click();
@@ -377,7 +388,6 @@ test.describe("when the function says no", () => {
         ? { status: 500, json: { ok: false, error: "internal" } }
         : { status: 403, json: { ok: false, error: "turnstile" } },
     );
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
     await f.submit.click();
@@ -393,7 +403,6 @@ test.describe("when the function says no", () => {
         ? { status: 500, json: { ok: false, error: "internal" } }
         : { status: 403, json: { ok: false, error: "turnstile" } },
     );
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
     await f.submit.click();
@@ -409,8 +418,8 @@ test.describe("the person check", () => {
   test("the widget script loads on first use of the form, once, with the right options", async ({
     page,
   }) => {
-    const requested = await mockTurnstile(page);
     const f = await open(page);
+    const requested = f.requested;
     await page.waitForTimeout(400);
     expect(requested, "Cloudflare must not be contacted before the form is used").toEqual([]);
 
@@ -432,16 +441,15 @@ test.describe("the person check", () => {
   });
 
   test("a click in the form starts it too", async ({ page }) => {
-    const requested = await mockTurnstile(page);
     const f = await open(page);
+    const requested = f.requested;
     await f.field("company").click();
     await expect.poll(() => requested.length).toBe(1);
   });
 
   test("a script that cannot load shows the person check warning on submit", async ({ page }) => {
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
-    await mockTurnstile(page, "blocked");
-    const f = await open(page);
+    const f = await open(page, { turnstile: "blocked" });
     await fillForm(page);
     await f.submit.click();
     await expect(f.statusRegion).toContainText(await copyOf(page, "person-check"));
@@ -451,7 +459,6 @@ test.describe("the person check", () => {
 
   test("a widget error shows the person check warning on submit", async ({ page }) => {
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
     await expect.poll(async () => (await turnstileCalls(page))?.renders.length).toBe(1);
@@ -467,7 +474,6 @@ test.describe("the person check", () => {
     page,
   }) => {
     // This is the private preview before the Cloudflare setup: the build has no PUBLIC_TURNSTILE_SITE_KEY.
-    const requested = await mockTurnstile(page);
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
     const f = await open(page, { siteKey: false });
     await expect(f.form).toHaveAttribute("data-sitekey", "");
@@ -478,7 +484,7 @@ test.describe("the person check", () => {
     await expect(f.field("message")).toHaveValue(VALID.message);
     await expect(f.submit).not.toHaveAttribute("aria-disabled", /.*/);
     expect(sent).toEqual([]);
-    expect(requested).toEqual([]);
+    expect(f.requested, "no site key, so the script is never asked for").toEqual([]);
   });
 });
 
@@ -511,7 +517,6 @@ test.describe("the honeypot", () => {
     page,
   }) => {
     const sent = await mockContact(page, { status: 200, json: { ok: true } });
-    await mockTurnstile(page);
     const f = await open(page);
     await fillForm(page);
     await page.locator("#contact-website").evaluate((input: HTMLInputElement) => {
@@ -530,11 +535,15 @@ test.describe("without JavaScript", () => {
     page,
   }) => {
     await page.goto("/");
-    const form = page.locator("#contact-form");
-    await expect(form.getByText("The form needs JavaScript.")).toBeVisible();
-    await expect(form.getByText("daniel@normek.dk")).toBeVisible();
+    // A browser with scripts off reads the <noscript> content as markup. This browser still holds it as text,
+    // so the test reads the element, and the screenshot check in the QA notes shows how it looks.
+    const notice = await page.locator("#contact-form > noscript").innerHTML();
+    expect(notice).toContain("The form needs JavaScript.");
+    expect(notice).toContain('href="mailto:daniel@normek.dk"');
     // The button cannot start a native submit that the function would answer with JSON.
     await expect(page.locator("#contact-submit")).toBeDisabled();
+    await page.locator("#contact-submit").click({ force: true });
+    expect(new URL(page.url()).pathname).toBe("/");
   });
 });
 

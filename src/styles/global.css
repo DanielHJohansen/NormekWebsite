@@ -96,6 +96,7 @@
 
   /* A navigation link in the header (tokens.md 5.4). No underline until hover. */
   .nav-link {
+    font-weight: 500;
     display: inline-flex;
     align-items: center;
     min-height: var(--target-min);
