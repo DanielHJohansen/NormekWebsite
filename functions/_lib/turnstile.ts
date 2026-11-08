@@ -57,7 +57,11 @@ export async function verifyTurnstile(
   try {
     answer = await timedFetch(
       SITEVERIFY_URL,
-      { method: "POST", body: new URLSearchParams({ secret, response: token }), redirect: "error" },
+      {
+        method: "POST",
+        body: new URLSearchParams({ secret, response: token }),
+        redirect: "manual",
+      },
       async (response) => {
         if (response.status !== 200) {
           await response.body?.cancel().catch(() => undefined);

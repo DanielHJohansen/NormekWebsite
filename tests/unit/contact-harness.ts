@@ -38,7 +38,8 @@ export const VALID_FIELDS: Readonly<Record<string, string>> = {
   name: "Ada Example",
   email: "ada@example.com",
   company: "Example Electronics AB",
-  message: "We need an enclosure for a battery powered sensor board, IP54, about 2000 units a year.",
+  message:
+    "We need an enclosure for a battery powered sensor board, IP54, about 2000 units a year.",
   website: "",
   "cf-turnstile-response": "fake-turnstile-token",
 };
@@ -68,8 +69,8 @@ export interface SendOptions {
   contentType?: string | null;
   /** Merged over VALID_FIELDS. */
   fields?: Fields;
-  /** A raw body, used instead of `fields`. */
-  body?: string | Uint8Array<ArrayBuffer> | ReadableStream<Uint8Array<ArrayBuffer>>;
+  /** A raw body, used instead of `fields`. null sends the request with no body at all. */
+  body?: string | Uint8Array<ArrayBuffer> | ReadableStream<Uint8Array<ArrayBuffer>> | null;
   headers?: Record<string, string>;
   /** Merged over ENV. A value of undefined removes the variable. */
   env?: Partial<Record<keyof Env, string | undefined>>;
@@ -88,8 +89,10 @@ export function buildRequest(options: SendOptions = {}): Request {
 
   const init: RequestInit & { duplex?: "half" } = { method, headers };
   if (method !== "GET" && method !== "HEAD") {
-    const body = options.body ?? encode(fields(options.fields));
-    if (body instanceof ReadableStream) {
+    const body = options.body === undefined ? encode(fields(options.fields)) : options.body;
+    if (body === null) {
+      // No body at all, so request.body is null.
+    } else if (body instanceof ReadableStream) {
       init.body = body;
       init.duplex = "half";
     } else if (typeof body === "string" && contentType === null) {
@@ -149,7 +152,10 @@ export interface SentMail {
 function consoleMethodNames(): string[] {
   const names: string[] = [];
   for (const key of Object.keys(console)) {
-    if (/^[a-z]/.test(key) && typeof (console as unknown as Record<string, unknown>)[key] === "function") {
+    if (
+      /^[a-z]/.test(key) &&
+      typeof (console as unknown as Record<string, unknown>)[key] === "function"
+    ) {
       names.push(key);
     }
   }
@@ -174,7 +180,8 @@ export function useContactHarness() {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
-        const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+        const url =
+          typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
         const outbound: Outbound = { url, init: init ?? {} };
         calls.push(outbound);
         if (url === SITEVERIFY_URL) return siteverify(outbound.init);

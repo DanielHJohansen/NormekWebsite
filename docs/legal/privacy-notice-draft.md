@@ -27,7 +27,6 @@ There is no separate inquiry database. Copies sit in my mailbox and, briefly, Re
 
 - **What you type:** name, work email address, company and message `[TO CONFIRM against the final form, incl. campaign code]`.
 - **Bot check:** Turnstile receives your IP address and browser signals to decide whether you are a person. I get only the result.
-- **Rate limit** `[TO CONFIRM built]`: a hashed (one-way scrambled) IP address, so one person cannot flood the form.
 - **Any page visit:** Cloudflare, the host, processes your IP address and request details (page, time, browser) to deliver and protect it `[TO CONFIRM: function logs off]`.
 - **Direct email:** your address, name and what you write.
 
@@ -61,7 +60,6 @@ Cloudflare and Resend are US companies, and Cloudflare serves pages from servers
 - **If we work together:** accounting records for 5 years after the financial year ends (Danish Bookkeeping Act, section 12), project material as the contract says.
 - **Resend's sending log:** `[TO CONFIRM period, and whether it stores the message text]`.
 - **Cloudflare logs and Turnstile data:** under Cloudflare's own terms `[TO CONFIRM period, link]`.
-- **Hashed IP address:** up to 1 hour.
 
 ## Cookies and the bot check
 

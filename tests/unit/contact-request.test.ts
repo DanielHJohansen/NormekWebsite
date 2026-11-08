@@ -61,9 +61,9 @@ describe("CF-01 method", () => {
       origin: "https://evil.example",
     });
     expect(response.status).toBe(405);
-    expect([...response.headers.keys()].filter((name) => name.startsWith("access-control-"))).toEqual(
-      [],
-    );
+    expect(
+      [...response.headers.keys()].filter((name) => name.startsWith("access-control-")),
+    ).toEqual([]);
   });
 
   it("never sets an Access-Control header, on success or on any failure", async () => {
@@ -125,8 +125,12 @@ describe("CF-02 origin", () => {
   it("keeps preview and production apart", async () => {
     const env = { ALLOWED_ORIGINS: "https://preview.normek-web.pages.dev" };
     h.setSiteverify(() => json({ ...TURNSTILE_PASS, hostname: "preview.normek-web.pages.dev" }));
-    expect((await h.send({ env, origin: "https://preview.normek-web.pages.dev" })).status).toBe(200);
-    expect((await h.send({ env, origin: "https://3f2a9c1e.normek-web.pages.dev" })).status).toBe(403);
+    expect((await h.send({ env, origin: "https://preview.normek-web.pages.dev" })).status).toBe(
+      200,
+    );
+    expect((await h.send({ env, origin: "https://3f2a9c1e.normek-web.pages.dev" })).status).toBe(
+      403,
+    );
     expect((await h.send({ env, origin: ORIGIN })).status).toBe(403);
   });
 });
@@ -323,6 +327,19 @@ describe("CF-05 fields", () => {
       error: "validation",
       fields: ["name", "email", "message"],
     });
+  });
+
+  it("answers a POST with no body at all like an empty one", async () => {
+    const request = buildRequest({ body: null });
+    expect(request.body).toBeNull();
+    const response = await h.dispatch(request);
+    expect(response.status).toBe(400);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: "validation",
+      fields: ["name", "email", "message"],
+    });
+    expect(h.calls).toEqual([]);
   });
 
   it("accepts all six allowed fields and nothing else", async () => {

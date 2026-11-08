@@ -44,7 +44,8 @@ describe("CF-10 the mail", () => {
       "Content-Type": "application/json",
     });
     expect(call?.init.signal).toBeInstanceOf(AbortSignal);
-    expect(call?.init.redirect).toBe("error");
+    // "manual", because the Workers runtime throws on "error". A redirect is a non-2xx answer, so it fails.
+    expect(call?.init.redirect).toBe("manual");
   });
 
   it("holds exactly from, to, reply_to, subject and text, and no html", async () => {
@@ -88,7 +89,9 @@ describe("CF-10 the mail", () => {
   });
 
   it("sets reply_to to the validated address alone, with no name around it", async () => {
-    await h.send({ fields: { name: "Ada, Countess <of@lovelace.example>", email: "  Ada.L+tag@Example.com \n" } });
+    await h.send({
+      fields: { name: "Ada, Countess <of@lovelace.example>", email: "  Ada.L+tag@Example.com \n" },
+    });
     const mail = onlyMail();
     expect(mail.reply_to).toBe("Ada.L+tag@Example.com");
     expect(typeof mail.reply_to).toBe("string");
@@ -231,7 +234,9 @@ describe("CF-12 mail failure", () => {
   it.each([400, 401, 403, 404, 422, 429, 500, 502, 503])(
     "answers 502 with a generic code when Resend answers %i, and does not retry",
     async (status) => {
-      h.setResend(() => json({ name: "validation_error", message: "SENTINEL provider text" }, status));
+      h.setResend(() =>
+        json({ name: "validation_error", message: "SENTINEL provider text" }, status),
+      );
       const response = await h.send();
       expect(response.status).toBe(502);
       expect(await readJson(response)).toEqual({ ok: false, error: "mail_failed" });
@@ -292,7 +297,10 @@ describe("CF-12 mail failure", () => {
 
   it("shows the visitor nothing of what the provider said", async () => {
     h.setResend(() =>
-      json({ statusCode: 422, name: "validation_error", message: "SENTINEL-reply-to is invalid" }, 422),
+      json(
+        { statusCode: 422, name: "validation_error", message: "SENTINEL-reply-to is invalid" },
+        422,
+      ),
     );
     const response = await h.send({ fields: { email: "sentinel-visitor@example.com" } });
     const text = await response.text();

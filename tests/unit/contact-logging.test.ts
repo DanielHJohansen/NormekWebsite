@@ -8,7 +8,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { useContactHarness } from "./contact-harness";
-import { ALL_SENTINELS, EXPECTED_LOG, scenarios } from "./contact-sentinels";
+import { ALL_SENTINELS, EXPECTED_LOG, scenarios, SENTINEL } from "./contact-sentinels";
 
 const h = useContactHarness();
 
@@ -58,7 +58,7 @@ describe("CF-13 the spy itself", () => {
     await scenarios["an accepted request"]?.(h);
     const sent = JSON.stringify(h.calls.map((call) => String(call.init.body)));
     // The markers really are in the outbound mail, so an empty console is a result and not luck.
-    expect(sent).toContain("SENTINEL-name-71c2");
-    expect(sent).toContain("sentinel-email-71c2@example.com");
+    expect(sent).toContain(SENTINEL.name);
+    expect(sent).toContain(SENTINEL.email);
   });
 });

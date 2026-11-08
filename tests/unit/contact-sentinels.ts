@@ -18,23 +18,27 @@ import {
   type SendOptions,
 } from "./contact-harness";
 
+/**
+ * The markers use letters and hyphens only. Mixed letters and digits next to words like key, secret or
+ * token look like credentials to the secret scanner in CI (gitleaks, generic-api-key rule).
+ */
 export const SENTINEL = {
-  name: "SENTINEL-name-71c2",
-  email: "sentinel-email-71c2@example.com",
-  company: "SENTINEL-company-71c2",
-  message: "SENTINEL-message-71c2 with enough words to pass the length rule",
-  /** 19 characters, one short of the minimum for a message. */
-  shortMessage: "SENTINEL-short-71c2",
-  token: "SENTINEL-token-71c2",
+  name: "SENTINEL-name-quartz",
+  email: "sentinel-email-quartz@example.com",
+  company: "SENTINEL-company-quartz",
+  message: "SENTINEL-message-quartz with enough words to pass the length rule",
+  /** Under the 20 characters a message needs, so it fails validation. */
+  shortMessage: "SENTINEL-short-msg",
+  token: "SENTINEL-token-quartz",
   ip: "198.51.100.77",
-  agent: "SENTINEL-agent-71c2",
-  resendKey: "SENTINEL-resend-key-71c2",
-  turnstileSecret: "SENTINEL-turnstile-secret-71c2",
-  contactTo: "sentinel-inbox-71c2@example.org",
-  origin: "https://sentinel-origin-71c2.example",
-  contentType: "application/sentinel-type-71c2",
-  fieldName: "sentinel_field_71c2",
-  upstream: "SENTINEL-upstream-text-71c2",
+  agent: "SENTINEL-agent-quartz",
+  resendKey: "SENTINEL-resend-key-quartz",
+  turnstileSecret: "SENTINEL-turnstile-secret-quartz",
+  contactTo: "sentinel-inbox-quartz@example.org",
+  origin: "https://sentinel-origin-quartz.example",
+  contentType: "application/sentinel-type-quartz",
+  fieldName: "sentinel_field_quartz",
+  upstream: "SENTINEL-upstream-text-quartz",
 } as const;
 
 export const ALL_SENTINELS: readonly string[] = Object.values(SENTINEL);
@@ -90,7 +94,8 @@ export const EXPECTED_LOG: Readonly<Record<string, readonly string[]>> = {
 export const scenarios: Readonly<Record<string, Scenario>> = {
   "an accepted request": (h) => h.send(base),
 
-  "a caught honeypot": (h) => h.send({ ...base, fields: { ...sentinelFields, website: SENTINEL.name } }),
+  "a caught honeypot": (h) =>
+    h.send({ ...base, fields: { ...sentinelFields, website: SENTINEL.name } }),
 
   "a validation error": (h) =>
     h.send({
@@ -156,8 +161,7 @@ export const scenarios: Readonly<Record<string, Scenario>> = {
     return h.send(base);
   },
 
-  "a missing setting": (h) =>
-    h.send({ ...base, env: { ...base.env, RESEND_API_KEY: undefined } }),
+  "a missing setting": (h) => h.send({ ...base, env: { ...base.env, RESEND_API_KEY: undefined } }),
 
   "an unreadable body": (h) =>
     h.send({

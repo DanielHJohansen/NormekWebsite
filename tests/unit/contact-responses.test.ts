@@ -15,7 +15,8 @@ const h = useContactHarness();
 /** One live request for every code the function can answer with. A new code fails to compile until it has one. */
 const LIVE: Record<ErrorCode, () => Promise<Response>> = {
   validation: () => h.send({ fields: { email: "nope" } }),
-  bad_request: () => h.send({ body: encode([...Object.entries(fields()), ["to", "eve@example.net"]]) }),
+  bad_request: () =>
+    h.send({ body: encode([...Object.entries(fields()), ["to", "eve@example.net"]]) }),
   turnstile: () => h.send({ fields: { "cf-turnstile-response": undefined } }),
   origin_not_allowed: () => h.send({ origin: "https://evil.example" }),
   method_not_allowed: () => h.send({ method: "GET" }),
@@ -58,7 +59,9 @@ describe("CF-14 the body", () => {
     expect(body["ok"]).toBe(false);
     expect(body["error"]).toBe(code);
     // Only a validation error lists fields.
-    expect(Object.keys(body).sort()).toEqual(code === "validation" ? ["error", "fields", "ok"] : ["error", "ok"]);
+    expect(Object.keys(body).sort()).toEqual(
+      code === "validation" ? ["error", "fields", "ok"] : ["error", "ok"],
+    );
   });
 
   it("names a failing field and nothing else in a validation error", async () => {
@@ -70,7 +73,8 @@ describe("CF-14 the body", () => {
     for (const [name, run] of Object.entries(scenarios)) {
       const response = await run(h);
       const body = (await readJson(response)) as Record<string, unknown>;
-      const allowedKeys = body["error"] === "validation" ? ["error", "fields", "ok"] : ["error", "ok"];
+      const allowedKeys =
+        body["error"] === "validation" ? ["error", "fields", "ok"] : ["error", "ok"];
       if (body["ok"] === true) {
         expect(Object.keys(body), name).toEqual(["ok"]);
         expect(response.status, name).toBe(200);
@@ -106,7 +110,9 @@ describe("CF-14 headers", () => {
     expect(headers.get("content-type")).toBe("application/json; charset=utf-8");
     expect(headers.get("cache-control")).toBe("no-store");
     expect(headers.get("x-content-type-options")).toBe("nosniff");
-    expect(headers.get("content-security-policy")).toBe("default-src 'none'; frame-ancestors 'none'");
+    expect(headers.get("content-security-policy")).toBe(
+      "default-src 'none'; frame-ancestors 'none'",
+    );
     expect(headers.get("referrer-policy")).toBe("no-referrer");
     expect(headers.get("x-robots-tag")).toBe("noindex");
   });
@@ -124,17 +130,16 @@ describe("CF-14 nothing is echoed", () => {
     "answers %s without any submitted value, token, address or secret in the body or headers",
     async (_name, run) => {
       const response = await run(h);
-      const everything = [
-        await response.text(),
-        ...[...response.headers].flat(),
-      ].join("\n");
+      const everything = [await response.text(), ...[...response.headers].flat()].join("\n");
       for (const sentinel of ALL_SENTINELS) expect(everything).not.toContain(sentinel);
     },
   );
 
   it("does not even repeat the markers that make the request invalid", async () => {
     const response = await scenarios["a validation error"]?.(h);
-    expect(await response?.text()).toBe('{"ok":false,"error":"validation","fields":["email","message"]}');
+    expect(await response?.text()).toBe(
+      '{"ok":false,"error":"validation","fields":["email","message"]}',
+    );
   });
 });
 
@@ -148,9 +153,14 @@ describe("CF-14 the contract in docs/security/contact-api.md", () => {
     return doc.slice(start, end);
   };
 
-  const rows = [...section("## 3. Responses", "## 4. Response headers").matchAll(/^\| (\d{3}) \| `(\{[^`]*\})` \|/gm)].map(
-    (match) => ({ status: Number(match[1]), body: JSON.parse(match[2] ?? "null") as Record<string, unknown> }),
-  );
+  const rows = [
+    ...section("## 3. Responses", "## 4. Response headers").matchAll(
+      /^\| (\d{3}) \| `(\{[^`]*\})` \|/gm,
+    ),
+  ].map((match) => ({
+    status: Number(match[1]),
+    body: JSON.parse(match[2] ?? "null") as Record<string, unknown>,
+  }));
 
   it("documents the success answer", () => {
     expect(rows.filter((row) => row.status === 200).map((row) => row.body)).toEqual([{ ok: true }]);
@@ -174,7 +184,9 @@ describe("CF-14 the contract in docs/security/contact-api.md", () => {
   });
 
   it("documents the response headers the function sets", () => {
-    const block = section("## 4. Response headers", "## 5. Order of checks").match(/```\n([\s\S]*?)```/);
+    const block = section("## 4. Response headers", "## 5. Order of checks").match(
+      /```\n([\s\S]*?)```/,
+    );
     const documented: Record<string, string> = {};
     for (const line of (block?.[1] ?? "").split("\n")) {
       const at = line.indexOf(": ");

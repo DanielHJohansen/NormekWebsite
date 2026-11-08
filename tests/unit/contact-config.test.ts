@@ -18,7 +18,12 @@ import {
 
 const h = useContactHarness();
 
-const REQUIRED = ["RESEND_API_KEY", "CONTACT_TO", "ALLOWED_ORIGINS", "TURNSTILE_SECRET_KEY"] as const;
+const REQUIRED = [
+  "RESEND_API_KEY",
+  "CONTACT_TO",
+  "ALLOWED_ORIGINS",
+  "TURNSTILE_SECRET_KEY",
+] as const;
 
 async function expectConfigError(response: Response): Promise<void> {
   expect(response.status).toBe(500);
@@ -74,7 +79,10 @@ describe("CF-15 ALLOWED_ORIGINS", () => {
 
   it.each([
     ["two origins", "https://normek-web.pages.dev,https://www.normek.dk"],
-    ["spaces around the entries and a trailing comma", ` https://normek-web.pages.dev , https://www.normek.dk ,`],
+    [
+      "spaces around the entries and a trailing comma",
+      ` https://normek-web.pages.dev , https://www.normek.dk ,`,
+    ],
     ["a repeated entry", "https://normek-web.pages.dev,https://normek-web.pages.dev"],
     ["a port", "https://normek-web.pages.dev,http://localhost:8788"],
   ])("accepts %s", async (_label, value) => {
@@ -101,9 +109,12 @@ describe("CF-15 RESEND_API_KEY", () => {
     ["a line break inside", "re_key\nwith-newline"],
     ["a tab inside", "re_key\twith-tab"],
     ["a letter that is not ASCII", "re_nøgle"],
-  ])("answers 500 for a key with %s, because it cannot be a header value", async (_label, value) => {
-    await expectConfigError(await h.send({ env: { RESEND_API_KEY: value } }));
-  });
+  ])(
+    "answers 500 for a key with %s, because it cannot be a header value",
+    async (_label, value) => {
+      await expectConfigError(await h.send({ env: { RESEND_API_KEY: value } }));
+    },
+  );
 });
 
 describe("CF-15 pasted values", () => {

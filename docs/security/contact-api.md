@@ -2,7 +2,7 @@
 
 Owner: `frontend-developer`, 2026-11-08. This is the contract between the contact function (`functions/api/contact.ts` and `functions/_lib/`) and the form client in `src/`. The rules behind it are CF-01 to CF-15 in `docs/security/threat-model-and-requirements.md` section 3. If a status or a code changes, this file changes first and the person building the form client is told.
 
-**Tested:** by unit tests only (`tests/unit/contact-*.test.ts`, no network, `fetch` mocked). Nothing was run against a real Cloudflare, Turnstile or Resend account.
+**Tested:** by unit tests (`tests/unit/contact-*.test.ts`, no network, `fetch` mocked) and by one run of the bundled function inside the Workers runtime (workerd, through Miniflare) with Turnstile and Resend mocked. That run found that workerd rejects `redirect: "error"`, which Node accepts, so the function uses `"manual"`. Nothing was run on a real Cloudflare Pages deployment or against a real Turnstile or Resend account.
 
 ## 1. What the client sends
 

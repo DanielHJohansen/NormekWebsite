@@ -19,7 +19,11 @@ interface Result {
 async function submit(overrides: Fields): Promise<Result> {
   const before = h.calls.length;
   const response = await h.send({ fields: overrides });
-  return { status: response.status, body: await readJson(response), outbound: h.calls.length - before };
+  return {
+    status: response.status,
+    body: await readJson(response),
+    outbound: h.calls.length - before,
+  };
 }
 
 /** A rejected request is answered with the failing fields and causes no Turnstile call and no mail. */
@@ -112,6 +116,9 @@ describe("CF-07 email", () => {
     "ada@example",
     "ada@@example.com",
     "a@b@example.com",
+    // Two @ where the first domain would be valid on its own.
+    "a@b.co@c.de",
+    "ada@example.com@evil.example",
     "ada @example.com",
     "ada@exa mple.com",
     "ada@example.com extra",
@@ -250,7 +257,9 @@ describe("CF-07 message", () => {
   });
 
   it("turns CRLF into LF, as a browser submits line breaks", async () => {
-    expectAccepted(await submit({ message: "First line of text.\r\nSecond line of text.\r\nThird." }));
+    expectAccepted(
+      await submit({ message: "First line of text.\r\nSecond line of text.\r\nThird." }),
+    );
     const text = lastMail()?.text ?? "";
     expect(text.endsWith("First line of text.\nSecond line of text.\nThird.")).toBe(true);
     expect(text).not.toContain("\r");
@@ -262,7 +271,9 @@ describe("CF-07 message", () => {
   });
 
   it("rejects a lone carriage return", async () => {
-    expectRejected(await submit({ message: "First line of text.\rSecond line of text." }), ["message"]);
+    expectRejected(await submit({ message: "First line of text.\rSecond line of text." }), [
+      "message",
+    ]);
   });
 
   it.each(CONTROLS.filter(([label]) => label !== "TAB" && label !== "LF"))(
@@ -321,9 +332,10 @@ describe("CF-07 the 400 body", () => {
   });
 
   it("is answered before Turnstile is asked, even when the token is fine", async () => {
-    expectRejected(await submit({ email: "nope", "cf-turnstile-response": "fake-turnstile-token" }), [
-      "email",
-    ]);
+    expectRejected(
+      await submit({ email: "nope", "cf-turnstile-response": "fake-turnstile-token" }),
+      ["email"],
+    );
     expect(h.siteverifyCalls()).toEqual([]);
   });
 });

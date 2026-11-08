@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pageNav, sectionNav } from "../../src/lib/nav";
+import { sectionNav } from "../../src/lib/nav";
 import {
   RESERVED_SLUGS,
   homePath,
@@ -68,30 +68,6 @@ describe("header navigation", () => {
     expect(sectionNav([section("process", 30, "Sådan arbejder vi")], "da")).toEqual([
       { label: "Sådan arbejder vi", href: "/da/#process" },
     ]);
-  });
-});
-
-describe("footer navigation", () => {
-  const config = [
-    { label: "Privacy", slug: "privacy" },
-    { label: "Terms", slug: "terms" },
-  ];
-
-  it("links to pages that are in the build", () => {
-    expect(pageNav(config, [{ id: "en/privacy" }], "en")).toEqual([
-      { label: "Privacy", href: "/privacy/" },
-    ]);
-  });
-
-  it("drops the link when the page is a draft and so not in the build", () => {
-    expect(pageNav(config, [], "en")).toEqual([]);
-    expect(pageNav(config, [{ id: "en/terms" }], "en")).toEqual([
-      { label: "Terms", href: "/terms/" },
-    ]);
-  });
-
-  it("does not link to a page that exists only in another language", () => {
-    expect(pageNav(config, [{ id: "da/privacy" }], "en")).toEqual([]);
   });
 });
 

@@ -45,7 +45,9 @@ describe("CF-08 the token", () => {
     const response = await h.send({ fields: { [TOKEN_FIELD]: token } });
     expect(response.status).toBe(200);
     expect(h.siteverifyCalls()).toHaveLength(1);
-    expect(new URLSearchParams(String(h.siteverifyCalls()[0]?.init.body)).get("response")).toBe(token);
+    expect(new URLSearchParams(String(h.siteverifyCalls()[0]?.init.body)).get("response")).toBe(
+      token,
+    );
   });
 });
 
@@ -85,11 +87,12 @@ describe("CF-08 the question to Turnstile", () => {
     expect(JSON.stringify(call?.init.headers ?? {})).not.toContain("198.51.100.77");
   });
 
-  it("limits the call with an abort signal and refuses redirects", async () => {
+  it("limits the call with an abort signal and never follows a redirect", async () => {
     await h.send();
     const init = h.siteverifyCalls()[0]?.init;
     expect(init?.signal).toBeInstanceOf(AbortSignal);
-    expect(init?.redirect).toBe("error");
+    // "manual", because the Workers runtime throws on "error". A redirect is not HTTP 200, so it fails closed.
+    expect(init?.redirect).toBe("manual");
   });
 
   it("asks once per request and never retries", async () => {
@@ -137,10 +140,19 @@ describe("CF-08 what lets a request through", () => {
 describe("CF-08 a visitor who fails the check", () => {
   const refused: [string, () => Response][] = [
     ["success false", () => json({ success: false, "error-codes": ["invalid-input-response"] })],
-    ["a token that was used before", () => json({ success: false, "error-codes": ["timeout-or-duplicate"] })],
-    ["a token Turnstile never saw", () => json({ success: false, "error-codes": ["missing-input-response"] })],
+    [
+      "a token that was used before",
+      () => json({ success: false, "error-codes": ["timeout-or-duplicate"] }),
+    ],
+    [
+      "a token Turnstile never saw",
+      () => json({ success: false, "error-codes": ["missing-input-response"] }),
+    ],
     ["success false and no error codes", () => json({ success: false })],
-    ["success false and a code that is not known", () => json({ success: false, "error-codes": ["new-code"] })],
+    [
+      "success false and a code that is not known",
+      () => json({ success: false, "error-codes": ["new-code"] }),
+    ],
     ["a hostname that is not allowed", () => answer({ hostname: "evil.example" })],
     ["a lookalike hostname", () => answer({ hostname: `${HOSTNAME}.evil.example` })],
     ["a hostname with another prefix", () => answer({ hostname: `evil-${HOSTNAME}` })],
@@ -284,12 +296,15 @@ describe("CF-08 the secret", () => {
     ["missing", undefined],
     ["empty", ""],
     ["only spaces", "   "],
-  ])("answers 500 and never skips the check when TURNSTILE_SECRET_KEY is %s", async (_label, secret) => {
-    const response = await h.send({ env: { TURNSTILE_SECRET_KEY: secret } });
-    expect(response.status).toBe(500);
-    expect(await readJson(response)).toEqual({ ok: false, error: "config" });
-    expect(h.calls).toEqual([]);
-  });
+  ])(
+    "answers 500 and never skips the check when TURNSTILE_SECRET_KEY is %s",
+    async (_label, secret) => {
+      const response = await h.send({ env: { TURNSTILE_SECRET_KEY: secret } });
+      expect(response.status).toBe(500);
+      expect(await readJson(response)).toEqual({ ok: false, error: "config" });
+      expect(h.calls).toEqual([]);
+    },
+  );
 
   describe("in production", () => {
     it.each([

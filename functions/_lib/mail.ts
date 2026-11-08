@@ -17,9 +17,7 @@ export interface MailMessage {
 }
 
 /** On failure, status is the provider's HTTP status, or 0 when there was none (network error, timeout). */
-export type MailResult =
-  | { readonly ok: true }
-  | { readonly ok: false; readonly status: number };
+export type MailResult = { readonly ok: true } | { readonly ok: false; readonly status: number };
 
 const RESEND_URL = "https://api.resend.com/emails";
 
@@ -38,7 +36,7 @@ export async function sendMail(message: MailMessage, apiKey: string): Promise<Ma
           subject: message.subject,
           text: message.text,
         }),
-        redirect: "error",
+        redirect: "manual",
       },
       async (response) => {
         // The answer holds nothing we use. Dropping it keeps provider text out of everything else.

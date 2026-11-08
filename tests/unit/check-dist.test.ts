@@ -2,7 +2,12 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { ALLOWED_INLINE_SCRIPT_TYPES, checkDist, readTags } from "../../scripts/check-dist.mjs";
+import {
+  ALLOWED_INLINE_SCRIPT_TYPES,
+  ALWAYS_NOINDEX_ROUTES,
+  checkDist,
+  readTags,
+} from "../../scripts/check-dist.mjs";
 
 // The real headers file, so these tests also fail if public/_headers drifts from the checker's rules.
 const REAL_HEADERS = readFileSync("public/_headers", "utf8");
@@ -84,10 +89,13 @@ const run = (overrides: Overrides = {}, options: Options = {}) =>
 const rules = (result: ReturnType<typeof checkDist>) =>
   [...new Set(result.problems.map((p) => p.rule))].sort();
 
-/** The launch flip: pages drop noindex, robots opens, and _headers loses the catch-all noindex. */
+/**
+ * The launch flip: pages drop noindex, robots opens, and _headers loses the catch-all noindex.
+ * The 404 page keeps its noindex tag, as /thanks/ does.
+ */
 const LAUNCH: Overrides = {
   "dist/index.html": html({ robots: null }),
-  "dist/404.html": html({ robots: null }),
+  "dist/404.html": html(),
   "dist/privacy/index.html": html({ robots: null }),
   "dist/robots.txt": "User-agent: *\nAllow: /\n\nSitemap: https://www.normek.dk/sitemap.xml\n",
   "dist/_headers": REAL_HEADERS.replace(/^\s*X-Robots-Tag:.*\n?/m, ""),
@@ -501,9 +509,93 @@ describe("launch mode (PUBLIC_INDEXABLE=true)", () => {
     expect(result.problems[0]?.where).toBe("_headers");
   });
 
+  it("does not read the web addresses inside licence texts", () => {
+    const licence = "See http://scripts.sil.org/OFL and https://github.com/x/y for details.";
+    expect(launch({ "dist/fonts/OFL-barlow.txt": licence }).problems).toEqual([]);
+  });
+
+  it("still looks for placeholders in a licence text", () => {
+    const result = launch({ "dist/fonts/OFL-barlow.txt": "Copyright [TO CONFIRM]" });
+    expect(rules(result)).toEqual(["launch-placeholder"]);
+  });
+
+  it("still reads the web addresses in other text files", () => {
+    expect(rules(launch({ "dist/notes.txt": "see https://example.com/" }))).toEqual([
+      "launch-origin",
+    ]);
+  });
+
   it("allows noindex on host rules, which is how the pages.dev hosts keep it at launch", () => {
     const hostRules = `${LAUNCH["dist/_headers"]}\nhttps://normek-web.pages.dev/*\n  X-Robots-Tag: noindex, nofollow\n`;
     expect(launch({ "dist/_headers": hostRules }).problems).toEqual([]);
+  });
+});
+
+describe("pages that stay out of search", () => {
+  const thanks = (robots: string | null = "noindex, nofollow") => ({
+    "dist/thanks/index.html": html({ robots }),
+  });
+  const launch = (overrides: Overrides = {}) => run({ ...LAUNCH, ...overrides }, { launch: true });
+
+  it("lists exactly the confirmation page and the error page", () => {
+    expect([...ALWAYS_NOINDEX_ROUTES]).toEqual(["/thanks/", "/404.html"]);
+  });
+
+  it("passes a production build that has a thanks page", () => {
+    expect(run(thanks()).problems).toEqual([]);
+  });
+
+  it("keeps noindex on /thanks/ and the 404 page at launch, and passes", () => {
+    expect(launch(thanks()).problems).toEqual([]);
+  });
+
+  it("fails at launch when /thanks/ lost its noindex tag", () => {
+    const result = launch(thanks(null));
+    expect(rules(result)).toEqual(["noindex"]);
+    expect(result.problems[0]?.where).toBe("thanks/index.html");
+    expect(result.problems[0]?.message).toMatch(/must keep noindex/);
+  });
+
+  it("fails at launch when the 404 page lost its noindex tag", () => {
+    const result = launch({ "dist/404.html": html({ robots: null }) });
+    expect(rules(result)).toEqual(["noindex"]);
+    expect(result.problems[0]?.where).toBe("404.html");
+  });
+
+  it("still fails at launch for any other page that says noindex", () => {
+    expect(rules(launch({ ...thanks(), "dist/privacy/index.html": html() }))).toEqual(["noindex"]);
+  });
+
+  it("fails when the sitemap lists /thanks/", () => {
+    const result = run({
+      ...thanks(),
+      "dist/sitemap.xml": sitemap("/", "/privacy/", "/thanks/"),
+    });
+    expect(rules(result)).toEqual(["private-page"]);
+    expect(result.problems[0]?.where).toBe("sitemap.xml");
+  });
+
+  it("fails when a page links to /thanks/, in production and at launch", () => {
+    const body = '<a href="/thanks/">Done</a>';
+    expect(rules(run({ ...thanks(), "dist/index.html": html({ body }) }))).toEqual([
+      "private-page",
+    ]);
+    expect(rules(launch({ ...thanks(), "dist/index.html": html({ robots: null, body }) }))).toEqual(
+      ["private-page"],
+    );
+  });
+
+  it("catches an absolute link to /thanks/ on the canonical origin", () => {
+    const body = '<a href="https://www.normek.dk/thanks/">Done</a>';
+    expect(rules(run({ ...thanks(), "dist/index.html": html({ body }) }))).toEqual([
+      "private-page",
+    ]);
+  });
+
+  it("does not count the form's data attribute or its action as a link", () => {
+    const body =
+      '<form method="post" action="/api/contact" data-thanks="/thanks/"><button>Send</button></form>';
+    expect(run({ ...thanks(), "dist/index.html": html({ body }) }).problems).toEqual([]);
   });
 });
 

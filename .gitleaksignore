@@ -1,0 +1,9 @@
+# Gitleaks ignore list (read by the secret scan in .github/workflows/ci.yml).
+# One fingerprint per line, with the reason above it. Add an entry only for a value that was
+# checked by hand and is not a credential. Never add a rule or a path wide enough to hide a real one.
+
+# A fake marker string in a unit test of the contact function (a made-up Turnstile secret used to
+# prove that no secret reaches a response or a log). The rule generic-api-key flagged it because of
+# its name and its mix of letters and digits. The next version of the file uses markers without
+# digits, which the scanner leaves alone, but this commit stays in history.
+c7b87dea129843a2008f469795064b54b429a562:tests/unit/contact-sentinels.ts:generic-api-key:32
