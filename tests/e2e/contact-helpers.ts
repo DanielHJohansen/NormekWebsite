@@ -109,14 +109,21 @@ export async function mockContact(
   return sent;
 }
 
-export const VALID = {
+export interface FormValues {
+  name: string;
+  email: string;
+  company: string;
+  message: string;
+}
+
+export const VALID: FormValues = {
   name: "Ada Lovelace",
   email: "ada@example.dk",
   company: "Analytical Engines ApS",
   message: "We need an enclosure for a battery powered sensor board with an antenna.",
-} as const;
+};
 
-export async function fillForm(page: Page, values: Partial<typeof VALID> = VALID): Promise<void> {
+export async function fillForm(page: Page, values: Partial<FormValues> = VALID): Promise<void> {
   for (const [field, value] of Object.entries(values)) {
     await page.locator(`#contact-${field}`).fill(value);
   }

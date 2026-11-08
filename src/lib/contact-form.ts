@@ -2,7 +2,7 @@
  * The logic of the contact form, kept free of the DOM so it can be unit tested.
  * The browser code in src/scripts/contact-form.ts only connects it to the page.
  *
- * The rules follow docs/security/contact-api.md sections 2 and 3 (the function's CF-07 and CF-14).
+ * The rules follow docs/security/contact-api.md sections 1 to 3 (the function's CF-04, CF-07 and CF-14).
  * The client is a little stricter than the server (company is required here, optional there),
  * and the server repeats every rule, because the client can be bypassed.
  */
@@ -23,10 +23,19 @@ export const LIMITS: Readonly<Record<FieldName, number>> = {
 
 export const MIN_MESSAGE_LENGTH = 20;
 
+/** The most the function reads from a request body, in bytes after encoding (CF-04, contact-api.md section 1). */
+export const MAX_BODY_BYTES = 16_384;
+
+/**
+ * The longest Turnstile token the function accepts. The size check counts a token this long, because the real
+ * one only arrives after the person check and the check has to come first (F6 of the security review).
+ */
+const MAX_TOKEN_LENGTH = 2048;
+
 /** How long the browser waits for the function before it gives up. The function can take about 10 seconds. */
 export const REQUEST_TIMEOUT_MS = 20_000;
 
-export type FieldError = "empty" | "no-at" | "invalid" | "too-short";
+export type FieldError = "empty" | "no-at" | "invalid" | "too-short" | "too-long";
 
 export type FieldValues = Readonly<Record<FieldName, string>>;
 
@@ -36,24 +45,30 @@ function length(value: string): number {
 }
 
 /**
- * Cleans a value before it is checked or sent: Unicode NFC, control characters replaced by a space,
+ * Characters that never go to the function, the same set it refuses (contact-api.md section 2, F2 of the security
+ * review): the C0 controls, DEL and the C1 controls (U+0000 to U+001F and U+007F to U+009F), the Unicode line and
+ * paragraph separators (U+2028, U+2029) and the bidirectional controls that can reorder or fake a line in a mail
+ * client (U+202A to U+202E and U+2066 to U+2069). They become a space, so a stray one from a paste never causes a
+ * failed send, and a value that is nothing else is empty and gets the field error.
+ * A message keeps its line breaks and tabs (U+000A and U+0009).
+ */
+/* eslint-disable no-control-regex -- the control characters are the point of these two patterns */
+const FORBIDDEN = /[\u0000-\u001f\u007f-\u009f\u2028\u2029\u202a-\u202e\u2066-\u2069]/g;
+const FORBIDDEN_IN_MESSAGE =
+  /[\u0000-\u0008\u000b-\u001f\u007f-\u009f\u2028\u2029\u202a-\u202e\u2066-\u2069]/g;
+/* eslint-enable no-control-regex */
+
+/**
+ * Cleans a value before it is checked or sent: Unicode NFC, forbidden characters replaced by a space,
  * CRLF in the message turned into LF, then trimmed. The function applies the same rules and rejects
- * what is left, so a stray tab from a paste never causes a failed send.
- * In the message only line breaks and tabs stay (U+000A and U+0009).
+ * what is left, so a stray tab or a bidi mark from a paste never causes a failed send.
  */
 export function normalizeValue(field: FieldName, raw: string): string {
   const text = raw.normalize("NFC");
   if (field === "message") {
-    return (
-      text
-        .replace(/\r\n?/g, "\n")
-        // eslint-disable-next-line no-control-regex
-        .replace(/[\u0000-\u0008\u000b-\u001f\u007f\u2028\u2029]/g, " ")
-        .trim()
-    );
+    return text.replace(/\r\n?/g, "\n").replace(FORBIDDEN_IN_MESSAGE, " ").trim();
   }
-  // eslint-disable-next-line no-control-regex
-  return text.replace(/[\u0000-\u001f\u007f\u2028\u2029]/g, " ").trim();
+  return text.replace(FORBIDDEN, " ").trim();
 }
 
 /** What the browser's own email input accepts, with a dot required in the domain. */
@@ -92,10 +107,22 @@ export function validateField(field: FieldName, raw: string): FieldError | null 
 
 export type FieldErrors = Partial<Record<FieldName, FieldError>>;
 
+/**
+ * The error for one field, seen in the whole form. The message is also too long when the whole request would not fit
+ * the function's limit: a message in a script that takes three bytes a character (2,000 of them, each encoded as nine
+ * characters) is over it, and the function would answer 413 with nothing to say about why (F6 of the security review).
+ */
+export function validateFieldIn(field: FieldName, values: FieldValues): FieldError | null {
+  const own = validateField(field, values[field]);
+  if (own) return own;
+  if (field === "message" && !fitsBodyLimit(values)) return "too-long";
+  return null;
+}
+
 export function validateAll(values: FieldValues): FieldErrors {
   const errors: FieldErrors = {};
   for (const field of FIELD_NAMES) {
-    const error = validateField(field, values[field]);
+    const error = validateFieldIn(field, values);
     if (error) errors[field] = error;
   }
   return errors;
@@ -109,7 +136,7 @@ export function messageKey(field: FieldName, error: FieldError): string {
   // A field only has the codes that make sense for it. Anything else falls back to the plain "empty" text.
   if (field === "email")
     return `email.${error === "no-at" || error === "invalid" ? error : "empty"}`;
-  if (field === "message") return "message.too-short";
+  if (field === "message") return error === "too-long" ? "message.too-long" : "message.too-short";
   return `${field}.empty`;
 }
 
@@ -130,6 +157,21 @@ export function encodeBody(values: FieldValues, honeypot: string, turnstileToken
   body.set("website", honeypot);
   body.set("cf-turnstile-response", turnstileToken);
   return body.toString();
+}
+
+/** The size of an encoded body in bytes, which is what the function counts. */
+export function encodedByteLength(body: string): number {
+  return new TextEncoder().encode(body).length;
+}
+
+/**
+ * Whether the request fits the function's limit of 16,384 bytes, counting a token of the longest length it accepts.
+ * Percent encoding turns each byte of a character outside ASCII into three, so 2,000 characters of Chinese,
+ * Japanese or Korean text come to 18,000 on their own.
+ */
+export function fitsBodyLimit(values: FieldValues, honeypot = ""): boolean {
+  const body = encodeBody(values, honeypot, "x".repeat(MAX_TOKEN_LENGTH));
+  return encodedByteLength(body) <= MAX_BODY_BYTES;
 }
 
 export type SubmitOutcome =

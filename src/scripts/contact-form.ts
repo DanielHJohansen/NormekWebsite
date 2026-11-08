@@ -3,7 +3,8 @@
  * in src/components/sections/ContactForm.astro. This file only connects them.
  *
  *  - Validate on blur and on submit. A field that has an error is checked again as the visitor types, so the
- *    error goes as soon as the value is fine.
+ *    error goes as soon as the value is fine. The message is also checked against the size of the whole request,
+ *    so a message the function would refuse with 413 is stopped here with its own text.
  *  - A failed submit shows an error summary at the top with a link to each field, and moves focus to it.
  *    Each field gets an icon and a text, aria-invalid and an aria-describedby that names the text. Values stay.
  *  - Sending: the button reads "Sending...", carries aria-disabled (never disabled, so focus stays) and the
@@ -20,7 +21,7 @@ import {
   interpretResponse,
   messageKey,
   validateAll,
-  validateField,
+  validateFieldIn,
   type FieldError,
   type FieldName,
   type FieldValues,
@@ -124,7 +125,8 @@ function setUp(form: HTMLFormElement): void {
   }
 
   function checkField(field: FieldName): void {
-    setFieldError(field, validateField(field, controls[field].value));
+    // The message is also checked against the size of the whole request, so it needs the other fields too.
+    setFieldError(field, validateFieldIn(field, collect()));
     renderSummary();
   }
 
@@ -250,6 +252,8 @@ function setUp(form: HTMLFormElement): void {
     });
     control.addEventListener("input", () => {
       if (shown[field]) checkField(field);
+      // A message that was too long for the request can fit again when another field gets shorter.
+      if (field !== "message" && shown.message === "too-long") checkField("message");
     });
   }
 

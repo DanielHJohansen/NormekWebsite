@@ -122,6 +122,57 @@ test.describe("validation", () => {
     await expect(f.field("message")).toHaveAttribute("aria-describedby", "contact-message-help");
   });
 
+  test("a message that is too long for the request is stopped before it is sent (F6)", async ({
+    page,
+  }) => {
+    const sent = await mockContact(page, { status: 200, json: { ok: true } });
+    const f = await open(page);
+    const cjk = String.fromCodePoint(0x6f22);
+    await fillForm(page, { ...VALID, message: cjk.repeat(1800) });
+
+    // On leaving the field, with the text from the content and no request.
+    await f.field("name").focus();
+    await expect(f.error("message")).toContainText(await copyOf(page, "message.too-long"));
+    await expect(f.field("message")).toHaveAttribute("aria-invalid", "true");
+
+    // On submit it joins the summary, takes focus there and still sends nothing.
+    await f.submit.click();
+    await expect(f.summary).toBeFocused();
+    await expect(f.summary.locator("a")).toHaveCount(1);
+    await expect(f.summary).toContainText(await copyOf(page, "message.too-long"));
+    expect(sent).toEqual([]);
+    await expect(f.field("message")).toHaveValue(cjk.repeat(1800));
+
+    // A shorter message clears the error as the visitor edits, and then the form sends.
+    await f.field("message").fill(cjk.repeat(1000));
+    await expect(f.error("message")).toBeHidden();
+    await expect(f.summary).toBeHidden();
+  });
+
+  test("a message that fits in two byte letters at the full 2,000 is not stopped", async ({
+    page,
+  }) => {
+    const f = await open(page);
+    await fillForm(page, { ...VALID, message: String.fromCodePoint(0x00f8).repeat(2000) });
+    await f.field("name").focus();
+    await expect(f.error("message")).toBeHidden();
+  });
+
+  test("the size error goes when another field gets shorter and the message fits again (F6)", async ({
+    page,
+  }) => {
+    const f = await open(page);
+    const cjk = String.fromCodePoint(0x6f22);
+    // At the edge: 1,560 characters fit with the name "Ada" (16,191 bytes) and not with 30 more in the name (16,458).
+    await fillForm(page, { ...VALID, name: cjk.repeat(30), message: cjk.repeat(1560) });
+    await f.field("name").focus();
+    await expect(f.error("message")).toContainText(await copyOf(page, "message.too-long"));
+
+    await f.field("name").fill("Ada");
+    await expect(f.error("message")).toBeHidden();
+    await expect(f.field("message")).not.toHaveAttribute("aria-invalid", /.*/);
+  });
+
   test("going straight from the last field to the button does not show an error before the submit", async ({
     page,
   }) => {
@@ -277,6 +328,45 @@ test.describe("success", () => {
     expect(new URL(page.url()).search).toBe("");
     expect(new URL(page.url()).hash).toBe("");
     expect(problems).toEqual([]);
+  });
+});
+
+test.describe("characters the function refuses (F2)", () => {
+  test("C1 controls and bidi controls never reach the request, and the send still works", async ({
+    page,
+  }) => {
+    const sent = await mockContact(page, { status: 200, json: { ok: true } });
+    const f = await open(page);
+    const nel = String.fromCodePoint(0x85);
+    const rlo = String.fromCodePoint(0x202e);
+    const lri = String.fromCodePoint(0x2066);
+    await fillForm(page, {
+      name: "Ada" + rlo + "Lovelace",
+      email: VALID.email,
+      company: "Analytical" + nel + "Engines",
+      message: VALID.message + lri + " and a second line.",
+    });
+
+    await f.submit.click();
+    await page.waitForURL("**/thanks/");
+    const fields = sent[0]?.fields;
+    expect(fields?.get("name")).toBe("Ada Lovelace");
+    expect(fields?.get("company")).toBe("Analytical Engines");
+    for (const [name, value] of fields ?? []) {
+      expect(/[\u0080-\u009f\u202a-\u202e\u2066-\u2069]/.test(value), name).toBe(false);
+    }
+  });
+
+  test("an address that holds one is refused by the form, as the function would refuse it", async ({
+    page,
+  }) => {
+    const sent = await mockContact(page, { status: 200, json: { ok: true } });
+    const f = await open(page);
+    await fillForm(page, { ...VALID, email: "ada" + String.fromCodePoint(0x202e) + "@example.dk" });
+    await f.submit.click();
+    await expect(f.summary).toBeFocused();
+    await expect(f.field("email")).toHaveAttribute("aria-invalid", "true");
+    expect(sent).toEqual([]);
   });
 });
 

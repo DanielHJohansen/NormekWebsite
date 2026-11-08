@@ -36,42 +36,74 @@ function runOnceOnDesktop(): void {
   });
 }
 
+/** Lines of running text wider than 28 em. An empty list is a pass. */
+async function findTooWide(
+  page: Page,
+): Promise<Array<{ text: string; width: number; limit: number }>> {
+  return page.evaluate(() => {
+    const out: Array<{ text: string; width: number; limit: number }> = [];
+    const skip =
+      "h1,h2,h3,h4,h5,h6,figcaption,.eyebrow,label,button,template,script,style,noscript,[hidden],.sr-only";
+    const blocks = new Set<HTMLElement>();
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const element = node.parentElement;
+      if (!element || !(node.textContent ?? "").trim()) continue;
+      if (element.closest(skip)) continue;
+      const style = getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      // Mono text is wider per em, so its captions and tags have their own limit.
+      if (style.fontFamily.startsWith('"IBM Plex Mono"')) continue;
+
+      // 1. A line made of a single piece of text. This sees a line in a paragraph that is all one run.
+      const fontSize = parseFloat(style.fontSize);
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      for (const rect of range.getClientRects()) {
+        if (rect.width > 28 * fontSize + 1) {
+          out.push({
+            text: (node.textContent ?? "").trim().slice(0, 50),
+            width: Math.round(rect.width),
+            limit: Math.round(28 * fontSize),
+          });
+        }
+      }
+      const block = element.closest<HTMLElement>("p, li, dd, dt");
+      if (block) blocks.add(block);
+    }
+
+    // 2. A paragraph or list item with more than 65 characters in a box wider than 28 em. A line there is often
+    // made of several pieces (bold lead-in, text, a tag), and each piece alone is short.
+    for (const block of blocks) {
+      const text = (block.textContent ?? "").trim();
+      if (text.length <= 65 || block.querySelector("p, li, ul, ol")) continue;
+      const style = getComputedStyle(block);
+      if (style.fontFamily.startsWith('"IBM Plex Mono"')) continue;
+      const sides = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"] as const;
+      const content =
+        block.getBoundingClientRect().width -
+        sides.reduce((sum, side) => sum + parseFloat(style[side]), 0);
+      const limit = 28 * parseFloat(style.fontSize);
+      if (content > limit + 1) {
+        out.push({
+          text: text.slice(0, 50),
+          width: Math.round(content),
+          limit: Math.round(limit),
+        });
+      }
+    }
+    return out;
+  });
+}
+
 for (const built of pages) {
   test.describe(`type and targets on ${built.route}`, () => {
     test("running text is at most 28 em wide, so no line passes 65 characters", async ({
       page,
     }) => {
       await visit(page, built.route);
-      const tooWide = await page.evaluate(() => {
-        const out: Array<{ text: string; width: number; limit: number }> = [];
-        const skip =
-          "h1,h2,h3,h4,h5,h6,figcaption,.eyebrow,label,button,template,script,style,noscript,[hidden],.sr-only";
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-        while (walker.nextNode()) {
-          const node = walker.currentNode;
-          const element = node.parentElement;
-          if (!element || !(node.textContent ?? "").trim()) continue;
-          if (element.closest(skip)) continue;
-          const style = getComputedStyle(element);
-          if (style.display === "none" || style.visibility === "hidden") continue;
-          // Mono text is wider per em, so its captions and tags have their own limit.
-          if (style.fontFamily.startsWith('"IBM Plex Mono"')) continue;
-          const fontSize = parseFloat(style.fontSize);
-          const range = document.createRange();
-          range.selectNodeContents(node);
-          for (const rect of range.getClientRects()) {
-            if (rect.width > 28 * fontSize + 1) {
-              out.push({
-                text: (node.textContent ?? "").trim().slice(0, 50),
-                width: Math.round(rect.width),
-                limit: Math.round(28 * fontSize),
-              });
-            }
-          }
-        }
-        return out;
-      });
-      expect(tooWide).toEqual([]);
+      expect(await findTooWide(page)).toEqual([]);
     });
 
     test("standalone links and controls are at least 44 px high", async ({ page }) => {
@@ -235,6 +267,19 @@ test.describe("no horizontal scroll at any width", () => {
   }
 });
 
+test.describe("running text at the widths in between", () => {
+  runOnceOnDesktop();
+
+  // The lists in the offers and the steps in the process change width when their columns wrap, so one width is not enough.
+  for (const width of [390, 480, 600, 768, 900, 1024, 1280, 1440]) {
+    test(`home page at ${width} px keeps running text at 28 em`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await visit(page, "/");
+      expect(await findTooWide(page)).toEqual([]);
+    });
+  }
+});
+
 test.describe("the hero", () => {
   test("puts the one-person line before the button and the drawing last", async ({ page }) => {
     await visit(page, "/");
@@ -314,7 +359,7 @@ test.describe("the hero", () => {
   test("keeps 'I design' together so the heading never ends a line with 'I'", async ({ page }) => {
     await visit(page, "/");
     const heading = (await page.locator("#top h1").textContent()) ?? "";
-    expect(heading).toContain("I design");
+    expect(heading).toContain("I\u00a0design");
   });
 
   test("the button is full width below 480 px and its natural width from there", async ({

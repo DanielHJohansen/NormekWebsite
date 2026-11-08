@@ -120,7 +120,7 @@ export const formCopySchema = z.object({
   name: z.object({ label: text, empty: text }),
   email: z.object({ label: text, empty: text, noAt: text, invalid: text }),
   company: z.object({ label: text, empty: text }),
-  message: z.object({ label: text, help: text, tooShort: text }),
+  message: z.object({ label: text, help: text, tooShort: text, tooLong: text }),
   honeypot: text,
   summaryTitle: text,
   submit: text,

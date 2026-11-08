@@ -27,6 +27,7 @@ form:
     label: What do you need?
     help: "Product, where it is used, board stage. No confidential details yet: files follow a non-disclosure agreement (NDA)."
     tooShort: Add a sentence or two on the product and what you need (at least 20 characters).
+    tooLong: Your message is too long. Shorten it and send again.
   honeypot: Website. Leave this field empty.
   summaryTitle: "Fix these fields to send your request:"
   submit: Request a feasibility review
