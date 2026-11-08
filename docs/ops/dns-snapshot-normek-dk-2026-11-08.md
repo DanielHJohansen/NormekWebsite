@@ -28,8 +28,8 @@ Read through Simply's official connector, with no changes made. Records only, no
 
 ## Other facts
 
-- Mail accounts: none. Mail forwards: none. Hosted subdomains: none.
+- At snapshot time: mail accounts none, mail forwards none, hosted subdomains none. Later on 2026-11-08 the mailbox daniel@normek.dk was created (no DNS change).
 - The bare domain, `www` and the wildcard all point at the Simply web server for this product.
 - There is no CAA record, and no MTA-STS or TLS reporting record.
 - DMARC and DKIM are delegated to Simply by CNAME, so Simply controls the DMARC policy and the report address. The policy itself has not been read.
-- What the web server shows today has not been checked.
+- The web server shows a Simply placeholder over plain HTTP (no certificate is active).

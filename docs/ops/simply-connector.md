@@ -32,12 +32,5 @@ I read Simply's public API specification on 2026-11-08. An API key (created unde
 1. Read the zone and save the snapshot.
 2. Lower the TTL on the `www` record.
 3. Add the domain in the hosting project first, then replace the `www` A record with a CNAME to the host's address.
-4. Send the bare domain to `www`. The connector has no forwarding tool, and the bare domain already points at the Simply web server, so put a one-file redirect there (Daniel uploads it) or use the panel's forwarding. Check that the hosting serves a valid certificate for the bare domain.
+4. Send the bare domain to `www` with Simply's URL forwarding in the control panel (DNS, then URL forwarding). The connector has no forwarding tool, so Daniel sets it up. Simply says HTTPS works automatically on these forwards. Test that `https://normek.dk` forwards without a certificate warning.
 5. Read the records back, check the site, and keep the old record as the rollback.
-
-Redirect rule for the bare domain (Apache, placed in the web root of the Simply hosting):
-
-```
-RewriteEngine On
-RewriteRule ^ https://www.normek.dk%{REQUEST_URI} [R=301,L]
-```

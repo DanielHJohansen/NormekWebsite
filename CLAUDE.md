@@ -103,5 +103,6 @@ Typical sequence:
 - Develop on the branch the session designates. Never push to `main` without Daniel's say-so. Never force-push. Do not open a pull request unless asked.
 - Small, atomic commits. Commit only the files you intend to change. Pull before and push right after.
 - Look at your work. Render pages with Playwright (preinstalled in cloud sessions) and review screenshots at 390, 768 and 1280 px before calling UI work done.
+- To view a page, run `node scripts/screenshot.mjs <https-url>` (details in `docs/ops/viewing-the-site.md`). Only HTTPS and hosts on the environment's allowed list work. Never bypass certificate errors.
 - Prefer boring technology. Justify every dependency. No third-party scripts without an ADR in `docs/adr/`.
 - Decisions that change scope, cost, brand or legal exposure go to Daniel as a short question with a recommended default.
