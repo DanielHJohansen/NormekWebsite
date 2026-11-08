@@ -18,7 +18,7 @@ Normek develops AI-native solutions for product development. The first offer is 
 - Target customers: electronics companies that are strong in PCBs, firmware and electronics but have no mechanical engineering in-house.
 - Offer: design the enclosure, prototype it, work with manufacturing partners for the mechanical components, and deliver the finished product. It starts as design consulting and grows into full product delivery.
 - Outwardly Normek looks like a premium engineering consultancy. Inwardly it uses AI tools heavily to work faster and cheaper than competitors.
-- Whether and how loudly to say "AI" in marketing is Daniel's decision. The consult in `docs/strategy/2026-11-08-ai-disclosure-and-go-to-market.md` recommends outcome-first messaging with AI disclosed as the method. Until Daniel decides, do not put "AI-powered" or similar claims in public copy.
+- Whether and how loudly to say "AI" in marketing is Daniel's decision. The consult in `docs/strategy/2026-11-08-ai-disclosure-and-go-to-market.md` recommends outcome-first messaging with AI disclosed as the method. Daniel's position on 2026-11-08: for now customers care about the result, not his tools, so the site carries no AI or tools statement and public copy makes no "AI-powered" or similar claim. Two rules stay: never put customer files into free or personal AI accounts, and answer honestly if an NDA or a customer asks about AI use.
 - The website is aimed first at the enclosure customer. Wider mechanical product development comes later.
 
 ## Founder facts and limits (do not overclaim)

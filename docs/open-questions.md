@@ -35,17 +35,19 @@ Do your SkyGrids share sale, your SkyGrids role or your earlier jobs carry confi
 
 Default: treat every past-employer item as not cleared, use only your own projects, and describe client work anonymously until written permission exists. Inventory: `docs/content-reuse-inventory.md`.
 
-### 4. The real AI workflow and data handling (BLOCKER for any AI claim)
+### 4. The real AI workflow and data handling (needed before any AI claim or customer file)
 
 Which AI tools do you use today, on which plans? Has any customer file ever touched a free or personal account? Can you run a project in a no-AI mode? Which steps does AI really speed up, and by how much (measured, not guessed)?
 
 Default: write the inventory in `docs/security/ai-data-handling.md` with `security-engineer`, move to business-tier accounts, get vendor terms in writing, and log hours on your first reference design so the numbers are real.
 
+Status on 2026-11-08: Daniel does not want to feature tools for now, so this no longer blocks the site. It still matters before the first customer file arrives, and before any AI claim is made.
+
 ## 1. Business definition
 
 | # | Decision | Why it matters | Recommended default |
 |---|---|---|---|
-| 5 | First offers | The site must sell something specific | Enclosure Feasibility Review (one week), Prototype Sprint (2 to 4 weeks), Production Package (quoted). The consult's prices (DKK 5,000 to 10,000 and DKK 30,000 to 60,000) are hypotheses to test in interviews |
+| 5 | First offers | The site must sell something specific | Enclosure Feasibility Review (one week), Prototype Sprint (about 1 week, depends on the project, per Daniel on 2026-11-08, a target until a build log confirms it), Production Package (quoted). The consult's prices (DKK 5,000 to 10,000 and DKK 30,000 to 60,000) are hypotheses to test in interviews |
 | 6 | Delivery and liability | Delivering finished parts may make you responsible as the manufacturer | Design plus supplier management first. Add parts resale with a stated handling margin only after insurance and terms exist |
 | 7 | Capacity | Over-promising kills trust | At most two active projects, and a site line saying how many projects you take per quarter |
 | 8 | Price visibility | It filters leads and few rivals do it | Show "from" prices after the first three interviews |
@@ -55,7 +57,7 @@ Default: write the inventory in `docs/security/ai-data-handling.md` with `securi
 | # | Decision | Recommended default |
 |---|---|---|
 | 9 | Beachhead | Danish and southern Swedish electronics firms and hardware startups of about 5 to 50 people, with low-volume industrial or IoT devices, at the point where a standard box stops fitting. Exclude defense, medical and automotive for now. Confirm with 15 to 20 interviews (confirmed if 30 percent or more have an enclosure need within six months) |
-| 10 | AI disclosure | Option B from the consult: outcome-first, with AI disclosed as the method on a how-we-work page, a data and IP page and a contract clause. Go live only once the commitments in item 4 are true |
+| 10 | AI disclosure | Option B from the consult: outcome-first, with AI disclosed as the method on a how-we-work page, a data and IP page and a contract clause. Go live only once the commitments in item 4 are true. **Daniel's position on 2026-11-08:** for now customers care about the result, not his tools, so v0 says nothing about tools or AI. Two rules stay: never put customer files into free or personal AI accounts, and answer honestly if an NDA or a customer asks |
 | 11 | Language and geography | English only at launch, Denmark and the Nordics first with EU reach. Danish later if inquiries ask for it |
 | 12 | Proof | Two public reference designs with a measured build log, plus two or three discounted pilots traded for case-study rights |
 
