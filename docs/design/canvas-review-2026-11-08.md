@@ -6,7 +6,7 @@ Reviewed from source, not rendered, against the brand guide, `tokens.md` and cop
 
 | # | Where | Severity | Finding and exact fix |
 |---|---|---|---|
-| 1 | `Main` 45, 126, 296, 344 to 348, 416. `Privacy` 27, 55. `Type` 164 | Must fix | Lines run past 65 characters (guide, `Type` 134): up to 71, 89, 71, 83, 96 and 103. At 768 the uncapped lists reach 95 (301 to 307) and 91 (324 to 328). `Type` 164 says "34 to 46 em" and the code has four tokens from it. Fix: `max-width:28em` on running text (longest line 65), one token, reword 164. |
+| 1 | `Main` 45, 126, 296, 344 to 348, 416. `Privacy` 27, 55. `Type` 164 | Must fix | Lines run past 65 characters (guide, `Type` 134): up to 71, 89, 71, 83, 96 and 103. At 768 the uncapped lists reach 95 (301 to 307) and 91 (324 to 328). `Type` 164 says "34 to 46 em". Fix: `max-width:28em` on running text (longest line 65), built as one token used through `max-w-measure` (Tailwind's `max-w-prose` is a fixed 65ch), and reword 164. |
 | 2 | `Main` 26 to 31, 428, 440 to 441 | Must fix | At 768 the header needs 765 px and has 707 (it fits from 832). Fix: links from 1280 as `Header.astro` does, `logoH` 28 below 768 and 32 above. |
 | 3 | `Main` 75 to 85. `Components` 335 to 341, 348 | Must fix | Labels are 13 units in a scaled SVG: 7 px at 390, 9 px at 1280, 15 px at 768. Fix: remove the `text` nodes and leaders, add an HTML legend in Plex Mono `text-sm`, move line 85 to the caption, reword 348 to "never scale text". |
 | 4 | `Main` 51 | Should fix | Copy 2.1 puts the one-person line before the button. It sits after the email link, at y 693 to 735 on a phone, under the fold. Fix: move it above line 46, no rule, margin 16. |
@@ -22,7 +22,7 @@ Reviewed from source, not rendered, against the brand guide, `tokens.md` and cop
 
 - Boards disagree: textarea 120 (`Components` 160) against 140 (`Main` 376), focus offset 2 (146) against 3 (48, 97), trace padding 24 (256, 265) against 32 (`Main` 245 to 275), status gap 10 (168 to 187) against 12 (`Thanks` 24).
 - Type: `Main` 44 adds Roboto Condensed, the footer logo is fixed at 28 (400), fixed 14 and 15 px sizes (26 to 31, 360 to 415) belong on `text-sm`, index numerals mix 14 px and body size (99, 383).
-- Weights: 500 on nav and standalone links (26 to 29, 50, 330) against the guide's 400 and 600 (`Type` 56). Fix: amend the guide, set footer links 500 (410 to 412) and line 386 to 400.
+- Weights: 500 on nav and links (26 to 29, 50, 102, 108, 114, 330, 349, 386, and links on `Components`, `Thanks`, `NotFound`) against the guide's 400 and 600 (`Type` 56). Fix: set them to 400.
 - Off the 4 px base: 6, 10 and 14 px (300, 338, 362 to 376, tag padding). Use 8, 8, 16 and 4.
 - Spec boards: 12 to 13 px labels, 56, 28 and 24 px headings, 46 to 60em paragraphs.
 

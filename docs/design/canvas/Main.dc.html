@@ -19,14 +19,14 @@ body{margin:0}
 
 <sc-if value="{{ showHeader }}" hint-placeholder-val="{{ true }}">
 <header style="background:#F4F5F2; border-bottom:1px solid #D3D6D8">
-<div style="max-width:1200px; margin:0 auto; padding:16px clamp(20px, 4vw, 48px); box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; gap:24px">
-<a href="#top" style="display:flex; align-items:center"><img src="/_blob/f88c3ff681522108eb3457e7769e3b4e" alt="Normek" style="display:block; height:{{logoH}}px; width:auto"></a>
+<div style="max-width:1200px; margin:0 auto; padding:clamp(12px, 2vw, 16px) clamp(20px, 4vw, 48px); box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; gap:24px">
+<a href="#top" style="display:flex; align-items:center; min-height:44px"><img src="/_blob/f88c3ff681522108eb3457e7769e3b4e" alt="Normek" style="display:block; height:{{logoH}}px; width:auto"></a>
 <nav aria-label="Main" style="display:flex; align-items:center; gap:32px">
 <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
-<a href="#offers" style="color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:500">Enclosure design</a>
-<a href="#process" style="color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:500">How I work</a>
-<a href="#data" style="color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:500">Data and files</a>
-<a href="#about" style="color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:500">About</a>
+<a href="#offers" style="display:inline-flex; align-items:center; min-height:44px; color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:400">Enclosure design</a>
+<a href="#process" style="display:inline-flex; align-items:center; min-height:44px; color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:400">How I work</a>
+<a href="#data" style="display:inline-flex; align-items:center; min-height:44px; color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:400">Data and files</a>
+<a href="#about" style="display:inline-flex; align-items:center; min-height:44px; color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:400">About</a>
 </sc-if>
 <a href="#contact" style="display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 20px; box-sizing:border-box; border:2px solid #0F1B2D; border-radius:2px; color:#0F1B2D; text-decoration:none; font-size:0.9375rem; font-weight:600">Request a review</a>
 </nav>
@@ -37,55 +37,50 @@ body{margin:0}
 <main>
 
 <sc-if value="{{ showA }}" hint-placeholder-val="{{ true }}">
-<section id="top" style="padding:clamp(48px, 7vw, 96px) 0 clamp(56px, 8vw, 112px)">
+<section id="top" style="padding:clamp(32px, 7vw, 96px) 0 clamp(56px, 8vw, 112px)">
 <div style="max-width:1200px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:clamp(32px, 5vw, 72px)">
 <div style="flex:1 1 480px; min-width:0">
-<p style="margin:0 0 20px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Enclosure design for electronics teams</p>
+<p style="margin:0 0 20px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374; text-wrap:balance">Enclosure design for electronics teams</p>
 <h1 style="margin:0 0 24px; font-family:'Barlow Semi Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif; font-weight:600; font-size:clamp(2.5rem, 1.8427rem + 2.6966vw, 4rem); line-height:1.05; text-wrap:balance">Your circuit board works. I design the box it ships in.</h1>
-<p style="margin:0 0 32px; max-width:34em; font-size:clamp(1.125rem, 1.0428rem + 0.3371vw, 1.3125rem); line-height:1.5; color:#586374">Design, printed prototypes and the hand-off to manufacturers, for teams that have the electronics but no mechanical engineer.</p>
+<p style="margin:0 0 16px; max-width:28em; font-size:clamp(1.125rem, 1.0428rem + 0.3371vw, 1.3125rem); line-height:1.5; color:{{leadColor}}; text-wrap:pretty">Design, printed prototypes and the hand-off to manufacturers, for teams that have the electronics but no mechanical engineer.</p>
+<p style="margin:0 0 32px; max-width:28em; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; color:#586374">I work alone. I am Daniel Hessellund Johansen, a mechanical engineer.</p>
 <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px 24px">
-<a href="#contact" style="display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 28px; box-sizing:border-box; background:#FF5A1F; border-radius:2px; color:#0F1B2D; text-decoration:none; font-weight:600">Request a feasibility review</a>
-<p style="margin:0; max-width:16em; font-size:0.9375rem; line-height:1.5; color:#586374">If a standard box fits, I recommend it.</p>
+<a href="#contact" style="display:inline-flex; align-items:center; justify-content:center; width:{{btnW}}; min-height:52px; padding:0 28px; box-sizing:border-box; background:#FF5A1F; border-radius:2px; color:#0F1B2D; text-decoration:none; font-weight:600">Request a feasibility review</a>
+<p style="margin:0; max-width:18em; font-size:0.9375rem; line-height:1.5; color:#586374">If a standard box fits, I recommend it.</p>
 </div>
-<p style="margin:16px 0 0"><a href="mailto:daniel@normek.dk" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Or email daniel@normek.dk</a></p>
-<p style="margin:40px 0 0; padding-top:20px; border-top:1px solid #D3D6D8; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; color:#586374">I work alone. I am Daniel Hessellund Johansen, a mechanical engineer.</p>
+<p style="margin:8px 0 0"><a href="mailto:daniel@normek.dk" style="display:inline-flex; align-items:center; min-height:44px; color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">Or email daniel@normek.dk</a></p>
 </div>
 <figure style="flex:1 1 380px; min-width:0; margin:0">
-<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; padding:clamp(20px, 3vw, 36px); box-sizing:border-box; clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px))">
-<svg viewBox="0 0 560 440" width="100%" style="display:block; height:auto" role="img" aria-label="Exploded section drawing of an enclosure. A lid with a seal at its lip, a circuit board with three components, and a base with two mounting posts, joined by dashed assembly lines.">
+<div style="padding:1px; background:#D3D6D8; clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px))">
+<div style="padding:clamp(20px, 3vw, 36px); background:#FFFFFF; clip-path:polygon(0 0, calc(100% - 27.41px) 0, 100% 27.41px, 100% 100%, 27.41px 100%, 0 calc(100% - 27.41px))">
+<svg viewBox="0 0 560 440" width="100%" style="display:block; height:auto" role="img" aria-label="Illustration, not to scale: a circuit board in a two-part housing, shown as a section. The lid is lifted off, and its lip has a groove holding a round seal. The board rests on two posts in the base.">
 <defs>
-<pattern id="cut" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)">
-<line x1="0" y1="0" x2="0" y2="9" stroke="#0F1B2D" stroke-width="1.5"/>
+<pattern id="hatch-lid" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="4.5" y1="0" x2="4.5" y2="9" stroke="#0F1B2D" stroke-width="1.5"/>
+</pattern>
+<pattern id="hatch-base" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+<line x1="4.5" y1="0" x2="4.5" y2="9" stroke="#0F1B2D" stroke-width="1.5"/>
 </pattern>
 </defs>
-<line x1="120" y1="112" x2="120" y2="262" stroke="#6B7686" stroke-width="1" stroke-dasharray="4 4"/>
-<line x1="400" y1="112" x2="400" y2="262" stroke="#6B7686" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M80 100V44H440V100H422V62H98V100Z" fill="url(#cut)" stroke="#0F1B2D" stroke-width="2" stroke-linejoin="miter"/>
-<circle cx="89" cy="108" r="5" fill="none" stroke="#0F1B2D" stroke-width="2"/>
-<circle cx="431" cy="108" r="5" fill="none" stroke="#0F1B2D" stroke-width="2"/>
-<rect x="110" y="196" width="300" height="10" fill="#0F1B2D"/>
-<rect x="140" y="170" width="44" height="26" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
-<rect x="226" y="176" width="30" height="20" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
-<rect x="352" y="160" width="48" height="36" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
-<path d="M80 268H98V366H422V268H440V386H80Z" fill="url(#cut)" stroke="#0F1B2D" stroke-width="2" stroke-linejoin="miter"/>
-<rect x="132" y="312" width="16" height="54" fill="url(#cut)" stroke="#0F1B2D" stroke-width="2"/>
-<rect x="372" y="312" width="16" height="54" fill="url(#cut)" stroke="#0F1B2D" stroke-width="2"/>
-<path d="M89 113L44 150" stroke="#FF5A1F" stroke-width="2" fill="none"/>
-<circle cx="44" cy="150" r="4" fill="#FF5A1F"/>
-<text x="14" y="174" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">seal</text>
-<line x1="440" y1="72" x2="488" y2="72" stroke="#6B7686" stroke-width="1"/>
-<text x="494" y="76" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">lid</text>
-<line x1="410" y1="201" x2="488" y2="201" stroke="#6B7686" stroke-width="1"/>
-<text x="494" y="205" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">board</text>
-<line x1="440" y1="330" x2="488" y2="330" stroke="#6B7686" stroke-width="1"/>
-<text x="494" y="334" font-family="IBM Plex Mono, monospace" font-size="13" fill="#0F1B2D">base</text>
+<line x1="93" y1="113" x2="93" y2="262" stroke="#6B7686" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="427" y1="113" x2="427" y2="262" stroke="#6B7686" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M80 268H106V286H98V366H132V312H148V366H372V312H388V366H422V286H414V268H440V386H80Z" fill="url(#hatch-base)" stroke="#0F1B2D" stroke-width="2" stroke-linejoin="miter"/>
+<rect x="110" y="302" width="300" height="10" fill="#0F1B2D"/>
+<rect x="140" y="276" width="44" height="26" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
+<rect x="226" y="282" width="30" height="20" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
+<rect x="352" y="266" width="48" height="36" fill="#FFFFFF" stroke="#0F1B2D" stroke-width="2"/>
+<path d="M80 100V44H440V100H434V92H420V100H414V82H422V62H98V82H106V100H100V92H86V100Z" fill="url(#hatch-lid)" stroke="#0F1B2D" stroke-width="2" stroke-linejoin="miter"/>
+<circle cx="93" cy="99" r="5" fill="#0F1B2D"/>
+<circle cx="427" cy="99" r="5" fill="#0F1B2D"/>
+<path d="M90 103L44 149" stroke="#FF5A1F" stroke-width="2" fill="none"/>
+<circle cx="44" cy="149" r="4" fill="#FF5A1F"/>
 <line x1="80" y1="414" x2="440" y2="414" stroke="#6B7686" stroke-width="1"/>
 <line x1="80" y1="406" x2="80" y2="422" stroke="#6B7686" stroke-width="1"/>
 <line x1="440" y1="406" x2="440" y2="422" stroke="#6B7686" stroke-width="1"/>
-<text x="260" y="434" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#586374">outer size set by the board and the seal</text>
 </svg>
 </div>
-<figcaption style="margin:12px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; color:#586374">Illustration, not to scale: a circuit board in a two-part housing, shown as a section. Not a customer project.</figcaption>
+</div>
+<figcaption style="margin:12px 0 0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; color:#586374">Illustration, not to scale: a circuit board in a two-part housing, shown as a section. Not a customer project.<span style="display:block; margin-top:8px">From the top: lid, circuit board, base with two posts. The orange mark points to the seal in a groove in the lid lip.</span></figcaption>
 </figure>
 </div>
 </section>
@@ -94,24 +89,24 @@ body{margin:0}
 <div style="max-width:1200px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); box-sizing:border-box">
 <p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">01 / Problem</p>
 <h2 style="margin:0 0 40px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem); line-height:1.2; text-wrap:balance">Three moments a standard box stops fitting</h2>
-<div style="display:flex; flex-wrap:wrap; gap:24px">
-<div style="flex:1 1 300px; min-width:0; background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap:24px">
+<div style="min-width:0; background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
 <p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; color:#586374">01</p>
 <h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem); line-height:1.3">The board is done and there is no box.</h3>
 <p style="margin:0; color:#586374">You have a working board and a ship date. The box has to match its connectors, antenna and mounting.</p>
-<a href="#contact" aria-label="Tell me about this: the board is done and there is no box" style="margin-top:auto; padding-top:8px; color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
+<a href="#contact" aria-label="Tell me about this: the board is done and there is no box" style="margin-top:auto; align-self:flex-start; display:inline-flex; align-items:center; min-height:44px; color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
 </div>
-<div style="flex:1 1 300px; min-width:0; background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
+<div style="min-width:0; background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
 <p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; color:#586374">02</p>
 <h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem); line-height:1.3">The first box failed or costs too much.</h3>
 <p style="margin:0; color:#586374">A sealed box breathes. As it cools, the air inside contracts and draws humid air in through the weakest seal. A membrane vent equalizes pressure and blocks liquid water and dust, but passes water vapor, so condensation can still form. I start with the cheapest fix that works.</p>
-<a href="#contact" aria-label="Tell me about this: the first box failed or costs too much" style="margin-top:auto; padding-top:8px; color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
+<a href="#contact" aria-label="Tell me about this: the first box failed or costs too much" style="margin-top:auto; align-self:flex-start; display:inline-flex; align-items:center; min-height:44px; color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
 </div>
-<div style="flex:1 1 300px; min-width:0; background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
+<div style="min-width:0; background:#FFFFFF; border:1px solid #D3D6D8; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px">
 <p style="margin:0; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; color:#586374">03</p>
 <h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem); line-height:1.3">From a few prototypes to hundreds of units.</h3>
 <p style="margin:0; color:#586374">Printing suits prototypes and small batches. In the hundreds and beyond, casting or molding can cost less per part. Tooling only pays off once volume covers it, and where that point falls depends on the part, so I ask for quotes.</p>
-<a href="#contact" aria-label="Tell me about this: from a few prototypes to hundreds of units" style="margin-top:auto; padding-top:8px; color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
+<a href="#contact" aria-label="Tell me about this: from a few prototypes to hundreds of units" style="margin-top:auto; align-self:flex-start; display:inline-flex; align-items:center; min-height:44px; color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">Tell me about this</a>
 </div>
 </div>
 </div>
@@ -123,7 +118,7 @@ body{margin:0}
 <div style="max-width:1200px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); box-sizing:border-box">
 <p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">02 / Offers</p>
 <h2 style="margin:0 0 16px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem); line-height:1.2; text-wrap:balance">Three stages. Use one or all three.</h2>
-<p style="margin:0 0 40px; max-width:40em; color:#586374">If a standard box fits, I recommend it. How long a stage takes depends on the project, so a written scope fixes duration and price before work starts <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>. Files follow a non-disclosure agreement (NDA).</p>
+<p style="margin:0 0 40px; max-width:28em; color:#586374">If a standard box fits, I recommend it. How long a stage takes depends on the project, so a written scope fixes duration and price before work starts <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>. Files follow a non-disclosure agreement (NDA).</p>
 
 <div style="border-top:2px solid #0F1B2D">
 
@@ -135,16 +130,16 @@ body{margin:0}
 </div>
 <div style="flex:2 1 360px; min-width:0">
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">You get</p>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
 <li>A PDF report with the verdict, manufacturing route for your volume, a material shortlist, sealing and venting, and each risk with its cheapest fix.</li>
-<li>It includes heat path notes (a hand estimate of temperature rise at your power figure, not a simulation) and antenna placement notes (keep-outs and housing material, not tuning or radio tests) <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
+<li>It includes heat path notes (a hand estimate of temperature rise at your power figure, not a simulation) and antenna placement notes (keep-outs and housing material, not tuning or radio tests) <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
 <li>Also a computer-aided design (CAD) envelope study and a rough unit cost range per volume step, not a quote.</li>
 <li>One 60 minute call, one written revision.</li>
 </ul>
 </div>
 <div style="flex:1.4 1 280px; min-width:0">
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">I need</p>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
 <li>A 3D model of the board (STEP: Standard for the Exchange of Product model data)</li>
 <li>Connector and antenna positions</li>
 <li>Power dissipation</li>
@@ -162,8 +157,8 @@ body{margin:0}
 </div>
 <div style="flex:2 1 360px; min-width:0">
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">You get</p>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
-<li>Native CAD (<span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[format TO CONFIRM]</span>) and STEP files with a bill of materials.</li>
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<li>Native CAD (<span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[format TO CONFIRM]</span>) and STEP files with a bill of materials.</li>
 <li>One or two rounds of 3D printed prototypes.</li>
 <li>A fit report with photos and measured dimensions.</li>
 <li>Two design reviews, one before printing.</li>
@@ -173,12 +168,12 @@ body{margin:0}
 </div>
 <div style="flex:1.4 1 280px; min-width:0">
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">I need</p>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
 <li>A frozen board revision</li>
 <li>One or two assembled boards</li>
 <li>Parts lists</li>
-<li>A reviewer who answers within <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[2 working days, TO CONFIRM]</span></li>
-<li>Who pays for prototype parts and shipping: <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span></li>
+<li>A reviewer who answers within <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[2 working days, TO CONFIRM]</span></li>
+<li>Who pays for prototype parts and shipping: <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span></li>
 </ul>
 </div>
 </div>
@@ -191,19 +186,19 @@ body{margin:0}
 </div>
 <div style="flex:2 1 360px; min-width:0">
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">You get</p>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
 <li>Drawings with material, finish and critical tolerances.</li>
-<li>A request for quote (RFQ) pack for <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[2 to 3, TO CONFIRM]</span> manufacturers, comparing unit price, tooling, lead time and tooling ownership.</li>
-<li>I choose the manufacturers with you, and you approve the list before I send any files <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
+<li>A request for quote (RFQ) pack for <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[2 to 3, TO CONFIRM]</span> manufacturers, comparing unit price, tooling, lead time and tooling ownership.</li>
+<li>I choose the manufacturers with you, and you approve the list before I send any files <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
 <li>The manufacturers' design for manufacturing (DFM) feedback, with my changes.</li>
-<li>Up to two revisions after DFM feedback. Later tooling changes are quoted <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
+<li>Up to two revisions after DFM feedback. Later tooling changes are quoted <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
 <li>A review of the first samples: the manufacturer's inspection report against my drawing, and a fit check on your board.</li>
-<li>First batch support: I answer the manufacturer's questions and assess any part that misses the drawing <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[limit TO CONFIRM]</span>.</li>
+<li>First batch support: I answer the manufacturer's questions and assess any part that misses the drawing <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[limit TO CONFIRM]</span>.</li>
 </ul>
 </div>
 <div style="flex:1.4 1 280px; min-width:0">
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">I need</p>
-<ul style="margin:0 0 20px; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<ul style="margin:0 0 20px; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
 <li>An accepted prototype</li>
 <li>A frozen board</li>
 <li>Volumes</li>
@@ -211,8 +206,8 @@ body{margin:0}
 <li>Someone who can sign for tooling and orders</li>
 </ul>
 <p style="margin:0 0 8px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; text-transform:uppercase; color:#586374">Not included</p>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px">
-<li>Tooling and part costs (manufacturers invoice you directly and you own the tooling <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM, lawyer]</span>)</li>
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
+<li>Tooling and part costs (manufacturers invoice you directly and you own the tooling <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM, lawyer]</span>)</li>
 <li>Certification</li>
 <li>Testing</li>
 <li>Warranty on parts others make</li>
@@ -262,7 +257,7 @@ body{margin:0}
 <svg width="24" height="24" viewBox="0 0 24 24" style="display:block; flex:none"><path d="M12 0V4L20 12V16L12 24" fill="none" stroke="#0F1B2D" stroke-width="2"/></svg>
 <div style="flex:1; width:2px; min-height:12px; background:#0F1B2D"></div>
 </div>
-<p style="margin:0; padding-bottom:32px; min-width:0"><span style="display:block; margin-bottom:4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; color:#586374">03</span><strong style="font-weight:600">Get a written scope.</strong> Deliverables, exclusions, duration and price. Work starts when you accept <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</p>
+<p style="margin:0; padding-bottom:32px; min-width:0"><span style="display:block; margin-bottom:4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; letter-spacing:0.06em; color:#586374">03</span><strong style="font-weight:600">Get a written scope.</strong> Deliverables, exclusions, duration and price. Work starts when you accept <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</p>
 </li>
 
 <li style="display:flex; gap:20px">
@@ -293,18 +288,18 @@ body{margin:0}
 <div style="display:flex; flex-wrap:wrap; gap:clamp(32px, 4vw, 56px)">
 <div style="flex:1 1 320px; min-width:0">
 <h3 style="margin:0 0 16px; padding-bottom:12px; border-bottom:2px solid #0F1B2D; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem); line-height:1.3">I take on</h3>
-<p style="margin:0; max-width:34em">Housings for sensors, gateways, controllers, handheld and rail-mounted units, in sealed, outdoor and dusty conditions. I design to an ingress protection (IP) rating as defined in International Electrotechnical Commission (IEC) standard 60529. The rating applies to the finished assembly with the glands, vent and cable I specify. The weakest opening sets the rating.</p>
+<p style="margin:0; max-width:28em">Housings for sensors, gateways, controllers, handheld and rail-mounted units, in sealed, outdoor and dusty conditions. I design to an ingress protection (IP) rating as defined in International Electrotechnical Commission (IEC) standard 60529. The rating applies to the finished assembly with the glands, vent and cable I specify. The weakest opening sets the rating.</p>
 </div>
 <div style="flex:1 1 400px; min-width:0">
 <h3 style="margin:0 0 16px; padding-bottom:12px; border-bottom:2px solid #0F1B2D; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem); line-height:1.3">Not for now</h3>
-<ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:10px">
+<ul style="margin:0; max-width:28em; padding-left:20px; display:flex; flex-direction:column; gap:8px">
 <li>Medical, automotive and defense products, and anything with a military use.</li>
 <li>Explosive atmospheres, including combustible dust.</li>
-<li>Products with 50 V AC or 75 V DC or more <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
+<li>Products with 50 V AC or 75 V DC or more <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
 <li>Simulation studies such as finite element analysis, airflow or mold filling. I build prototypes and measure them.</li>
 <li>Certification, marking and tests: electromagnetic compatibility (EMC), radio, flammability, ultraviolet (UV) exposure, thermal and ingress protection tests, CE marking and UL listing. I design for the rating you need. You or a test lab confirm it.</li>
 <li>Making production parts. I make printed prototypes only.</li>
-<li>Glands, vents and seals: I specify them, you buy them <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
+<li>Glands, vents and seals: I specify them, you buy them <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
 </ul>
 </div>
 </div>
@@ -321,32 +316,34 @@ body{margin:0}
 <p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#969EA8">05 / Data</p>
 <h2 style="margin:0 0 40px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem); line-height:1.2; text-wrap:balance">Data and what you send</h2>
 <ul style="margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap:0 56px">
-<li style="padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">No file upload.</strong> Describe the product in words and keep confidential details out.</li>
-<li style="padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">Files follow a mutual NDA,</strong> sent on request <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM, wording needs a lawyer]</span>. Email <a href="mailto:daniel@normek.dk" style="color:#FE835E; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a> and ask before sending anything.</li>
-<li style="padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">Ask me which services touch your files.</strong> I answer in writing before you send anything <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
-<li style="padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">Quote request files</strong> go only to manufacturers you approve <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</li>
-<li style="padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">The form emails your message to me.</strong> Cloudflare hosts this site and runs the Turnstile check that a visitor is a person. Resend delivers the email. Simply.com hosts my mailbox.</li>
+<li style="max-width:28em; padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">No file upload.</strong> Describe the product in words and keep confidential details out.</li>
+<li style="max-width:28em; padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">Files follow a mutual NDA,</strong> sent on request <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM, wording needs a lawyer]</span>. Email <a href="mailto:daniel@normek.dk" style="color:#FE835E; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a> and ask before sending anything.</li>
+<li style="max-width:28em; padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">Ask me which services touch your files.</strong> I answer in writing before you send anything <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
+<li style="max-width:28em; padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">Quote request files</strong> go only to manufacturers you approve <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</li>
+<li style="max-width:28em; padding:20px 0; border-top:1px solid #293547; color:#969EA8"><strong style="font-weight:600; color:#F4F5F2">The form emails your message to me.</strong> Cloudflare hosts this site and runs the Turnstile check that a visitor is a person. Resend delivers the email. Simply.com hosts my mailbox.</li>
 </ul>
-<p style="margin:32px 0 0"><a href="#" style="color:#FE835E; font-weight:500; text-decoration:underline; text-underline-offset:3px">Read the privacy notice</a></p>
+<p style="margin:16px 0 0"><a href="#" style="display:inline-flex; align-items:center; min-height:44px; color:#FE835E; font-weight:400; text-decoration:underline; text-underline-offset:3px">Read the privacy notice</a></p>
 </div>
 </section>
 
 <section id="about" style="padding:clamp(56px, 8vw, 96px) 0">
 <div style="max-width:1200px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); box-sizing:border-box; display:flex; flex-wrap:wrap; gap:clamp(32px, 5vw, 72px); align-items:flex-start">
 <div style="flex:1 1 320px; min-width:0; max-width:440px">
-<div style="background:#FFFFFF; box-shadow:inset 0 0 0 1px #D3D6D8; aspect-ratio:4 / 5; box-sizing:border-box; display:flex; align-items:flex-end; padding:20px; clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px))">
-<span style="display:inline-block; border:1px dashed #6B7686; padding:4px 10px; background:#FFFFFF; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.8125rem; color:#586374">Photo: [TO CONFIRM]</span>
+<div style="aspect-ratio:4 / 5; padding:1px; box-sizing:border-box; background:#D3D6D8; clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px))">
+<div style="height:100%; box-sizing:border-box; background:#FFFFFF; display:flex; align-items:flex-end; padding:20px; clip-path:polygon(0 0, calc(100% - 27.41px) 0, 100% 27.41px, 100% 100%, 27.41px 100%, 0 calc(100% - 27.41px))">
+<span style="display:inline-block; border:1px dashed #6B7686; padding:4px 8px; background:#FFFFFF; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem; color:#586374">Photo: [TO CONFIRM]</span>
+</div>
 </div>
 </div>
 <div style="flex:2 1 480px; min-width:0">
 <p style="margin:0 0 12px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:clamp(0.875rem, 0.8476rem + 0.1124vw, 0.9375rem); line-height:1.5; letter-spacing:0.06em; text-transform:uppercase; color:#586374">06 / About</p>
 <h2 style="margin:0 0 24px; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.6875rem, 1.441rem + 1.0112vw, 2.25rem); line-height:1.2">Who does the work</h2>
-<p style="margin:0 0 16px; max-width:38em">I am Daniel Hessellund Johansen, a mechanical engineer with a Bachelor of Engineering (B.Eng.) from Aalborg University, 2017 to 2021. I co-founded SkyGrids (September 2022 to November 2025), an aerospace and deep tech company, and exited by selling my shares.</p>
-<p style="margin:0 0 16px; max-width:38em">I work alone. If I am ill, <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[who covers your project, TO CONFIRM]</span>. I work from <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[city, TO CONFIRM]</span> and design in <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[CAD system, TO CONFIRM]</span>. Prototypes are printed <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[by me or at a print service, TO CONFIRM]</span>.</p>
-<p style="margin:0 0 16px; max-width:38em">My portfolio includes enclosure work. Some of it belongs to companies I worked for, so I show it only with their written permission.</p>
-<p style="margin:0 0 16px; max-width:38em">I build and test physical prototypes early. A printed part on your real board shows problems a screen does not.</p>
-<p style="margin:0 0 24px; max-width:38em">My injection molding knowledge comes from university study, not production work. That is why a manufacturer's review comes before tooling is ordered.</p>
-<p style="margin:0; display:flex; flex-wrap:wrap; gap:8px 28px"><span><a href="#" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">LinkedIn</a> <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM link]</span></span><a href="mailto:daniel@normek.dk" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a></p>
+<p style="margin:0 0 16px; max-width:28em">I am Daniel Hessellund Johansen, a mechanical engineer with a Bachelor of Engineering (B.Eng.) from Aalborg University, 2017 to 2021. I co-founded SkyGrids (September 2022 to November 2025), an aerospace and deep tech company, and exited by selling my shares.</p>
+<p style="margin:0 0 16px; max-width:28em">I work alone. If I am ill, <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[who covers your project, TO CONFIRM]</span>. I work from <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[city, TO CONFIRM]</span> and design in <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[CAD system, TO CONFIRM]</span>. Prototypes are printed <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[by me or at a print service, TO CONFIRM]</span>.</p>
+<p style="margin:0 0 16px; max-width:28em">My portfolio includes enclosure work. Some of it belongs to companies I worked for, so I show it only with their written permission.</p>
+<p style="margin:0 0 16px; max-width:28em">I build and test physical prototypes early. A printed part on your real board shows problems a screen does not.</p>
+<p style="margin:0 0 24px; max-width:28em">My injection molding knowledge comes from university study, not production work. That is why a manufacturer's review comes before tooling is ordered.</p>
+<p style="margin:0; display:flex; flex-wrap:wrap; gap:0 28px"><span style="display:inline-flex; align-items:center; min-height:44px"><a href="#" style="color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">LinkedIn</a> <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM link]</span></span><a href="mailto:daniel@normek.dk" style="display:inline-flex; align-items:center; min-height:44px; color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a></p>
 </div>
 </div>
 </section>
@@ -380,10 +377,10 @@ body{margin:0}
 </div>
 <div style="flex:5 1 320px; min-width:0; display:flex; flex-direction:column; gap:24px">
 <h3 style="margin:0; font-family:'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight:600; font-size:clamp(1.375rem, 1.2381rem + 0.5618vw, 1.6875rem); line-height:1.3">Next steps</h3>
-<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">01</span><p style="margin:0">I reply by email within <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[1 working day, TO CONFIRM]</span>.</p></div>
+<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">01</span><p style="margin:0">I reply by email within <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[1 working day, TO CONFIRM]</span>.</p></div>
 <div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">02</span><p style="margin:0">If useful, a 30 minute call to scope. A mutual NDA comes first for files.</p></div>
-<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">03</span><p style="margin:0">A written scope and price before any work starts <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span>.</p></div>
-<p style="margin:0; padding-top:20px; border-top:1px solid #D3D6D8">I take on at most <span style="border:1px dashed #6B7686; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[N, TO CONFIRM]</span> projects at a time and say so early if I am full. Or email <a href="mailto:daniel@normek.dk" style="color:#B43601; font-weight:500; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a>.</p>
+<div style="display:flex; gap:16px"><span style="flex:none; font-family:'IBM Plex Mono', ui-monospace, monospace; color:#586374">03</span><p style="margin:0">A written scope and price before any work starts <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span>.</p></div>
+<p style="margin:0; padding-top:20px; border-top:1px solid #D3D6D8">I take on at most <span style="border:1px dashed #6B7686; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[N, TO CONFIRM]</span> projects at a time and say so early if I am full. Or email <a href="mailto:daniel@normek.dk" style="color:#B43601; font-weight:400; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a>.</p>
 </div>
 </div>
 </div>
@@ -401,20 +398,20 @@ body{margin:0}
 <p style="margin:0; font-size:0.9375rem; color:#969EA8">Normek, enclosure design for electronics teams.</p>
 </div>
 <div style="flex:1 1 260px; min-width:0; display:flex; flex-direction:column; gap:8px; font-size:0.9375rem">
-<span>Legal name and form: <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span></span>
-<span>Company registration number (CVR): <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span></span>
-<span>Address: <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span></span>
-<span>Professional liability insurance: <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM]</span></span>
+<span>Legal name and form: <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span></span>
+<span>Company registration number (CVR): <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span></span>
+<span>Address: <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span></span>
+<span>Professional liability insurance: <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM]</span></span>
 </div>
-<div style="flex:1 1 200px; min-width:0; display:flex; flex-direction:column; gap:8px; font-size:0.9375rem">
-<a href="mailto:daniel@normek.dk" style="color:#FE835E; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a>
-<a href="#" style="color:#FE835E; text-decoration:underline; text-underline-offset:3px">Privacy notice</a>
-<span><a href="#" style="color:#FE835E; text-decoration:underline; text-underline-offset:3px">LinkedIn</a> <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM link]</span></span>
+<div style="flex:1 1 200px; min-width:0; display:flex; flex-direction:column; gap:0; font-size:0.9375rem">
+<a href="mailto:daniel@normek.dk" style="display:inline-flex; align-items:center; min-height:44px; align-self:flex-start; color:#FE835E; text-decoration:underline; text-underline-offset:3px">daniel@normek.dk</a>
+<a href="#" style="display:inline-flex; align-items:center; min-height:44px; align-self:flex-start; color:#FE835E; text-decoration:underline; text-underline-offset:3px">Privacy notice</a>
+<span style="display:inline-flex; align-items:center; min-height:44px"><a href="#" style="color:#FE835E; text-decoration:underline; text-underline-offset:3px">LinkedIn</a> <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM link]</span></span>
 </div>
 </div>
 <div style="margin-top:32px; padding-top:24px; border-top:1px solid #293547; display:flex; flex-wrap:wrap; gap:12px 32px; justify-content:space-between; font-size:0.875rem; color:#969EA8">
-<p style="margin:0; max-width:46em">Mutual non-disclosure agreement on request, and ownership of what I design for you: <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM, wording needs a lawyer]</span></p>
-<p style="margin:0">© 2026 <span style="border:1px dashed #969EA8; padding:0 6px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875em">[TO CONFIRM legal name]</span></p>
+<p style="margin:0; max-width:28em">Mutual non-disclosure agreement on request, and ownership of what I design for you: <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM, wording needs a lawyer]</span></p>
+<p style="margin:0">© 2026 <span style="border:1px dashed #969EA8; padding:0 4px; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:0.875rem">[TO CONFIRM legal name]</span></p>
 </div>
 </div>
 </footer>
@@ -425,7 +422,7 @@ body{margin:0}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":8000},"slice":{"editor":null,"default":"all"},"phone":{"editor":null,"default":false}}'>
 class Component extends DCLogic {
   componentDidMount() {
-    this.sync = () => this.setState({ narrow: window.innerWidth < 760 });
+    this.sync = () => this.setState({ w: window.innerWidth });
     this.sync();
     window.addEventListener('resize', this.sync);
   }
@@ -435,10 +432,12 @@ class Component extends DCLogic {
   renderVals() {
     const slice = String(this.props.slice || 'all');
     const phone = this.props.phone === true || this.props.phone === 'true';
-    const narrow = phone || !!(this.state && this.state.narrow);
+    const w = phone ? 390 : ((this.state && this.state.w) || 1440);
     return {
-      wide: !narrow,
-      logoH: narrow ? 28 : 32,
+      wide: w >= 1280,
+      logoH: w < 768 ? 28 : 32,
+      btnW: w < 480 ? '100%' : 'auto',
+      leadColor: w < 480 ? '#0F1B2D' : '#586374',
       showHeader: slice === 'all' || slice === 'a' || slice === 'header',
       showA: slice === 'all' || slice === 'a',
       showB: slice === 'all' || slice === 'b',

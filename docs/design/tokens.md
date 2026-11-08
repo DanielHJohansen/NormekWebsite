@@ -188,7 +188,7 @@ Paste this over the current file. It keeps every name and value from the current
 
   /* ---------- Layout widths ---------- */
   --container-page: 75rem; /* 1200 px including the gutters, so content is 1104 px at the cap */
-  --container-form: 47.5rem; /* the confirmation and not found pages, 760 px */
+  --container-narrow: 47.5rem; /* the confirmation and not found pages, 760 px */
   --container-measure: 28em; /* 65 characters of Plex Sans, measured on the page copy. Use max-w-measure. Tailwind's max-w-prose is a fixed 65ch and ignores the theme */
 
   /* ---------- Radius and shadow ---------- */
@@ -319,7 +319,7 @@ For 390 to 1280 px viewports. The clamp values are the brand guide's. The pixel 
 | Token | Value | Where in the canvas |
 |---|---|---|
 | Container | `max-w-page`, 1200 px with the gutter inside it, centred | 22, 41, 93 and every section |
-| Narrow page container | `max-w-form`, 760 px (47.5rem), centred, same gutter | `Thanks` 22, `NotFound` 22 |
+| Narrow page container | `max-w-narrow`, 760 px (47.5rem), centred, same gutter | `Thanks` 22, `NotFound` 22 |
 | Gutter | `px-gutter`, `clamp(20px, 4vw, 48px)` (20 / 30.7 / 48 at 390 / 768 / 1280) | every container |
 | Section padding | `py-section`, `clamp(56px, 8vw, 96px)` | 92, 121, 186, 245, 273, 292, 311 |
 | Hero padding | top `clamp(48px, 7vw, 96px)`, bottom `clamp(56px, 8vw, 112px)` | 40 |
@@ -745,7 +745,6 @@ The developer has applied section 2. `tokens.css` now matches it, with one extra
 | Where | Now | Should be |
 |---|---|---|
 | `--container-prose` and every `max-w-prose` class | Tailwind compiles `max-w-prose` to a fixed `65ch` (about 87 characters of Plex Sans) and ignores the 28em token. The first version of this file told you to use it, which was wrong. Only `.prose` honours the token. `max-w-measure-md` in `TextSection.astro` generates nothing, because that token is gone | Rename the token to `--container-measure`, which generates `max-w-measure`. Point `.prose` in `global.css` at `var(--container-measure)`. Replace every `max-w-prose` and `max-w-measure-md` with `max-w-measure` (seen in `HeroSection`, `OffersSection`, `ScopeSection`, `TextSection`, `Footer`, `404` and the work page). I compiled the renamed token with the repo's Tailwind and it generates the class |
-| Narrow pages | No narrow container | Add `--container-form: 47.5rem` (760 px) for the confirmation and not found pages, as in section 2 |
 
 ## 8. Decisions
 
