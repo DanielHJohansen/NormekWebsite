@@ -131,3 +131,6 @@ Each has a default, so "go with the defaults" works.
 | 29 | Bare domain at go-live: set an unframed 301 forward from normek.dk to the www address at Simply. A framed forward breaks the page | Do it at go-live, with the Simply connector |
 | 30 | Your LinkedIn address, and a portrait or workshop photo for the About section | Provide both. Without them the section shows a labelled gap |
 | 31 | Accept the Cloudflare, Resend and Simply data processing agreements before any tester submits the form | Do it during the setup in `docs/ops/cloudflare-and-resend-setup.md` |
+| 32 | Publish a fixed price and a fixed duration for the feasibility review alone? The simulated buyer would reply more readily (`docs/strategy/persona-review-2026-11-08-copy.md`) | Decide after the first three interviews, as item 8 says. Until then the page shows no price |
+| 33 | One real, labelled photo of your own prototype work, and whether an independent molding or tooling engineer could give a second opinion | Provide the photo. Say "no independent check" until a person exists |
+| 34 | Which CAD system do you deliver in, in which city do you work, who prints your prototypes, and who covers a project if you are ill? | Name each in plain words, or the page cuts the sentence |
